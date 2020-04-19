@@ -1,0 +1,118 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: EntityPair</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.entity.components</a> ]
+</div>
+
+<h1>Coverage Summary for Class: EntityPair (org.cauldron.entity.components)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EntityPair</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (3/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (10/ 11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.entity.components;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.Entity;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * A pair of entities. Custom equals method to test if the same pair in the different order is the same.
+<i>7</i>&nbsp; */
+<i>8</i>&nbsp;public class EntityPair {
+<i>9</i>&nbsp;    public Entity A;
+<i>10</i>&nbsp;    public Entity B;
+<i>11</i>&nbsp;
+<b class="fc"><i>12</i>&nbsp;    public EntityPair(Entity A, Entity B) {</b>
+<b class="fc"><i>13</i>&nbsp;        this.A = A;</b>
+<b class="fc"><i>14</i>&nbsp;        this.B = B;</b>
+<i>15</i>&nbsp;    }
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    @Override
+<i>18</i>&nbsp;    public boolean equals(Object object) {
+<b class="pc"><i>19</i>&nbsp;        if (!(object instanceof EntityPair)) return false;</b>
+<b class="fc"><i>20</i>&nbsp;        EntityPair otherPair = (EntityPair) object;</b>
+<b class="pc"><i>21</i>&nbsp;        if ((A.equals(otherPair.A)) &amp;&amp; B.equals(otherPair.B)) return true;</b>
+<b class="pc"><i>22</i>&nbsp;        return (A.equals(otherPair.B)) &amp;&amp; B.equals(otherPair.A);</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public String toString() {
+<b class="nc"><i>26</i>&nbsp;        return A.toString() + &quot; and &quot; + A.toString();</b>
+<i>27</i>&nbsp;    }
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    @Override
+<i>30</i>&nbsp;    public int hashCode() {
+<b class="pc"><i>31</i>&nbsp;        int result = A != null ? A.hashCode() : 0;</b>
+<b class="pc"><i>32</i>&nbsp;        result = 31 * result + (B != null ? B.hashCode() : 0);</b>
+<b class="fc"><i>33</i>&nbsp;        return result;</b>
+<i>34</i>&nbsp;    }
+<i>35</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

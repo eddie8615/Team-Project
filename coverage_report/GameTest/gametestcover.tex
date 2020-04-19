@@ -1,0 +1,143 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Coverage Report :: Summary},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage{longtable,booktabs}
+% Correct order of tables after \paragraph or \subparagraph
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
+\makeatother
+% Allow footnotes in longtable head/foot
+\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
+\makesavenoteenv{longtable}
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Coverage Report :: Summary}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+{[} all classes {]}
+
+\hypertarget{overall-coverage-summary}{%
+\section{Overall Coverage Summary}\label{overall-coverage-summary}}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+Package & Class, \% & Method, \% & Line, \%\tabularnewline
+\midrule
+\endhead
+all classes & { 91\% } { (91/ 100) } & { 64\% } { (410/ 641) } & {
+63.1\% } { (3071/ 4866) }\tabularnewline
+\bottomrule
+\end{longtable}
+
+\hfill\break
+
+\hypertarget{coverage-breakdown}{%
+\subsection{Coverage Breakdown}\label{coverage-breakdown}}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule
+\href{index_SORT_BY_NAME_DESC.html}{Package} &
+\href{index_SORT_BY_CLASS.html}{Class, \%} &
+\href{index_SORT_BY_METHOD.html}{Method, \%} &
+\href{index_SORT_BY_LINE.html}{Line, \%}\tabularnewline
+\midrule
+\endhead
+\href{org.cauldron.ai/index.html}{org.cauldron.ai} & { 100\% } { (1/ 1)
+} & { 81.8\% } { (9/ 11) } & { 77.6\% } { (38/ 49) }\tabularnewline
+\href{org.cauldron.audio/index.html}{org.cauldron.audio} & { 100\% } {
+(3/ 3) } & { 53.1\% } { (17/ 32) } & { 75.2\% } { (88/ 117)
+}\tabularnewline
+\href{org.cauldron.database/index.html}{org.cauldron.database} & { 100\%
+} { (2/ 2) } & { 76\% } { (19/ 25) } & { 64.6\% } { (62/ 96)
+}\tabularnewline
+\href{org.cauldron.entity/index.html}{org.cauldron.entity} & { 100\% } {
+(4/ 4) } & { 79.7\% } { (47/ 59) } & { 74.1\% } { (298/ 402)
+}\tabularnewline
+\href{org.cauldron.entity.components/index.html}{org.cauldron.entity.components}
+& { 100\% } { (12/ 12) } & { 90.5\% } { (19/ 21) } & { 93.1\% } { (67/
+72) }\tabularnewline
+\href{org.cauldron.entity.entities/index.html}{org.cauldron.entity.entities}
+& { 100\% } { (6/ 6) } & { 85.7\% } { (18/ 21) } & { 81.7\% } { (98/
+120) }\tabularnewline
+\href{org.cauldron.game/index.html}{org.cauldron.game} & { 90\% } { (9/
+10) } & { 62.4\% } { (53/ 85) } & { 54.9\% } { (456/ 831)
+}\tabularnewline
+\href{org.cauldron.network/index.html}{org.cauldron.network} & { 16.7\%
+} { (1/ 6) } & { 3.7\% } { (2/ 54) } & { 0.7\% } { (2/ 277)
+}\tabularnewline
+\href{org.cauldron.renderer/index.html}{org.cauldron.renderer} & { 100\%
+} { (15/ 15) } & { 72.7\% } { (72/ 99) } & { 79.1\% } { (416/ 526)
+}\tabularnewline
+\href{org.cauldron.renderer.animations/index.html}{org.cauldron.renderer.animations}
+& { 75\% } { (6/ 8) } & { 75\% } { (6/ 8) } & { 92.1\% } { (58/ 63)
+}\tabularnewline
+\href{org.cauldron.renderer.layers/index.html}{org.cauldron.renderer.layers}
+& { 100\% } { (5/ 5) } & { 84.8\% } { (39/ 46) } & { 93.1\% } { (435/
+467) }\tabularnewline
+\href{org.cauldron.scenes/index.html}{org.cauldron.scenes} & { 75\% } {
+(3/ 4) } & { 75\% } { (12/ 16) } & { 77\% } { (231/ 300)
+}\tabularnewline
+\href{org.cauldron.ui/index.html}{org.cauldron.ui} & { 100\% } { (3/ 3)
+} & { 62.7\% } { (47/ 75) } & { 72.2\% } { (182/ 252) }\tabularnewline
+\href{org.cauldron.ui.elements/index.html}{org.cauldron.ui.elements} & {
+100\% } { (18/ 18) } & { 48.5\% } { (33/ 68) } & { 31.9\% } { (292/ 914)
+}\tabularnewline
+\href{org.cauldron.ui.styles/index.html}{org.cauldron.ui.styles} & {
+100\% } { (1/ 1) } & { 66.7\% } { (2/ 3) } & { 98.6\% } { (215/ 218)
+}\tabularnewline
+\href{org.cauldron.util/index.html}{org.cauldron.util} & { 100\% } { (2/
+2) } & { 83.3\% } { (15/ 18) } & { 82.1\% } { (133/ 162)
+}\tabularnewline
+\bottomrule
+\end{longtable}
+
+generated on 2020-04-15 23:11
+
+\end{document}

@@ -1,0 +1,144 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: NameTag</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: NameTag (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">NameTag</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (2/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87%
+  </span>
+  <span class="absValue">
+    (20/ 23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>4</i>&nbsp;import org.lwjgl.nuklear.NkColor;
+<i>5</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>6</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>7</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;public class NameTag extends UIElement {
+<b class="fc"><i>12</i>&nbsp;    String userName = null;</b>
+<b class="fc"><i>13</i>&nbsp;    private NkColor white = NkColor.create().set((byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF);</b>
+<b class="fc"><i>14</i>&nbsp;    private NkColor green = NkColor.create().set((byte) 0x00, (byte) 0x99, (byte) 0x11, (byte) 0xFF);</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    public NameTag(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>17</i>&nbsp;        super(ctx, name, x, y);</b>
+<i>18</i>&nbsp;    }
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    public void setUserName(String userName) {
+<b class="nc"><i>21</i>&nbsp;        this.userName = userName;</b>
+<i>22</i>&nbsp;    }
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    public String getUserName() {
+<b class="nc"><i>25</i>&nbsp;        return userName;</b>
+<i>26</i>&nbsp;    }
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;    @Override
+<i>29</i>&nbsp;    public void layout() {
+<b class="pc"><i>30</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="fc"><i>31</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;            NkColor oldBG = ctx.style().window().background();</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;            NkColor newBG = NkColor.create().set(oldBG);</b>
+<b class="fc"><i>36</i>&nbsp;            newBG.a((byte) 0x00);</b>
+<b class="fc"><i>37</i>&nbsp;            ctx.style().window().fixed_background().data().color().set(newBG);</b>
+<i>38</i>&nbsp;//            nk_style_item_hide(ctx.style().window().fixed_background());
+<i>39</i>&nbsp;
+<b class="fc"><i>40</i>&nbsp;            setUserDataUUID();</b>
+<b class="pc"><i>41</i>&nbsp;            if (nk_begin(</b>
+<i>42</i>&nbsp;                    ctx,
+<i>43</i>&nbsp;                    name,
+<b class="fc"><i>44</i>&nbsp;                    nk_rect(x, y, 230, 25, rect),</b>
+<i>45</i>&nbsp;                    NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NO_INPUT
+<i>46</i>&nbsp;            )) {
+<i>47</i>&nbsp;
+<b class="fc"><i>48</i>&nbsp;                nk_layout_row_static(ctx, 8, 100, 1);</b>
+<b class="pc"><i>49</i>&nbsp;                if (userName == null)</b>
+<b class="fc"><i>50</i>&nbsp;                    nk_label_colored(ctx, &quot;YOU&quot;, NK_TEXT_ALIGN_CENTERED, green);</b>
+<i>51</i>&nbsp;                else
+<b class="nc"><i>52</i>&nbsp;                    nk_label_colored(ctx, userName, NK_TEXT_ALIGN_CENTERED, white);</b>
+<i>53</i>&nbsp;            }
+<b class="fc"><i>54</i>&nbsp;            resetUserDataUUID();</b>
+<b class="fc"><i>55</i>&nbsp;            nk_end(ctx);</b>
+<i>56</i>&nbsp;
+<b class="fc"><i>57</i>&nbsp;            ctx.style().window().fixed_background().data().color().set(oldBG);</b>
+<b class="pc"><i>58</i>&nbsp;        }</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

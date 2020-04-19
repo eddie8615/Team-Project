@@ -1,0 +1,329 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Scoreboard</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Scoreboard (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Scoreboard</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    22.2%
+  </span>
+  <span class="absValue">
+    (2/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    7.6%
+  </span>
+  <span class="absValue">
+    (9/ 118)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.components.Stats;
+<i>4</i>&nbsp;import org.cauldron.game.Game;
+<i>5</i>&nbsp;import org.cauldron.renderer.TextureHandler;
+<i>6</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>7</i>&nbsp;import org.lwjgl.BufferUtils;
+<i>8</i>&nbsp;import org.lwjgl.PointerBuffer;
+<i>9</i>&nbsp;import org.lwjgl.nuklear.NkColor;
+<i>10</i>&nbsp;import org.lwjgl.nuklear.NkCommandBuffer;
+<i>11</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>12</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>13</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;import java.math.BigInteger;
+<i>16</i>&nbsp;import java.nio.ByteBuffer;
+<i>17</i>&nbsp;import java.util.ArrayList;
+<i>18</i>&nbsp;import java.util.Map;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;import static org.cauldron.game.Game.SceneType.MAINMENU;
+<i>21</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;/**
+<i>24</i>&nbsp; * Used for both the in game scoreboard that can be viewed by holding tab and also for the game over scoreboard which is displayed at the end of games.
+<i>25</i>&nbsp; *
+<i>26</i>&nbsp; * &lt;img src=&quot;https://i.ibb.co/5hc2DFf/image.png&quot; alt=&quot;screenshot of scoreboard in game over mode.&gt;
+<i>27</i>&nbsp; */
+<i>28</i>&nbsp;public class Scoreboard extends UIElement {
+<i>29</i>&nbsp;    public ArrayList&lt;ArrayList&lt;String&gt;&gt; teamsList;
+<i>30</i>&nbsp;    public int[] scores;
+<i>31</i>&nbsp;    public Map&lt;String, String&gt; tankToUsernameMap;
+<i>32</i>&nbsp;    public long timeRemaining;
+<b class="fc"><i>33</i>&nbsp;    private NkColor white = NkColor.create().set((byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF);</b>
+<i>34</i>&nbsp;
+<b class="fc"><i>35</i>&nbsp;    private ByteBuffer buffer = BufferUtils.createByteBuffer(120);</b>
+<b class="fc"><i>36</i>&nbsp;    private PointerBuffer cur = PointerBuffer.create(buffer);</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    public boolean gameFinished;
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    public Stats youStats;
+<i>41</i>&nbsp;    public Stats AIStats;
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    public Scoreboard(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>44</i>&nbsp;        super(ctx, name, x, y);</b>
+<b class="fc"><i>45</i>&nbsp;        initSB();</b>
+<i>46</i>&nbsp;    }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    public void initSB() {
+<b class="fc"><i>49</i>&nbsp;        gameFinished = false;</b>
+<b class="fc"><i>50</i>&nbsp;        timeRemaining = 0;</b>
+<b class="fc"><i>51</i>&nbsp;        scores = new int[]{0, 0};</b>
+<b class="fc"><i>52</i>&nbsp;        teamsList = new ArrayList&lt;&gt;();</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    public void layout() {
+<b class="nc"><i>56</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="nc"><i>57</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<b class="nc"><i>58</i>&nbsp;            ctx.style().window().fixed_background().data().color().set((byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0xAA);</b>
+<b class="nc"><i>59</i>&nbsp;            setUserDataUUID();</b>
+<b class="nc"><i>60</i>&nbsp;            int height = 280;</b>
+<b class="nc"><i>61</i>&nbsp;            int flags = NK_WINDOW_NO_INPUT | NK_WINDOW_NO_SCROLLBAR;</b>
+<b class="nc"><i>62</i>&nbsp;            if (gameFinished) {</b>
+<b class="nc"><i>63</i>&nbsp;                height = 500;</b>
+<b class="nc"><i>64</i>&nbsp;                flags = NK_WINDOW_NO_SCROLLBAR;</b>
+<i>65</i>&nbsp;            }
+<b class="nc"><i>66</i>&nbsp;            if (nk_begin(</b>
+<i>67</i>&nbsp;                    ctx,
+<i>68</i>&nbsp;                    name,
+<b class="nc"><i>69</i>&nbsp;                    nk_rect(x, y, 600, height, rect),</b>
+<i>70</i>&nbsp;                    flags
+<i>71</i>&nbsp;            )) {
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;                nk_layout_row_dynamic(ctx, 10, 1);</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;                if (!gameFinished) {</b>
+<b class="nc"><i>76</i>&nbsp;                    nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>77</i>&nbsp;                    nk_layout_row_dynamic(ctx, 30, 1);</b>
+<b class="nc"><i>78</i>&nbsp;                    nk_label_colored(ctx, &quot;Scoreboard&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<i>79</i>&nbsp;                } else {
+<b class="nc"><i>80</i>&nbsp;                    nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>81</i>&nbsp;                    nk_layout_row_static(ctx, 150, 100, 1);</b>
+<b class="nc"><i>82</i>&nbsp;                    NkRect picRect = NkRect.create();</b>
+<b class="nc"><i>83</i>&nbsp;                    NkCommandBuffer cmd = nk_window_get_canvas(ctx);</b>
+<b class="nc"><i>84</i>&nbsp;                    nk_draw_image(cmd, nk_rect(x + 30, y + 20, 540, 60, picRect), TextureHandler.getTextureNk(&quot;game_over&quot;), white);</b>
+<b class="nc"><i>85</i>&nbsp;                    if (scores[0] &gt; scores[1]) {</b>
+<b class="nc"><i>86</i>&nbsp;                        nk_draw_image(cmd, nk_rect(x + 30, y + 100, 540, 43, picRect), TextureHandler.getTextureNk(&quot;team_1_wins&quot;), white);</b>
+<b class="nc"><i>87</i>&nbsp;                    } else if (scores[1] &gt; scores[0]) {</b>
+<b class="nc"><i>88</i>&nbsp;                        nk_draw_image(cmd, nk_rect(x + 30, y + 100, 540, 43, picRect), TextureHandler.getTextureNk(&quot;team_2_wins&quot;), white);</b>
+<i>89</i>&nbsp;                    } else {
+<b class="nc"><i>90</i>&nbsp;                        nk_draw_image(cmd, nk_rect(x + 30, y + 100, 540, 43, picRect), TextureHandler.getTextureNk(&quot;tie&quot;), white);</b>
+<i>91</i>&nbsp;                    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;                }
+<b class="nc"><i>94</i>&nbsp;                if (Game.currentScene.getType() == Game.SceneType.OFFLINE | Game.currentScene.getType() == Game.SceneType.ONLINE) {</b>
+<b class="nc"><i>95</i>&nbsp;                    if (Game.currentScene.getType() == Game.SceneType.OFFLINE) {</b>
+<b class="nc"><i>96</i>&nbsp;                        layoutOffline();</b>
+<b class="nc"><i>97</i>&nbsp;                    } else if (!teamsList.isEmpty()) {</b>
+<b class="nc"><i>98</i>&nbsp;                        layoutOnline();</b>
+<i>99</i>&nbsp;                    }
+<b class="nc"><i>100</i>&nbsp;                    if (gameFinished) {</b>
+<b class="nc"><i>101</i>&nbsp;                        drawBackButton();</b>
+<i>102</i>&nbsp;                    }
+<i>103</i>&nbsp;                }
+<i>104</i>&nbsp;            }
+<b class="nc"><i>105</i>&nbsp;            resetUserDataUUID();</b>
+<b class="nc"><i>106</i>&nbsp;            nk_end(ctx);</b>
+<b class="nc"><i>107</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>108</i>&nbsp;            System.out.println(&quot;Scoreboard error&quot;);</b>
+<b class="nc"><i>109</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>110</i>&nbsp;            System.out.println(e.getMessage());</b>
+<b class="nc"><i>111</i>&nbsp;            System.out.println(e.getLocalizedMessage());</b>
+<b class="nc"><i>112</i>&nbsp;        }</b>
+<i>113</i>&nbsp;    }
+<i>114</i>&nbsp;
+<i>115</i>&nbsp;    /**
+<i>116</i>&nbsp;     * draws the back button which will take the user back to the main menu after the game has finished.
+<i>117</i>&nbsp;     */
+<i>118</i>&nbsp;    private void drawBackButton() {
+<b class="nc"><i>119</i>&nbsp;        nk_layout_row_dynamic(ctx, 50, 1);</b>
+<b class="nc"><i>120</i>&nbsp;        nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>121</i>&nbsp;        nk_layout_row_dynamic(ctx, 50, 3);</b>
+<b class="nc"><i>122</i>&nbsp;        nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>123</i>&nbsp;        if (nk_button_label(ctx, &quot;RETURN TO MENU&quot;)) {</b>
+<b class="nc"><i>124</i>&nbsp;            Game.changeSceneFlag = true;</b>
+<b class="nc"><i>125</i>&nbsp;            Game.destScene = MAINMENU;</b>
+<b class="nc"><i>126</i>&nbsp;            System.out.println(&quot;return to menu button pressed&quot;);</b>
+<i>127</i>&nbsp;        }
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;
+<i>131</i>&nbsp;    /**
+<i>132</i>&nbsp;     * the layout used for when the game is in online mode
+<i>133</i>&nbsp;     */
+<i>134</i>&nbsp;    private void layoutOnline() {
+<b class="nc"><i>135</i>&nbsp;        nk_layout_row_dynamic(ctx, 40, 2);</b>
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;        nk_label_colored(ctx, &quot;Team 1&quot;, NK_TEXT_ALIGN_LEFT, white);</b>
+<b class="nc"><i>138</i>&nbsp;        nk_label_colored(ctx, Integer.toString(scores[0]), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>139</i>&nbsp;
+<b class="nc"><i>140</i>&nbsp;        nk_layout_row_dynamic(ctx, 40, teamsList.get(0).size());</b>
+<b class="nc"><i>141</i>&nbsp;        for (int i = 0; i &lt; teamsList.get(0).size(); i++) {</b>
+<b class="nc"><i>142</i>&nbsp;            nk_label_colored(ctx, tankToUsernameMap.get(teamsList.get(0).get(i)), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>143</i>&nbsp;        }
+<i>144</i>&nbsp;
+<b class="nc"><i>145</i>&nbsp;        nk_layout_row_dynamic(ctx, 40, 2);</b>
+<b class="nc"><i>146</i>&nbsp;        nk_label_colored(ctx, &quot;Team 2&quot;, NK_TEXT_ALIGN_LEFT, white);</b>
+<b class="nc"><i>147</i>&nbsp;        nk_label_colored(ctx, Integer.toString(scores[1]), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>148</i>&nbsp;
+<b class="nc"><i>149</i>&nbsp;        nk_layout_row_dynamic(ctx, 40, teamsList.get(1).size());</b>
+<b class="nc"><i>150</i>&nbsp;        for (int i = 0; i &lt; teamsList.get(1).size(); i++) {</b>
+<b class="nc"><i>151</i>&nbsp;            nk_label_colored(ctx, tankToUsernameMap.get(teamsList.get(1).get(i)), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>152</i>&nbsp;        }
+<i>153</i>&nbsp;    }
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;    /**
+<i>156</i>&nbsp;     * &lt;p&gt;The layout used when the game is in offline mode&lt;/p&gt;
+<i>157</i>&nbsp;     *
+<i>158</i>&nbsp;     * &lt;img src=&quot;https://i.ibb.co/gTyPgHQ/image.png&quot; alt=&quot;screenshot of the scoreboard in offline mode&quot;&gt;
+<i>159</i>&nbsp;     */
+<i>160</i>&nbsp;    private void layoutOffline() {
+<i>161</i>&nbsp;        // header
+<b class="nc"><i>162</i>&nbsp;        nk_layout_row_dynamic(ctx, 30, 4);</b>
+<b class="nc"><i>163</i>&nbsp;        nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>164</i>&nbsp;        nk_label_colored(ctx, &quot;YOU&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<b class="nc"><i>165</i>&nbsp;        nk_label_colored(ctx, &quot;AI TANK&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<b class="nc"><i>166</i>&nbsp;        nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;        // kills bar
+<b class="nc"><i>169</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 1);</b>
+<b class="nc"><i>170</i>&nbsp;        nk_label_colored(ctx, &quot;KILLS&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<b class="nc"><i>171</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 4);</b>
+<b class="nc"><i>172</i>&nbsp;        nk_label_colored(ctx, Integer.toString(AIStats.deaths), NK_TEXT_ALIGN_RIGHT, white);</b>
+<b class="nc"><i>173</i>&nbsp;        layoutLeftBar(BigInteger.valueOf(scaleTo100(AIStats.deaths, youStats.deaths + AIStats.deaths)));</b>
+<b class="nc"><i>174</i>&nbsp;        layoutRightBar(BigInteger.valueOf(scaleTo100(youStats.deaths, youStats.deaths + AIStats.deaths)));</b>
+<b class="nc"><i>175</i>&nbsp;        nk_label_colored(ctx, Integer.toString(youStats.deaths), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>176</i>&nbsp;
+<i>177</i>&nbsp;        // shots bar
+<b class="nc"><i>178</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 1);</b>
+<b class="nc"><i>179</i>&nbsp;        nk_label_colored(ctx, &quot;SHOTS&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<b class="nc"><i>180</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 4);</b>
+<b class="nc"><i>181</i>&nbsp;        nk_label_colored(ctx, Integer.toString(youStats.shotsFired), NK_TEXT_ALIGN_RIGHT, white);</b>
+<b class="nc"><i>182</i>&nbsp;        layoutLeftBar(BigInteger.valueOf(scaleTo100(youStats.shotsFired, youStats.shotsFired + AIStats.shotsFired)));</b>
+<b class="nc"><i>183</i>&nbsp;        layoutRightBar(BigInteger.valueOf(scaleTo100(AIStats.shotsFired, youStats.shotsFired + AIStats.shotsFired)));</b>
+<b class="nc"><i>184</i>&nbsp;        nk_label_colored(ctx, Integer.toString(AIStats.shotsFired), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>185</i>&nbsp;
+<i>186</i>&nbsp;        // on target bar
+<b class="nc"><i>187</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 1);</b>
+<b class="nc"><i>188</i>&nbsp;        nk_label_colored(ctx, &quot;ACCURACY&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<b class="nc"><i>189</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 4);</b>
+<b class="nc"><i>190</i>&nbsp;        nk_label_colored(ctx, youStats.getAccuracy() + &quot;%&quot;, NK_TEXT_ALIGN_RIGHT, white);</b>
+<b class="nc"><i>191</i>&nbsp;        layoutLeftBar(BigInteger.valueOf(youStats.getAccuracy()));</b>
+<b class="nc"><i>192</i>&nbsp;        layoutRightBar(BigInteger.valueOf(AIStats.getAccuracy()));</b>
+<b class="nc"><i>193</i>&nbsp;        nk_label_colored(ctx, AIStats.getAccuracy() + &quot;%&quot;, NK_TEXT_ALIGN_LEFT, white);</b>
+<i>194</i>&nbsp;
+<i>195</i>&nbsp;        // crates bar
+<b class="nc"><i>196</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 1);</b>
+<b class="nc"><i>197</i>&nbsp;        nk_label_colored(ctx, &quot;CRATES OPENED&quot;, NK_TEXT_ALIGN_CENTERED, white);</b>
+<b class="nc"><i>198</i>&nbsp;        nk_layout_row_dynamic(ctx, 15, 4);</b>
+<b class="nc"><i>199</i>&nbsp;        nk_label_colored(ctx, Integer.toString(youStats.crates), NK_TEXT_ALIGN_RIGHT, white);</b>
+<b class="nc"><i>200</i>&nbsp;        layoutLeftBar(BigInteger.valueOf(scaleTo100(youStats.crates, youStats.crates + AIStats.crates)));</b>
+<b class="nc"><i>201</i>&nbsp;        layoutRightBar(BigInteger.valueOf(scaleTo100(AIStats.crates, youStats.crates + AIStats.crates)));</b>
+<b class="nc"><i>202</i>&nbsp;        nk_label_colored(ctx, Integer.toString(AIStats.crates), NK_TEXT_ALIGN_LEFT, white);</b>
+<i>203</i>&nbsp;    }
+<i>204</i>&nbsp;
+<i>205</i>&nbsp;    /**
+<i>206</i>&nbsp;     * draws the bars that are on the left side of the screen.
+<i>207</i>&nbsp;     *
+<i>208</i>&nbsp;     * @param value value out of max 100
+<i>209</i>&nbsp;     */
+<i>210</i>&nbsp;    private void layoutRightBar(BigInteger value) {
+<b class="nc"><i>211</i>&nbsp;        ctx.style().progress().rounding(3f);</b>
+<b class="nc"><i>212</i>&nbsp;        ctx.style().progress().normal().data().color().set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x66);</b>
+<b class="nc"><i>213</i>&nbsp;        ctx.style().progress().cursor_normal().data().color().set((byte) 0x9A, (byte) 0x2F, (byte) 0xEF, (byte) 0xFF);</b>
+<b class="nc"><i>214</i>&nbsp;        ctx.style().progress().border(1f);</b>
+<b class="nc"><i>215</i>&nbsp;        buffer.put(0, value.byteValueExact());</b>
+<b class="nc"><i>216</i>&nbsp;        nk_progress(ctx, cur, 100, false);</b>
+<i>217</i>&nbsp;    }
+<i>218</i>&nbsp;
+<i>219</i>&nbsp;    /**
+<i>220</i>&nbsp;     * draws the bars that are on the right side of the screen.
+<i>221</i>&nbsp;     *
+<i>222</i>&nbsp;     * @param value value out of max 100
+<i>223</i>&nbsp;     */
+<i>224</i>&nbsp;    private void layoutLeftBar(BigInteger value) {
+<b class="nc"><i>225</i>&nbsp;        ctx.style().progress().rounding(3f);</b>
+<b class="nc"><i>226</i>&nbsp;        ctx.style().progress().normal().data().color().set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x66);</b>
+<b class="nc"><i>227</i>&nbsp;        ctx.style().progress().cursor_normal().data().color().set((byte) 0xEF, (byte) 0x9A, (byte) 0x2F, (byte) 0xFF);</b>
+<b class="nc"><i>228</i>&nbsp;        ctx.style().progress().border(1f);</b>
+<b class="nc"><i>229</i>&nbsp;        buffer.put(0, value.byteValueExact());</b>
+<b class="nc"><i>230</i>&nbsp;        nk_progress(ctx, cur, 100, false);</b>
+<i>231</i>&nbsp;    }
+<i>232</i>&nbsp;
+<i>233</i>&nbsp;    /**
+<i>234</i>&nbsp;     * will scale a number to be out of 100 when you pass in a number and what it was originally out of. Used in rendering so we dont get a BigInteger out of byte range error.
+<i>235</i>&nbsp;     *
+<i>236</i>&nbsp;     * @param s smaller number
+<i>237</i>&nbsp;     * @param b bigger number
+<i>238</i>&nbsp;     * @return
+<i>239</i>&nbsp;     */
+<i>240</i>&nbsp;    private int scaleTo100(int s, int b) {
+<b class="nc"><i>241</i>&nbsp;        if (b == 0) {</b>
+<b class="nc"><i>242</i>&nbsp;            return 0;</b>
+<i>243</i>&nbsp;        }
+<b class="nc"><i>244</i>&nbsp;        return (100 * s / b);</b>
+<i>245</i>&nbsp;    }
+<i>246</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

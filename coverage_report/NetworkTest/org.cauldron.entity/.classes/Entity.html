@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Entity</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.entity</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Entity (org.cauldron.entity)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Entity</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (7/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    98.1%
+  </span>
+  <span class="absValue">
+    (51/ 52)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.entity;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.components.Friction;
+<i>4</i>&nbsp;import org.cauldron.entity.components.Mass;
+<i>5</i>&nbsp;import org.cauldron.entity.components.Material;
+<i>6</i>&nbsp;import org.cauldron.entity.components.Shape;
+<i>7</i>&nbsp;import org.cauldron.game.Physics;
+<i>8</i>&nbsp;import org.cauldron.renderer.Renderer;
+<i>9</i>&nbsp;import org.joml.Vector2d;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;import java.io.Serializable;
+<i>12</i>&nbsp;import java.util.HashMap;
+<i>13</i>&nbsp;import java.util.Map;
+<i>14</i>&nbsp;import java.util.Objects;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;public class Entity implements Serializable {
+<i>17</i>&nbsp;    private static final long serialVersionUID = 4755776264473110998L;
+<i>18</i>&nbsp;    public String name;
+<i>19</i>&nbsp;    public int loc;
+<i>20</i>&nbsp;    public Shape shape;
+<b class="fc"><i>21</i>&nbsp;    public Vector2d position = new Vector2d();</b>
+<b class="fc"><i>22</i>&nbsp;    public float rotation = 0;</b>
+<b class="fc"><i>23</i>&nbsp;    public Material material = new Material();</b>
+<b class="fc"><i>24</i>&nbsp;    public Mass mass = new Mass();</b>
+<b class="fc"><i>25</i>&nbsp;    public Friction frictionData = new Friction();</b>
+<b class="fc"><i>26</i>&nbsp;    public Vector2d velocity = new Vector2d();</b>
+<b class="fc"><i>27</i>&nbsp;    public Map&lt;String, Vector2d&gt; forces = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>28</i>&nbsp;    public float drivingForce = 0;</b>
+<b class="fc"><i>29</i>&nbsp;    public float depth = 0;</b>
+<i>30</i>&nbsp;    public int parent;
+<b class="fc"><i>31</i>&nbsp;    public EntityType type = null;</b>
+<b class="fc"><i>32</i>&nbsp;    public Renderer.COLOR blockColor = null;</b>
+<b class="fc"><i>33</i>&nbsp;    public String playerColor = &quot;green&quot;;</b>
+<b class="fc"><i>34</i>&nbsp;    public double creationTime = -1;</b>
+<b class="fc"><i>35</i>&nbsp;    public double lifespan = 0f;</b>
+<i>36</i>&nbsp;
+<b class="fc"><i>37</i>&nbsp;    public Entity(String name) {</b>
+<b class="fc"><i>38</i>&nbsp;        this.name = name;</b>
+<b class="fc"><i>39</i>&nbsp;        this.loc = Integer.parseInt(name.substring(0, name.indexOf(&quot;_&quot;)));</b>
+<b class="fc"><i>40</i>&nbsp;        this.creationTime = System.currentTimeMillis();</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    @Override
+<i>44</i>&nbsp;    public boolean equals(Object o) {
+<b class="fc"><i>45</i>&nbsp;        if (this == o) return true;</b>
+<b class="pc"><i>46</i>&nbsp;        if (o == null || getClass() != o.getClass()) return false;</b>
+<b class="fc"><i>47</i>&nbsp;        Entity entity = (Entity) o;</b>
+<b class="fc"><i>48</i>&nbsp;        return this.name.equals(entity.name);</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    @Override
+<i>52</i>&nbsp;    public int hashCode() {
+<b class="fc"><i>53</i>&nbsp;        return Objects.hash(name);</b>
+<i>54</i>&nbsp;    }
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * @return the four coordinates that make up the rectangle of this entity. [Bottom Left, Top Left, Top Right, Bottom Right]
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    public Vector2d[] getCornerCoords() {
+<b class="fc"><i>60</i>&nbsp;        double a = Math.toRadians(this.rotation);</b>
+<b class="fc"><i>61</i>&nbsp;        float x = (float) this.position.x;</b>
+<b class="fc"><i>62</i>&nbsp;        float y = (float) this.position.y;</b>
+<b class="fc"><i>63</i>&nbsp;        float w = this.shape.width;</b>
+<b class="fc"><i>64</i>&nbsp;        float h = this.shape.height;</b>
+<b class="fc"><i>65</i>&nbsp;        return new Vector2d[]{new Vector2d(x, y),//bottom left</b>
+<b class="fc"><i>66</i>&nbsp;                new Vector2d(x + -h * Math.sin(a), y + h * Math.cos(a)),//top left</b>
+<b class="fc"><i>67</i>&nbsp;                new Vector2d(x + -h * Math.sin(a) + w * Math.cos(a), y + h * Math.cos(a) + w * Math.sin(a)),//top right</b>
+<b class="fc"><i>68</i>&nbsp;                new Vector2d(x + w * Math.cos(a), y + w * Math.sin(a)) //bottom right</b>
+<i>69</i>&nbsp;        };
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    public void updateNormal() {
+<b class="fc"><i>73</i>&nbsp;        Vector2d normal = new Vector2d(0, this.mass.mass * -Physics.GRAVITY * Math.cos(Math.toRadians(rotation)));</b>
+<b class="fc"><i>74</i>&nbsp;        forces.put(&quot;normal&quot;, normal);</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    public void updateFriction() {
+<b class="fc"><i>78</i>&nbsp;        double deltaX = 0;</b>
+<b class="fc"><i>79</i>&nbsp;        double deltaY = 0;</b>
+<b class="fc"><i>80</i>&nbsp;        if (velocity.x &gt; 0.1f || velocity.x &lt; -0.1f) {</b>
+<b class="fc"><i>81</i>&nbsp;            deltaX = 0.9f * (0 - velocity.x);</b>
+<i>82</i>&nbsp;        } else {
+<b class="fc"><i>83</i>&nbsp;            velocity.x = 0;</b>
+<i>84</i>&nbsp;        }
+<b class="fc"><i>85</i>&nbsp;        if (velocity.y &gt; 0.1f || velocity.y &lt; -0.1f) {</b>
+<b class="fc"><i>86</i>&nbsp;            deltaY = 0.9f * (0 - velocity.y);</b>
+<i>87</i>&nbsp;        } else {
+<b class="fc"><i>88</i>&nbsp;            velocity.y = 0;</b>
+<i>89</i>&nbsp;        }
+<i>90</i>&nbsp;
+<b class="fc"><i>91</i>&nbsp;        Vector2d friction = new Vector2d(mass.mass * deltaX, mass.mass * deltaY);</b>
+<b class="fc"><i>92</i>&nbsp;        forces.put(&quot;friction&quot;, friction);</b>
+<i>93</i>&nbsp;    }
+<i>94</i>&nbsp;
+<i>95</i>&nbsp;    public Vector2d getResultant() {
+<b class="fc"><i>96</i>&nbsp;        Vector2d resultant = new Vector2d();</b>
+<b class="fc"><i>97</i>&nbsp;        for (Map.Entry&lt;String, Vector2d&gt; force : forces.entrySet()) {</b>
+<b class="fc"><i>98</i>&nbsp;            resultant.add(force.getValue());</b>
+<b class="fc"><i>99</i>&nbsp;        }</b>
+<b class="fc"><i>100</i>&nbsp;        resultant.add(new Vector2d(drivingForce * Math.cos(Math.toRadians(rotation)),</b>
+<b class="fc"><i>101</i>&nbsp;                drivingForce * Math.sin(Math.toRadians(rotation))));</b>
+<i>102</i>&nbsp;
+<b class="fc"><i>103</i>&nbsp;        return resultant;</b>
+<i>104</i>&nbsp;    }
+<i>105</i>&nbsp;
+<i>106</i>&nbsp;    @Override
+<i>107</i>&nbsp;    public String toString() {
+<b class="nc"><i>108</i>&nbsp;        return name;</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

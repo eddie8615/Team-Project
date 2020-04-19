@@ -1,0 +1,234 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Bars</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Bars (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Bars</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.8%
+  </span>
+  <span class="absValue">
+    (67/ 80)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.PowerUpType;
+<i>4</i>&nbsp;import org.cauldron.entity.components.AppliedPowerUp;
+<i>5</i>&nbsp;import org.cauldron.renderer.TextureHandler;
+<i>6</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>7</i>&nbsp;import org.cauldron.ui.styles.DefaultStyle;
+<i>8</i>&nbsp;import org.lwjgl.BufferUtils;
+<i>9</i>&nbsp;import org.lwjgl.PointerBuffer;
+<i>10</i>&nbsp;import org.lwjgl.nuklear.NkColor;
+<i>11</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>12</i>&nbsp;import org.lwjgl.nuklear.NkImage;
+<i>13</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>14</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;import java.math.BigInteger;
+<i>17</i>&nbsp;import java.nio.ByteBuffer;
+<i>18</i>&nbsp;import java.util.ArrayList;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>21</i>&nbsp;
+<i>22</i>&nbsp;public class Bars extends UIElement {
+<i>23</i>&nbsp;    public BigInteger health;
+<i>24</i>&nbsp;    public BigInteger power;
+<b class="fc"><i>25</i>&nbsp;    public ArrayList&lt;AppliedPowerUp&gt; appliedPowerUps = new ArrayList&lt;AppliedPowerUp&gt;();</b>
+<i>26</i>&nbsp;    public int lives;
+<i>27</i>&nbsp;
+<b class="fc"><i>28</i>&nbsp;    private NkColor white = NkColor.create().set((byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0xFF);</b>
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;    private ByteBuffer buffer = BufferUtils.createByteBuffer(120);</b>
+<b class="fc"><i>31</i>&nbsp;    private PointerBuffer cur = PointerBuffer.create(buffer);</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;    public boolean livesEnabled = false;</b>
+<i>34</i>&nbsp;    public boolean healthEnabled;
+<i>35</i>&nbsp;    public boolean powerEnabled;
+<b class="fc"><i>36</i>&nbsp;    public boolean powerUpsEnabled = true;</b>
+<i>37</i>&nbsp;
+<b class="fc"><i>38</i>&nbsp;    private NkImage crate_strength = TextureHandler.getTextureNk(&quot;crate_strength&quot;);</b>
+<b class="fc"><i>39</i>&nbsp;    private NkImage crate_shield = TextureHandler.getTextureNk(&quot;crate_shield&quot;);</b>
+<b class="fc"><i>40</i>&nbsp;    private NkImage crate_cluster = TextureHandler.getTextureNk(&quot;crate_cluster&quot;);</b>
+<b class="fc"><i>41</i>&nbsp;    private NkImage crate_reverse = TextureHandler.getTextureNk(&quot;crate_reverse&quot;);</b>
+<b class="fc"><i>42</i>&nbsp;    private NkImage crate_speed = TextureHandler.getTextureNk(&quot;crate_speed&quot;);</b>
+<b class="fc"><i>43</i>&nbsp;    private NkImage crate_targeting = TextureHandler.getTextureNk(&quot;crate_targeting&quot;);</b>
+<b class="fc"><i>44</i>&nbsp;    private NkImage crate_default = TextureHandler.getTextureNk(&quot;crate&quot;);</b>
+<i>45</i>&nbsp;
+<b class="fc"><i>46</i>&nbsp;    private NkImage heart = TextureHandler.getTextureNk(&quot;heart&quot;);</b>
+<b class="fc"><i>47</i>&nbsp;    private NkImage heart_black = TextureHandler.getTextureNk(&quot;heart_black&quot;);</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    public Bars(NkContext ctx, String name, int x, int y, boolean healthEnabled, boolean powerEnabled) {
+<b class="fc"><i>50</i>&nbsp;        super(ctx, name, x, y);</b>
+<b class="fc"><i>51</i>&nbsp;        health = BigInteger.valueOf(80);</b>
+<b class="fc"><i>52</i>&nbsp;        power = BigInteger.valueOf(80);</b>
+<b class="fc"><i>53</i>&nbsp;        this.healthEnabled = healthEnabled;</b>
+<b class="fc"><i>54</i>&nbsp;        this.powerEnabled = powerEnabled;</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    @Override
+<i>58</i>&nbsp;    public void layout() {
+<b class="pc"><i>59</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="fc"><i>60</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<i>61</i>&nbsp;
+<b class="fc"><i>62</i>&nbsp;            ctx.style().window().fixed_background().data().color().a((byte) 0x00);</b>
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;            // Ensure that GUILayer knows how to identify the element giving the draw command
+<b class="fc"><i>65</i>&nbsp;            setUserDataUUID();</b>
+<b class="pc"><i>66</i>&nbsp;            if (nk_begin(</b>
+<i>67</i>&nbsp;                    ctx,
+<i>68</i>&nbsp;                    name,
+<b class="fc"><i>69</i>&nbsp;                    nk_rect(x, y, 230, 250, rect),</b>
+<i>70</i>&nbsp;                    NK_WINDOW_NO_INPUT
+<i>71</i>&nbsp;            )) {
+<b class="pc"><i>72</i>&nbsp;                if (livesEnabled)</b>
+<b class="nc"><i>73</i>&nbsp;                    layoutLives();</b>
+<b class="pc"><i>74</i>&nbsp;                if (healthEnabled)</b>
+<b class="fc"><i>75</i>&nbsp;                    layoutHealth();</b>
+<b class="fc"><i>76</i>&nbsp;                if (powerEnabled)</b>
+<b class="fc"><i>77</i>&nbsp;                    layoutPower();</b>
+<b class="pc"><i>78</i>&nbsp;                if (powerUpsEnabled)</b>
+<b class="fc"><i>79</i>&nbsp;                    layoutPowerUps();</b>
+<i>80</i>&nbsp;            }
+<i>81</i>&nbsp;
+<b class="fc"><i>82</i>&nbsp;            resetUserDataUUID();</b>
+<b class="fc"><i>83</i>&nbsp;            nk_end(ctx);</b>
+<b class="fc"><i>84</i>&nbsp;            new DefaultStyle().setStyle(ctx, true);</b>
+<b class="pc"><i>85</i>&nbsp;        }</b>
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    private void layoutLives() {
+<b class="nc"><i>89</i>&nbsp;        nk_layout_row_static(ctx, 20, 22, 4);</b>
+<b class="nc"><i>90</i>&nbsp;        for (int i = 0; i &lt; lives; i++) {</b>
+<b class="nc"><i>91</i>&nbsp;            nk_image(ctx, heart);</b>
+<i>92</i>&nbsp;        }
+<b class="nc"><i>93</i>&nbsp;        for (int i = 0; i &lt; 8 - lives; i++) {</b>
+<b class="nc"><i>94</i>&nbsp;            nk_image(ctx, heart_black);</b>
+<i>95</i>&nbsp;        }
+<i>96</i>&nbsp;    }
+<i>97</i>&nbsp;
+<i>98</i>&nbsp;    private void layoutPower() {
+<b class="fc"><i>99</i>&nbsp;        ctx.style().progress().rounding(3f);</b>
+<b class="fc"><i>100</i>&nbsp;        ctx.style().progress().normal().data().color().set((byte) 0x66, (byte) 0xCC, (byte) 0xFF, (byte) 0x66);</b>
+<b class="fc"><i>101</i>&nbsp;        ctx.style().progress().cursor_normal().data().color().set((byte) 0x66, (byte) 0xCC, (byte) 0xFF, (byte) 0xFF);</b>
+<b class="fc"><i>102</i>&nbsp;        ctx.style().progress().border(1f);</b>
+<b class="fc"><i>103</i>&nbsp;        nk_layout_row_static(ctx, 8, 100, 1);</b>
+<b class="fc"><i>104</i>&nbsp;        buffer.put(0, power.byteValueExact());</b>
+<b class="fc"><i>105</i>&nbsp;        nk_progress(ctx, cur, 100, false);</b>
+<i>106</i>&nbsp;    }
+<i>107</i>&nbsp;
+<i>108</i>&nbsp;    private void layoutHealth() {
+<b class="fc"><i>109</i>&nbsp;        ctx.style().progress().rounding(3f);</b>
+<b class="fc"><i>110</i>&nbsp;        ctx.style().progress().normal().data().color().set((byte) 0x33, (byte) 0xCC, (byte) 0x33, (byte) 0x66);</b>
+<b class="fc"><i>111</i>&nbsp;        ctx.style().progress().cursor_normal().data().color().set((byte) 0x33, (byte) 0xCC, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>112</i>&nbsp;        ctx.style().progress().border(1f);</b>
+<b class="fc"><i>113</i>&nbsp;        nk_layout_row_static(ctx, 8, 100, 1);</b>
+<b class="fc"><i>114</i>&nbsp;        buffer.put(0, health.byteValueExact());</b>
+<b class="fc"><i>115</i>&nbsp;        nk_progress(ctx, cur, 100, false);</b>
+<i>116</i>&nbsp;    }
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;    private void layoutPowerUps() {
+<b class="fc"><i>119</i>&nbsp;        nk_layout_row_static(ctx, 20, 22, 4);</b>
+<i>120</i>&nbsp;        // used to alternate sides
+<b class="fc"><i>121</i>&nbsp;        boolean left = true;</b>
+<b class="fc"><i>122</i>&nbsp;        for (AppliedPowerUp appliedPowerUp : appliedPowerUps) {</b>
+<b class="fc"><i>123</i>&nbsp;            layoutPowerUp(appliedPowerUp, left);</b>
+<b class="pc"><i>124</i>&nbsp;            left = !left;</b>
+<b class="fc"><i>125</i>&nbsp;        }</b>
+<i>126</i>&nbsp;    }
+<i>127</i>&nbsp;
+<i>128</i>&nbsp;    private void layoutPowerUp(AppliedPowerUp appliedPowerUp, boolean left) {
+<b class="pc"><i>129</i>&nbsp;        if (left) {</b>
+<b class="fc"><i>130</i>&nbsp;            nk_label_colored(ctx, appliedPowerUp.timeLeft, NK_TEXT_ALIGN_CENTERED, white);</b>
+<i>131</i>&nbsp;        }
+<b class="pc"><i>132</i>&nbsp;        if (appliedPowerUp.powerUpType == PowerUpType.STRENGTH) {</b>
+<b class="nc"><i>133</i>&nbsp;            nk_image(ctx, crate_strength);</b>
+<b class="pc"><i>134</i>&nbsp;        } else if (appliedPowerUp.powerUpType == PowerUpType.SHIELD) {</b>
+<b class="nc"><i>135</i>&nbsp;            nk_image(ctx, crate_shield);</b>
+<b class="pc"><i>136</i>&nbsp;        } else if (appliedPowerUp.powerUpType == PowerUpType.CLUSTER) {</b>
+<b class="nc"><i>137</i>&nbsp;            nk_image(ctx, crate_cluster);</b>
+<b class="pc"><i>138</i>&nbsp;        } else if (appliedPowerUp.powerUpType == PowerUpType.REVERSE) {</b>
+<b class="nc"><i>139</i>&nbsp;            nk_image(ctx, crate_reverse);</b>
+<b class="pc"><i>140</i>&nbsp;        } else if (appliedPowerUp.powerUpType == PowerUpType.SPEED) {</b>
+<b class="nc"><i>141</i>&nbsp;            nk_image(ctx, crate_speed);</b>
+<b class="pc"><i>142</i>&nbsp;        } else if (appliedPowerUp.powerUpType == PowerUpType.TARGETING) {</b>
+<b class="fc"><i>143</i>&nbsp;            nk_image(ctx, crate_targeting);</b>
+<i>144</i>&nbsp;        } else {
+<b class="nc"><i>145</i>&nbsp;            nk_image(ctx, crate_default);</b>
+<i>146</i>&nbsp;        }
+<b class="pc"><i>147</i>&nbsp;        if (!left) {</b>
+<b class="nc"><i>148</i>&nbsp;            nk_label_colored(ctx, appliedPowerUp.timeLeft, NK_TEXT_ALIGN_CENTERED, white);</b>
+<i>149</i>&nbsp;        }
+<i>150</i>&nbsp;    }
+<i>151</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

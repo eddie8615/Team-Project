@@ -1,0 +1,560 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TextureHandler</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TextureHandler (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TextureHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.7%
+  </span>
+  <span class="absValue">
+    (14/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.4%
+  </span>
+  <span class="absValue">
+    (156/ 187)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">TextureHandler$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (15/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    83.5%
+  </span>
+  <span class="absValue">
+    (157/ 188)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.Entity;
+<i>4</i>&nbsp;import org.cauldron.entity.EntityHandler;
+<i>5</i>&nbsp;import org.cauldron.entity.PowerUpType;
+<i>6</i>&nbsp;import org.cauldron.entity.entities.Crate;
+<i>7</i>&nbsp;import org.cauldron.entity.entities.Projectile;
+<i>8</i>&nbsp;import org.cauldron.renderer.layers.GUILayer;
+<i>9</i>&nbsp;import org.lwjgl.nuklear.NkImage;
+<i>10</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import java.io.BufferedReader;
+<i>13</i>&nbsp;import java.io.IOException;
+<i>14</i>&nbsp;import java.io.InputStream;
+<i>15</i>&nbsp;import java.io.InputStreamReader;
+<i>16</i>&nbsp;import java.nio.ByteBuffer;
+<i>17</i>&nbsp;import java.nio.IntBuffer;
+<i>18</i>&nbsp;import java.util.*;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;import static java.lang.Math.round;
+<i>21</i>&nbsp;import static org.cauldron.util.IOUtil.ioResourceToByteBuffer;
+<i>22</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_BLEND;
+<i>23</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_NEAREST;
+<i>24</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_NEAREST_MIPMAP_LINEAR;
+<i>25</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_ONE;
+<i>26</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA;
+<i>27</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_REPEAT;
+<i>28</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_RGB;
+<i>29</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+<i>30</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+<i>31</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+<i>32</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
+<i>33</i>&nbsp;import static org.lwjgl.opengl.GL11.GL_UNPACK_ALIGNMENT;
+<i>34</i>&nbsp;import static org.lwjgl.opengl.GL11.glBlendFunc;
+<i>35</i>&nbsp;import static org.lwjgl.opengl.GL11.glDeleteTextures;
+<i>36</i>&nbsp;import static org.lwjgl.opengl.GL11.glEnable;
+<i>37</i>&nbsp;import static org.lwjgl.opengl.GL11.glGenTextures;
+<i>38</i>&nbsp;import static org.lwjgl.opengl.GL11.glPixelStorei;
+<i>39</i>&nbsp;import static org.lwjgl.opengl.GL11.glTexParameteri;
+<i>40</i>&nbsp;import static org.lwjgl.opengl.GL11C.GL_RGBA;
+<i>41</i>&nbsp;import static org.lwjgl.opengl.GL11C.GL_TEXTURE_2D;
+<i>42</i>&nbsp;import static org.lwjgl.opengl.GL11C.GL_UNSIGNED_BYTE;
+<i>43</i>&nbsp;import static org.lwjgl.opengl.GL11C.glBindTexture;
+<i>44</i>&nbsp;import static org.lwjgl.opengl.GL11C.glTexImage2D;
+<i>45</i>&nbsp;import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+<i>46</i>&nbsp;import static org.lwjgl.opengl.GL13.glActiveTexture;
+<i>47</i>&nbsp;import static org.lwjgl.stb.STBImage.*;
+<i>48</i>&nbsp;import static org.lwjgl.stb.STBImageResize.*;
+<i>49</i>&nbsp;import static org.lwjgl.system.MemoryUtil.memAlloc;
+<i>50</i>&nbsp;import static org.lwjgl.system.MemoryUtil.memFree;
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;/**
+<i>53</i>&nbsp; * Loads textures and gets their locations in OpenGL once loaded.
+<i>54</i>&nbsp; */
+<b class="nc"><i>55</i>&nbsp;public class TextureHandler {</b>
+<b class="fc"><i>56</i>&nbsp;    private static HashMap&lt;Integer, Integer&gt; entityTextures = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>57</i>&nbsp;    private static HashMap&lt;String, Integer&gt; textures = new HashMap&lt;&gt;();</b>
+<b class="fc"><i>58</i>&nbsp;    private static HashMap&lt;String, NkImage&gt; texturesNk = new HashMap&lt;&gt;();</b>
+<i>59</i>&nbsp;    private static EntityHandler entityHandler;
+<b class="fc"><i>60</i>&nbsp;    static Map&lt;Integer, Animation&gt; animationCache = new HashMap&lt;Integer, Animation&gt;();</b>
+<b class="fc"><i>61</i>&nbsp;    static Map&lt;String, Animation&gt; uiAnimationCache = new HashMap&lt;String, Animation&gt;();</b>
+<i>62</i>&nbsp;
+<i>63</i>&nbsp;    public static void initEntityTextures(EntityHandler eh) {
+<b class="nc"><i>64</i>&nbsp;        entityHandler = eh;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * Loads a folder of texture PNGs into the texture index in the OpenGL context.
+<i>69</i>&nbsp;     * The names in the returned HashMap have the same name as the PNG file, without the extension.
+<i>70</i>&nbsp;     *
+<i>71</i>&nbsp;     * @param texList The folder of texture PNGs to load in
+<i>72</i>&nbsp;     * @return A HashMap of all texture names and their corresponding OpenGL IDs
+<i>73</i>&nbsp;     */
+<i>74</i>&nbsp;    public static HashMap&lt;String, Integer&gt; loadTextures(String texList) {
+<i>75</i>&nbsp;        // Get all texture paths in texList
+<b class="fc"><i>76</i>&nbsp;        List&lt;String&gt; texFiles = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>77</i>&nbsp;        InputStream in = Thread.currentThread().getContextClassLoader().getResourceAsStream(texList);</b>
+<b class="fc"><i>78</i>&nbsp;        BufferedReader rdr = new BufferedReader(new InputStreamReader(in));</b>
+<i>79</i>&nbsp;        String line;
+<i>80</i>&nbsp;        try {
+<b class="fc"><i>81</i>&nbsp;            while ((line = rdr.readLine()) != null) {</b>
+<b class="fc"><i>82</i>&nbsp;                texFiles.add(line);</b>
+<i>83</i>&nbsp;            }
+<b class="fc"><i>84</i>&nbsp;            rdr.close();</b>
+<b class="nc"><i>85</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>86</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>87</i>&nbsp;            System.exit(0);</b>
+<b class="fc"><i>88</i>&nbsp;        }</b>
+<i>89</i>&nbsp;
+<b class="fc"><i>90</i>&nbsp;        for (String s : texFiles)</b>
+<b class="fc"><i>91</i>&nbsp;            System.out.println(s);</b>
+<i>92</i>&nbsp;
+<b class="fc"><i>93</i>&nbsp;        String texName = &quot;&quot;;</b>
+<b class="fc"><i>94</i>&nbsp;        int posSlash = texList.lastIndexOf(&quot;/&quot;);</b>
+<b class="fc"><i>95</i>&nbsp;        String texPath = texList.substring(0, posSlash + 1);</b>
+<b class="fc"><i>96</i>&nbsp;        glActiveTexture(GL_TEXTURE0);</b>
+<b class="fc"><i>97</i>&nbsp;        for (String file : texFiles) {</b>
+<b class="fc"><i>98</i>&nbsp;            texName = file;</b>
+<b class="fc"><i>99</i>&nbsp;            int pos = texName.lastIndexOf(&quot;.&quot;);</b>
+<b class="pc"><i>100</i>&nbsp;            if (pos == -1)</b>
+<b class="nc"><i>101</i>&nbsp;                continue;</b>
+<b class="pc"><i>102</i>&nbsp;            if (!texName.substring(texName.length() - 3).equals(&quot;png&quot;))</b>
+<b class="nc"><i>103</i>&nbsp;                continue;</b>
+<b class="fc"><i>104</i>&nbsp;            texName = file.substring(0, pos);</b>
+<b class="fc"><i>105</i>&nbsp;            int texID = loadPNGTexture(texPath + file, GL_TEXTURE0);</b>
+<b class="fc"><i>106</i>&nbsp;            textures.put(texName, texID);</b>
+<b class="fc"><i>107</i>&nbsp;            NkImage nkImage = NkImage.create();</b>
+<b class="fc"><i>108</i>&nbsp;            texturesNk.put(texName, nkImage.handle(it -&gt; it.id(texID)));</b>
+<b class="fc"><i>109</i>&nbsp;        }</b>
+<i>110</i>&nbsp;
+<b class="fc"><i>111</i>&nbsp;        return textures;</b>
+<i>112</i>&nbsp;    }
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;    /**
+<i>115</i>&nbsp;     * Loads a PNG file into OpenGL, after decoding it.
+<i>116</i>&nbsp;     *
+<i>117</i>&nbsp;     * @param path        The file to decode and load into the OpenGL context
+<i>118</i>&nbsp;     * @param textureUnit The texture attribute list to load the texture into
+<i>119</i>&nbsp;     * @return The location of the texture in OpenGL context
+<i>120</i>&nbsp;     */
+<i>121</i>&nbsp;    private static int loadPNGTexture(String path, int textureUnit) {
+<i>122</i>&nbsp;        ByteBuffer imageBuffer;
+<i>123</i>&nbsp;        try {
+<b class="fc"><i>124</i>&nbsp;            imageBuffer = ioResourceToByteBuffer(path, 8 * 1024);</b>
+<b class="nc"><i>125</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>126</i>&nbsp;            throw new RuntimeException(e);</b>
+<b class="fc"><i>127</i>&nbsp;        }</b>
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;        int texID;
+<i>130</i>&nbsp;        ByteBuffer image;
+<i>131</i>&nbsp;        int width, height, comp;
+<i>132</i>&nbsp;        IntBuffer w, h, channel;
+<b class="pc"><i>133</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="fc"><i>134</i>&nbsp;            w = stack.mallocInt(1);</b>
+<b class="fc"><i>135</i>&nbsp;            h = stack.mallocInt(1);</b>
+<b class="fc"><i>136</i>&nbsp;            channel = stack.mallocInt(1);</b>
+<b class="fc"><i>137</i>&nbsp;            image = stbi_load_from_memory(imageBuffer, w, h, channel, 0);</b>
+<b class="pc"><i>138</i>&nbsp;            if (image == null) {</b>
+<b class="nc"><i>139</i>&nbsp;                throw new RuntimeException(&quot;Failed to load texture: &quot; + stbi_failure_reason());</b>
+<i>140</i>&nbsp;            }
+<i>141</i>&nbsp;
+<b class="fc"><i>142</i>&nbsp;            width = w.get();</b>
+<b class="fc"><i>143</i>&nbsp;            height = h.get();</b>
+<b class="fc"><i>144</i>&nbsp;            comp = channel.get();</b>
+<b class="pc"><i>145</i>&nbsp;        }</b>
+<i>146</i>&nbsp;
+<b class="fc"><i>147</i>&nbsp;        texID = glGenTextures();</b>
+<b class="fc"><i>148</i>&nbsp;        glActiveTexture(textureUnit);</b>
+<b class="fc"><i>149</i>&nbsp;        glBindTexture(GL_TEXTURE_2D, texID);</b>
+<i>150</i>&nbsp;
+<i>151</i>&nbsp;        // Setup the ST coordinate system
+<b class="fc"><i>152</i>&nbsp;        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</b>
+<b class="fc"><i>153</i>&nbsp;        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</b>
+<i>154</i>&nbsp;
+<i>155</i>&nbsp;        // Setup what to do when the texture has to be scaled
+<b class="fc"><i>156</i>&nbsp;        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);</b>
+<b class="fc"><i>157</i>&nbsp;        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);</b>
+<i>158</i>&nbsp;
+<i>159</i>&nbsp;        int format;
+<b class="fc"><i>160</i>&nbsp;        if (comp == 3) {</b>
+<b class="fc"><i>161</i>&nbsp;            if ((width &amp; 3) != 0) {</b>
+<b class="fc"><i>162</i>&nbsp;                glPixelStorei(GL_UNPACK_ALIGNMENT, 2 - (width &amp; 1));</b>
+<i>163</i>&nbsp;            }
+<b class="fc"><i>164</i>&nbsp;            format = GL_RGB;</b>
+<i>165</i>&nbsp;        } else {
+<b class="fc"><i>166</i>&nbsp;            premultiplyAlpha(image, width, height);</b>
+<i>167</i>&nbsp;
+<b class="fc"><i>168</i>&nbsp;            glEnable(GL_BLEND);</b>
+<b class="fc"><i>169</i>&nbsp;            glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);</b>
+<i>170</i>&nbsp;
+<b class="fc"><i>171</i>&nbsp;            format = GL_RGBA;</b>
+<i>172</i>&nbsp;        }
+<i>173</i>&nbsp;
+<b class="fc"><i>174</i>&nbsp;        glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, image);</b>
+<i>175</i>&nbsp;
+<b class="fc"><i>176</i>&nbsp;        ByteBuffer input_pixels = image;</b>
+<b class="fc"><i>177</i>&nbsp;        int input_w = width;</b>
+<b class="fc"><i>178</i>&nbsp;        int input_h = height;</b>
+<b class="fc"><i>179</i>&nbsp;        int mipmapLevel = 0;</b>
+<b class="fc"><i>180</i>&nbsp;        while (1 &lt; input_w || 1 &lt; input_h) {</b>
+<b class="fc"><i>181</i>&nbsp;            int output_w = Math.max(1, input_w &gt;&gt; 1);</b>
+<b class="fc"><i>182</i>&nbsp;            int output_h = Math.max(1, input_h &gt;&gt; 1);</b>
+<i>183</i>&nbsp;
+<b class="fc"><i>184</i>&nbsp;            ByteBuffer output_pixels = memAlloc(output_w * output_h * comp);</b>
+<b class="fc"><i>185</i>&nbsp;            stbir_resize_uint8_generic(</b>
+<i>186</i>&nbsp;                    input_pixels, input_w, input_h, input_w * comp,
+<i>187</i>&nbsp;                    output_pixels, output_w, output_h, output_w * comp,
+<b class="fc"><i>188</i>&nbsp;                    comp, comp == 4 ? 3 : STBIR_ALPHA_CHANNEL_NONE, STBIR_FLAG_ALPHA_PREMULTIPLIED,</b>
+<i>189</i>&nbsp;                    STBIR_EDGE_CLAMP,
+<i>190</i>&nbsp;                    STBIR_FILTER_MITCHELL,
+<i>191</i>&nbsp;                    STBIR_COLORSPACE_SRGB
+<i>192</i>&nbsp;            );
+<i>193</i>&nbsp;
+<b class="fc"><i>194</i>&nbsp;            if (mipmapLevel == 0) {</b>
+<b class="fc"><i>195</i>&nbsp;                stbi_image_free(image);</b>
+<i>196</i>&nbsp;            } else {
+<b class="fc"><i>197</i>&nbsp;                memFree(input_pixels);</b>
+<i>198</i>&nbsp;            }
+<i>199</i>&nbsp;
+<b class="fc"><i>200</i>&nbsp;            glTexImage2D(GL_TEXTURE_2D, ++mipmapLevel, format, output_w, output_h, 0, format, GL_UNSIGNED_BYTE, output_pixels);</b>
+<i>201</i>&nbsp;
+<b class="fc"><i>202</i>&nbsp;            input_pixels = output_pixels;</b>
+<b class="fc"><i>203</i>&nbsp;            input_w = output_w;</b>
+<b class="fc"><i>204</i>&nbsp;            input_h = output_h;</b>
+<b class="fc"><i>205</i>&nbsp;        }</b>
+<b class="pc"><i>206</i>&nbsp;        if (mipmapLevel == 0) {</b>
+<b class="nc"><i>207</i>&nbsp;            stbi_image_free(image);</b>
+<i>208</i>&nbsp;        } else {
+<b class="fc"><i>209</i>&nbsp;            memFree(input_pixels);</b>
+<i>210</i>&nbsp;        }
+<i>211</i>&nbsp;
+<b class="fc"><i>212</i>&nbsp;        return texID;</b>
+<i>213</i>&nbsp;    }
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;
+<i>216</i>&nbsp;    private static void premultiplyAlpha(ByteBuffer image, int w, int h) {
+<b class="fc"><i>217</i>&nbsp;        int stride = w * 4;</b>
+<b class="fc"><i>218</i>&nbsp;        for (int y = 0; y &lt; h; y++) {</b>
+<b class="fc"><i>219</i>&nbsp;            for (int x = 0; x &lt; w; x++) {</b>
+<b class="fc"><i>220</i>&nbsp;                int i = y * stride + x * 4;</b>
+<i>221</i>&nbsp;
+<b class="fc"><i>222</i>&nbsp;                float alpha = (image.get(i + 3) &amp; 0xFF) / 255.0f;</b>
+<b class="fc"><i>223</i>&nbsp;                image.put(i + 0, (byte) round(((image.get(i + 0) &amp; 0xFF) * alpha)));</b>
+<b class="fc"><i>224</i>&nbsp;                image.put(i + 1, (byte) round(((image.get(i + 1) &amp; 0xFF) * alpha)));</b>
+<b class="fc"><i>225</i>&nbsp;                image.put(i + 2, (byte) round(((image.get(i + 2) &amp; 0xFF) * alpha)));</b>
+<i>226</i>&nbsp;            }
+<i>227</i>&nbsp;        }
+<i>228</i>&nbsp;    }
+<i>229</i>&nbsp;
+<i>230</i>&nbsp;    public static HashMap&lt;String, Integer&gt; getTextures() {
+<b class="nc"><i>231</i>&nbsp;        return textures;</b>
+<i>232</i>&nbsp;    }
+<i>233</i>&nbsp;
+<i>234</i>&nbsp;    public static int getTextureID(String name) {
+<b class="fc"><i>235</i>&nbsp;        return textures.get(name);</b>
+<i>236</i>&nbsp;    }
+<i>237</i>&nbsp;
+<i>238</i>&nbsp;    public static NkImage getTextureNk(String name) {
+<b class="fc"><i>239</i>&nbsp;        return texturesNk.get(name);</b>
+<i>240</i>&nbsp;    }
+<i>241</i>&nbsp;
+<i>242</i>&nbsp;    /**
+<i>243</i>&nbsp;     * will return the correct texture (the ID of it) for the entity it is passed. e.g. it will check what type of powerup the crate holds and display the right crate image.
+<i>244</i>&nbsp;     *
+<i>245</i>&nbsp;     * @param e the entity
+<i>246</i>&nbsp;     * @return the texture ID, gotten using getTextureID()
+<i>247</i>&nbsp;     */
+<i>248</i>&nbsp;    public static int getEntityTexture(Entity e) {
+<b class="fc"><i>249</i>&nbsp;        if (entityTextures.containsKey(e.loc))</b>
+<b class="fc"><i>250</i>&nbsp;            return entityTextures.get(e.loc);</b>
+<i>251</i>&nbsp;
+<b class="fc"><i>252</i>&nbsp;        String color = e.playerColor;</b>
+<b class="pc"><i>253</i>&nbsp;        if (!(color.equals(&quot;green&quot;) || color.equals(&quot;blue&quot;) || color.equals(&quot;purple&quot;) || color.equals(&quot;red&quot;))) {</b>
+<b class="nc"><i>254</i>&nbsp;            color = &quot;green&quot;;</b>
+<i>255</i>&nbsp;        }
+<i>256</i>&nbsp;
+<b class="pc"><i>257</i>&nbsp;        switch (e.type) {</b>
+<i>258</i>&nbsp;            case TANK:
+<b class="fc"><i>259</i>&nbsp;                return getTextureID(&quot;tank_&quot; + color);</b>
+<i>260</i>&nbsp;            case TURRET:
+<b class="fc"><i>261</i>&nbsp;                return getTextureID(&quot;turret_&quot; + color);</b>
+<i>262</i>&nbsp;            case PROJECTILE:
+<b class="fc"><i>263</i>&nbsp;                Projectile projectile = (Projectile) e;</b>
+<b class="fc"><i>264</i>&nbsp;                if (projectile.guided) {</b>
+<b class="fc"><i>265</i>&nbsp;                    return getTextureID(&quot;projectile_targeting&quot;);</b>
+<i>266</i>&nbsp;                }
+<b class="fc"><i>267</i>&nbsp;                return getTextureID(&quot;projectile&quot;);</b>
+<i>268</i>&nbsp;            case CRATE:
+<b class="fc"><i>269</i>&nbsp;                Crate crate = (Crate) e;</b>
+<b class="fc"><i>270</i>&nbsp;                String stage = &quot;&quot;;</b>
+<b class="fc"><i>271</i>&nbsp;                if (crate.health &lt;= 28) {</b>
+<b class="fc"><i>272</i>&nbsp;                    stage = &quot;_2&quot;;</b>
+<b class="fc"><i>273</i>&nbsp;                } else if (crate.health &lt;= 55) {</b>
+<b class="fc"><i>274</i>&nbsp;                    stage = &quot;_1&quot;;</b>
+<i>275</i>&nbsp;                }
+<b class="pc"><i>276</i>&nbsp;                if (crate.powerUpType == PowerUpType.HEAL) {</b>
+<b class="nc"><i>277</i>&nbsp;                    return getTextureID(&quot;crate_health&quot; + stage);</b>
+<i>278</i>&nbsp;                }
+<b class="pc"><i>279</i>&nbsp;                if (crate.powerUpType == PowerUpType.STRENGTH) {</b>
+<b class="nc"><i>280</i>&nbsp;                    return getTextureID(&quot;crate_strength&quot; + stage);</b>
+<i>281</i>&nbsp;                }
+<b class="fc"><i>282</i>&nbsp;                if (crate.powerUpType == PowerUpType.SHIELD) {</b>
+<b class="fc"><i>283</i>&nbsp;                    return getTextureID(&quot;crate_shield&quot; + stage);</b>
+<i>284</i>&nbsp;                }
+<b class="fc"><i>285</i>&nbsp;                if (crate.powerUpType == PowerUpType.CLUSTER) {</b>
+<b class="fc"><i>286</i>&nbsp;                    return getTextureID(&quot;crate_cluster&quot; + stage);</b>
+<i>287</i>&nbsp;                }
+<b class="pc"><i>288</i>&nbsp;                if (crate.powerUpType == PowerUpType.RANDOM) {</b>
+<i>289</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="nc"><i>290</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="nc"><i>291</i>&nbsp;                        return getTextureID(&quot;crate_question_bold&quot;);</b>
+<i>292</i>&nbsp;                    }
+<i>293</i>&nbsp;                }
+<b class="pc"><i>294</i>&nbsp;                if (crate.powerUpType == PowerUpType.SPEED) {</b>
+<i>295</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="nc"><i>296</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="nc"><i>297</i>&nbsp;                        return getTextureID(&quot;crate_speed&quot;);</b>
+<i>298</i>&nbsp;                    }
+<i>299</i>&nbsp;                }
+<b class="pc"><i>300</i>&nbsp;                if (crate.powerUpType == PowerUpType.REVERSE) {</b>
+<i>301</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="nc"><i>302</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="nc"><i>303</i>&nbsp;                        return getTextureID(&quot;crate_reverse&quot;);</b>
+<i>304</i>&nbsp;                    }
+<i>305</i>&nbsp;                }
+<b class="pc"><i>306</i>&nbsp;                if (crate.powerUpType == PowerUpType.REVERSEOTHERS) {</b>
+<i>307</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="nc"><i>308</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="nc"><i>309</i>&nbsp;                        return getTextureID(&quot;crate_reverse_others&quot;);</b>
+<i>310</i>&nbsp;                    }
+<i>311</i>&nbsp;                }
+<b class="pc"><i>312</i>&nbsp;                if (crate.powerUpType == PowerUpType.REVERSEOTHERS) {</b>
+<i>313</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="nc"><i>314</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="nc"><i>315</i>&nbsp;                        return getTextureID(&quot;crate_extra_a&quot;);</b>
+<i>316</i>&nbsp;                    }
+<i>317</i>&nbsp;                }
+<b class="pc"><i>318</i>&nbsp;                if (crate.powerUpType == PowerUpType.DAMAGE) {</b>
+<i>319</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="nc"><i>320</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="nc"><i>321</i>&nbsp;                        return getTextureID(&quot;crate_damage&quot;);</b>
+<i>322</i>&nbsp;                    }
+<i>323</i>&nbsp;                }
+<b class="fc"><i>324</i>&nbsp;                if (crate.powerUpType == PowerUpType.TARGETING) {</b>
+<i>325</i>&nbsp;                    // because I only made one texture for this powerup
+<b class="fc"><i>326</i>&nbsp;                    if (stage == &quot;&quot;) {</b>
+<b class="fc"><i>327</i>&nbsp;                        return getTextureID(&quot;crate_targeting&quot;);</b>
+<i>328</i>&nbsp;                    }
+<i>329</i>&nbsp;                }
+<b class="fc"><i>330</i>&nbsp;                return getTextureID(&quot;crate&quot; + stage);</b>
+<i>331</i>&nbsp;            default:
+<b class="nc"><i>332</i>&nbsp;                return getTextureID(&quot;uvgrid1&quot;);</b>
+<i>333</i>&nbsp;        }
+<i>334</i>&nbsp;    }
+<i>335</i>&nbsp;
+<i>336</i>&nbsp;    /**
+<i>337</i>&nbsp;     * Cycle all held animations in the animationCache, including those within texUIElements.
+<i>338</i>&nbsp;     *
+<i>339</i>&nbsp;     * @param gl The GUILayer holding any animations you&#39;d like to cycle
+<i>340</i>&nbsp;     */
+<i>341</i>&nbsp;    public static void cycleAnimations(GUILayer gl) {
+<b class="fc"><i>342</i>&nbsp;        Iterator&lt;Map.Entry&lt;Integer, Animation&gt;&gt; it = animationCache.entrySet().iterator();</b>
+<b class="fc"><i>343</i>&nbsp;        while (it.hasNext()) {</b>
+<b class="fc"><i>344</i>&nbsp;            Map.Entry&lt;Integer, Animation&gt; entry = it.next();</b>
+<b class="fc"><i>345</i>&nbsp;            int texID = entry.getValue().cycle();</b>
+<b class="fc"><i>346</i>&nbsp;            if (texID == -1) {</b>
+<b class="fc"><i>347</i>&nbsp;                it.remove();</b>
+<b class="fc"><i>348</i>&nbsp;                entityTextures.remove(entry.getKey());</b>
+<i>349</i>&nbsp;            } else {
+<b class="fc"><i>350</i>&nbsp;                entityTextures.put(entry.getKey(), texID);</b>
+<i>351</i>&nbsp;            }
+<b class="fc"><i>352</i>&nbsp;        }</b>
+<b class="fc"><i>353</i>&nbsp;        Iterator&lt;Map.Entry&lt;String, Animation&gt;&gt; itUI = uiAnimationCache.entrySet().iterator();</b>
+<b class="fc"><i>354</i>&nbsp;        while (itUI.hasNext()) {</b>
+<b class="fc"><i>355</i>&nbsp;            Map.Entry&lt;String, Animation&gt; entry = itUI.next();</b>
+<b class="fc"><i>356</i>&nbsp;            int texID = entry.getValue().cycle();</b>
+<b class="fc"><i>357</i>&nbsp;            if (texID == -1) {</b>
+<b class="fc"><i>358</i>&nbsp;                itUI.remove();</b>
+<b class="fc"><i>359</i>&nbsp;                gl.getTexUIElements().get(entry.getKey()).resetTex();</b>
+<i>360</i>&nbsp;            } else {
+<b class="fc"><i>361</i>&nbsp;                gl.getTexUIElements().get(entry.getKey()).texID = texID;</b>
+<i>362</i>&nbsp;            }
+<b class="fc"><i>363</i>&nbsp;        }</b>
+<i>364</i>&nbsp;    }
+<i>365</i>&nbsp;
+<i>366</i>&nbsp;    /**
+<i>367</i>&nbsp;     * Set the current animation for an entity at the given index
+<i>368</i>&nbsp;     *
+<i>369</i>&nbsp;     * @param index The index of the animation within the cache. Use the index of the Entity in EntityHandler
+<i>370</i>&nbsp;     * @param anim  The animation to assign
+<i>371</i>&nbsp;     */
+<i>372</i>&nbsp;    public static void setAnimation(int index, Animation anim) {
+<b class="fc"><i>373</i>&nbsp;        if (animationCache.get(index) != null) {</b>
+<b class="fc"><i>374</i>&nbsp;            if (animationCache.get(index).equals(anim)) {</b>
+<i>375</i>&nbsp;                return;
+<i>376</i>&nbsp;            }
+<i>377</i>&nbsp;        }
+<b class="fc"><i>378</i>&nbsp;        animationCache.put(index, anim);</b>
+<i>379</i>&nbsp;    }
+<i>380</i>&nbsp;
+<i>381</i>&nbsp;    /**
+<i>382</i>&nbsp;     * Set the current animation for a given entity
+<i>383</i>&nbsp;     *
+<i>384</i>&nbsp;     * @param e    The Entity to assign the animation to
+<i>385</i>&nbsp;     * @param anim The Animation to assign
+<i>386</i>&nbsp;     */
+<i>387</i>&nbsp;    public static void setAnimation(Entity e, Animation anim) {
+<b class="fc"><i>388</i>&nbsp;        if (animationCache.get(e.loc) != null) {</b>
+<b class="pc"><i>389</i>&nbsp;            if (animationCache.get(e.loc).equals(anim)) {</b>
+<i>390</i>&nbsp;                return;
+<i>391</i>&nbsp;            }
+<i>392</i>&nbsp;        }
+<b class="fc"><i>393</i>&nbsp;        animationCache.put(e.loc, anim);</b>
+<i>394</i>&nbsp;    }
+<i>395</i>&nbsp;
+<i>396</i>&nbsp;    /**
+<i>397</i>&nbsp;     * Set the current animation for a given UI element
+<i>398</i>&nbsp;     *
+<i>399</i>&nbsp;     * @param name The name of the texUIElement to assign the animation to
+<i>400</i>&nbsp;     * @param anim The Animation to assign
+<i>401</i>&nbsp;     */
+<i>402</i>&nbsp;    public static void setUIAnimation(String name, Animation anim) {
+<b class="fc"><i>403</i>&nbsp;        if (uiAnimationCache.get(name) != null) {</b>
+<b class="fc"><i>404</i>&nbsp;            if (uiAnimationCache.get(name).equals(anim)) {</b>
+<i>405</i>&nbsp;                return;
+<i>406</i>&nbsp;            }
+<i>407</i>&nbsp;        }
+<b class="fc"><i>408</i>&nbsp;        uiAnimationCache.put(name, anim);</b>
+<i>409</i>&nbsp;    }
+<i>410</i>&nbsp;
+<i>411</i>&nbsp;    /**
+<i>412</i>&nbsp;     * Clear all animations within TextureHandler&#39;s animationCache
+<i>413</i>&nbsp;     */
+<i>414</i>&nbsp;    public static void wipeAnimations() {
+<b class="fc"><i>415</i>&nbsp;        animationCache.clear();</b>
+<b class="fc"><i>416</i>&nbsp;        entityTextures.clear();</b>
+<i>417</i>&nbsp;    }
+<i>418</i>&nbsp;
+<i>419</i>&nbsp;    /**
+<i>420</i>&nbsp;     * Clear the Animation at the given index
+<i>421</i>&nbsp;     */
+<i>422</i>&nbsp;    public static void wipeAnimation(int index) {
+<b class="nc"><i>423</i>&nbsp;        animationCache.remove(index);</b>
+<b class="nc"><i>424</i>&nbsp;        entityTextures.remove(index);</b>
+<i>425</i>&nbsp;    }
+<i>426</i>&nbsp;
+<i>427</i>&nbsp;    /**
+<i>428</i>&nbsp;     * Clear the Animation for the given Entity
+<i>429</i>&nbsp;     */
+<i>430</i>&nbsp;    public static void wipeAnimation(Entity e) {
+<b class="fc"><i>431</i>&nbsp;        animationCache.remove(e.loc);</b>
+<b class="fc"><i>432</i>&nbsp;        entityTextures.remove(e.loc);</b>
+<i>433</i>&nbsp;    }
+<i>434</i>&nbsp;
+<i>435</i>&nbsp;    /**
+<i>436</i>&nbsp;     * Clear the Animation for the given texUIElement
+<i>437</i>&nbsp;     */
+<i>438</i>&nbsp;    public static void wipeAnimation(String name) {
+<b class="nc"><i>439</i>&nbsp;        uiAnimationCache.remove(name);</b>
+<i>440</i>&nbsp;    }
+<i>441</i>&nbsp;
+<i>442</i>&nbsp;    /**
+<i>443</i>&nbsp;     * Clean up the TextureHandler by deleting all textures held by OpenGL
+<i>444</i>&nbsp;     */
+<i>445</i>&nbsp;    public static void cleanup() {
+<b class="fc"><i>446</i>&nbsp;        for (HashMap.Entry&lt;String, Integer&gt; entry : textures.entrySet()) {</b>
+<b class="fc"><i>447</i>&nbsp;            glDeleteTextures(entry.getValue());</b>
+<b class="fc"><i>448</i>&nbsp;        }</b>
+<i>449</i>&nbsp;    }
+<i>450</i>&nbsp;}
+<i>451</i>&nbsp;
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

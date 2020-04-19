@@ -1,0 +1,186 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BackdropLayer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer.layers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BackdropLayer (org.cauldron.renderer.layers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BackdropLayer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    85.7%
+  </span>
+  <span class="absValue">
+    (6/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97.5%
+  </span>
+  <span class="absValue">
+    (39/ 40)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer.layers;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.renderer.*;
+<i>4</i>&nbsp;import org.joml.Matrix4f;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import static org.lwjgl.opengl.GL11C.*;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;/**
+<i>9</i>&nbsp; * BackdropLayer holds all Backdrop information draws it using OpenGL calls.
+<i>10</i>&nbsp; */
+<i>11</i>&nbsp;public class BackdropLayer extends Layer {
+<i>12</i>&nbsp;
+<b class="fc"><i>13</i>&nbsp;    public Backdrop[] backdrops = new Backdrop[]{new Backdrop(-1)};</b>
+<b class="fc"><i>14</i>&nbsp;    private VertexBufferLayout layout = new VertexBufferLayout();</b>
+<i>15</i>&nbsp;    private Matrix4f projectionMatrix;
+<i>16</i>&nbsp;    private Matrix4f viewMatrix;
+<i>17</i>&nbsp;
+<b class="fc"><i>18</i>&nbsp;    public BackdropLayer() {</b>
+<b class="fc"><i>19</i>&nbsp;        vertexShaderPath = &quot;game/shaders/vertex.glsl&quot;;</b>
+<b class="fc"><i>20</i>&nbsp;        fragmentShaderPath = &quot;game/shaders/fragment.glsl&quot;;</b>
+<b class="fc"><i>21</i>&nbsp;        attribLocations.put(&quot;in_Position&quot;, 0);</b>
+<b class="fc"><i>22</i>&nbsp;        attribLocations.put(&quot;in_Color&quot;, 1);</b>
+<b class="fc"><i>23</i>&nbsp;        attribLocations.put(&quot;in_TextureCoord&quot;, 2);</b>
+<i>24</i>&nbsp;    }
+<i>25</i>&nbsp;
+<i>26</i>&nbsp;    @Override
+<i>27</i>&nbsp;    public void setup() {
+<b class="fc"><i>28</i>&nbsp;        shader = new Shader(vertexShaderPath, fragmentShaderPath, attribLocations);</b>
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;        Vertex[] vertices = new Vertex[]{new Vertex().setXYZ(0, HEIGHT, -0.0002f).setST(0, 0),</b>
+<b class="fc"><i>31</i>&nbsp;                new Vertex().setXYZ(0, 0, -0.0002f).setST(0, 1),</b>
+<b class="fc"><i>32</i>&nbsp;                new Vertex().setXYZ(WIDTH, 0, -0.0002f).setST(1, 1),</b>
+<b class="fc"><i>33</i>&nbsp;                new Vertex().setXYZ(WIDTH, HEIGHT, -0.0002f).setST(1, 0)</b>
+<i>34</i>&nbsp;        };
+<i>35</i>&nbsp;
+<b class="fc"><i>36</i>&nbsp;        ibo = new IndexBuffer(new byte[]{</b>
+<i>37</i>&nbsp;                0, 1, 2,
+<i>38</i>&nbsp;                2, 3, 0
+<i>39</i>&nbsp;        });
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;        // Create a new Vertex Array Object in memory and select it (bind)
+<i>42</i>&nbsp;        // A VAO can have up to 16 attributes (VBO&#39;s) assigned to it by default
+<b class="fc"><i>43</i>&nbsp;        vao = new VertexArray();</b>
+<b class="fc"><i>44</i>&nbsp;        vao.bind();</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;        // New VBO and bind it
+<b class="fc"><i>47</i>&nbsp;        vbo = new VertexBuffer(vertices);</b>
+<i>48</i>&nbsp;        // Put the positions in attribute list 0
+<b class="fc"><i>49</i>&nbsp;        layout.push(4, GL_FLOAT, false);</b>
+<i>50</i>&nbsp;        // Put the colors in attribute list 1
+<b class="fc"><i>51</i>&nbsp;        layout.push(4, GL_FLOAT, false);</b>
+<i>52</i>&nbsp;        // Put the texture coordinates in attribute list 2
+<b class="fc"><i>53</i>&nbsp;        layout.push(2, GL_FLOAT, false);</b>
+<i>54</i>&nbsp;
+<b class="fc"><i>55</i>&nbsp;        vao.addBuffer(vbo, layout);</b>
+<i>56</i>&nbsp;
+<b class="fc"><i>57</i>&nbsp;        projectionMatrix = new Matrix4f().frustum(0f, Layer.WIDTH, 0f, Layer.HEIGHT,</b>
+<i>58</i>&nbsp;                1f, 100f);
+<b class="fc"><i>59</i>&nbsp;        viewMatrix = new Matrix4f().translate(0f, 0f, -1f);</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    @Override
+<i>63</i>&nbsp;    public void preDraw() {
+<b class="fc"><i>64</i>&nbsp;        vao.bind();</b>
+<b class="fc"><i>65</i>&nbsp;        ibo.bind();</b>
+<i>66</i>&nbsp;
+<b class="fc"><i>67</i>&nbsp;        shader.bind();</b>
+<b class="fc"><i>68</i>&nbsp;        shader.setMatrix4f(&quot;projectionMatrix&quot;, projectionMatrix);</b>
+<b class="fc"><i>69</i>&nbsp;        shader.setMatrix4f(&quot;viewMatrix&quot;, viewMatrix);</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;
+<i>72</i>&nbsp;    @Override
+<i>73</i>&nbsp;    public void draw() {
+<b class="fc"><i>74</i>&nbsp;        for (int i = backdrops.length - 1; i &gt; -1; i--) {</b>
+<b class="fc"><i>75</i>&nbsp;            shader.setMatrix4f(&quot;modelMatrix&quot;,</b>
+<b class="fc"><i>76</i>&nbsp;                    new Matrix4f().translate(backdrops[i].x, backdrops[i].y, -0.1f - (0.0001f * i)).scale(1.15f, 1.1f, 1f));</b>
+<b class="pc"><i>77</i>&nbsp;            if (backdrops[i].texID != -1)</b>
+<b class="fc"><i>78</i>&nbsp;                glBindTexture(GL_TEXTURE_2D, backdrops[i].texID);</b>
+<b class="fc"><i>79</i>&nbsp;            glDrawElements(GL_TRIANGLES, ibo.getIndicesCount(), GL_UNSIGNED_BYTE, 0);</b>
+<i>80</i>&nbsp;        }
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    @Override
+<i>84</i>&nbsp;    public void postDraw() {
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    @Override
+<i>89</i>&nbsp;    public void close() {
+<b class="fc"><i>90</i>&nbsp;        vao.bind();</b>
+<b class="fc"><i>91</i>&nbsp;        vbo.close();</b>
+<b class="fc"><i>92</i>&nbsp;        ibo.close();</b>
+<b class="fc"><i>93</i>&nbsp;        vao.close();</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    public void setBackdrop(int id) {
+<b class="nc"><i>97</i>&nbsp;        backdrops = new Backdrop[]{new Backdrop(id)};</b>
+<i>98</i>&nbsp;    }
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    public void setBackdrops(Backdrop[] backdrops) {
+<b class="fc"><i>101</i>&nbsp;        this.backdrops = backdrops;</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MapEditingScene</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.scenes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MapEditingScene (org.cauldron.scenes)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MapEditingScene</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 42)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.scenes;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.audio.AudioManager;
+<i>4</i>&nbsp;import org.cauldron.game.*;
+<i>5</i>&nbsp;import org.cauldron.renderer.Backdrop;
+<i>6</i>&nbsp;import org.cauldron.renderer.BackdropScroller;
+<i>7</i>&nbsp;import org.cauldron.renderer.Renderer;
+<i>8</i>&nbsp;import org.cauldron.renderer.TextureHandler;
+<i>9</i>&nbsp;import org.cauldron.renderer.layers.BackdropLayer;
+<i>10</i>&nbsp;import org.cauldron.renderer.layers.GUILayer;
+<i>11</i>&nbsp;import org.cauldron.renderer.layers.TerrainLayer;
+<i>12</i>&nbsp;import org.cauldron.ui.UIHandler;
+<i>13</i>&nbsp;import org.cauldron.ui.elements.MapEditor;
+<i>14</i>&nbsp;import org.cauldron.ui.elements.MapSelector;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.nk_window_set_focus;
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;public class MapEditingScene extends Scene {
+<b class="nc"><i>19</i>&nbsp;    TerrainLayer terrainLayer = new TerrainLayer();</b>
+<b class="nc"><i>20</i>&nbsp;    BackdropLayer backdropLayer = new BackdropLayer();</b>
+<i>21</i>&nbsp;    public Terrain map;
+<b class="nc"><i>22</i>&nbsp;    BackdropScroller bScroll = null;</b>
+<b class="nc"><i>23</i>&nbsp;    long mapLastUpdated = System.currentTimeMillis();</b>
+<b class="nc"><i>24</i>&nbsp;    long mapUpdateInterval = 500;</b>
+<i>25</i>&nbsp;
+<b class="nc"><i>26</i>&nbsp;    public MapEditingScene(GUILayer guiLayer) {</b>
+<i>27</i>&nbsp;        // Clean the animations from a previous scene
+<b class="nc"><i>28</i>&nbsp;        TextureHandler.wipeAnimations();</b>
+<b class="nc"><i>29</i>&nbsp;        super.guiLayer = guiLayer;</b>
+<b class="nc"><i>30</i>&nbsp;        map = new Terrain(25);</b>
+<b class="nc"><i>31</i>&nbsp;        MapLoader.init();</b>
+<b class="nc"><i>32</i>&nbsp;        MapLoader.load(map, ((MapSelector) UIHandler.getUIElements().get(&quot;MapSelector&quot;)).chosenMap);</b>
+<b class="nc"><i>33</i>&nbsp;        this.setType(Game.SceneType.MAPEDITOR);</b>
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;        // Initialise AudioManager
+<b class="nc"><i>36</i>&nbsp;        AudioManager.setSources(new String[]{});</b>
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;        // Initialise the layers
+<b class="nc"><i>39</i>&nbsp;        terrainLayer.setTerrain(map);</b>
+<b class="nc"><i>40</i>&nbsp;        terrainLayer.setup();</b>
+<b class="nc"><i>41</i>&nbsp;        backdropLayer.setup();</b>
+<b class="nc"><i>42</i>&nbsp;        backdropLayer.setBackdrops(new Backdrop[]{new Backdrop(TextureHandler.getTextureID(&quot;clouds_fg&quot;)),</b>
+<b class="nc"><i>43</i>&nbsp;                new Backdrop(TextureHandler.getTextureID(&quot;clouds_bg&quot;)),</b>
+<b class="nc"><i>44</i>&nbsp;                new Backdrop(TextureHandler.getTextureID(&quot;sky&quot;))});</b>
+<b class="nc"><i>45</i>&nbsp;        bScroll = new BackdropScroller(backdropLayer, 1, 200);</b>
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;        // Enable various necessary UI elements for this Scene
+<b class="nc"><i>48</i>&nbsp;        UIHandler.disableAll();</b>
+<b class="nc"><i>49</i>&nbsp;        UIHandler.enable(&quot;GridOverlay&quot;);</b>
+<b class="nc"><i>50</i>&nbsp;        UIHandler.enable(&quot;MapEditor&quot;);</b>
+<b class="nc"><i>51</i>&nbsp;        ((MapEditor) UIHandler.getUIElements().get(&quot;MapEditor&quot;)).reset();</b>
+<b class="nc"><i>52</i>&nbsp;        ((MapEditor) UIHandler.getUIElements().get(&quot;MapEditor&quot;)).setMap(map);</b>
+<i>53</i>&nbsp;
+<b class="nc"><i>54</i>&nbsp;        Renderer.clear();</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    @Override
+<i>58</i>&nbsp;    public void cycle() {
+<b class="nc"><i>59</i>&nbsp;        nk_window_set_focus(guiLayer.getContext(), &quot;MapEditor&quot;);</b>
+<i>60</i>&nbsp;        // Update the map on tick
+<b class="nc"><i>61</i>&nbsp;        if (System.currentTimeMillis() - mapLastUpdated &gt; mapUpdateInterval) {</b>
+<b class="nc"><i>62</i>&nbsp;            ((MapEditor) UIHandler.getUIElements().get(&quot;MapEditor&quot;)).updateMap();</b>
+<b class="nc"><i>63</i>&nbsp;            terrainLayer.update();</b>
+<b class="nc"><i>64</i>&nbsp;            mapLastUpdated = System.currentTimeMillis();</b>
+<i>65</i>&nbsp;        }
+<b class="nc"><i>66</i>&nbsp;        if (Settings.fps)</b>
+<b class="nc"><i>67</i>&nbsp;            UIHandler.enable(&quot;FPSCounter&quot;);</b>
+<i>68</i>&nbsp;        else
+<b class="nc"><i>69</i>&nbsp;            UIHandler.disable(&quot;FPSCounter&quot;);</b>
+<i>70</i>&nbsp;
+<i>71</i>&nbsp;        // Polling input and clearing the framebuffer
+<b class="nc"><i>72</i>&nbsp;        Input.cycle();</b>
+<b class="nc"><i>73</i>&nbsp;        Renderer.clear();</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;        // Rendering calls
+<b class="nc"><i>76</i>&nbsp;        Renderer.draw(backdropLayer);</b>
+<b class="nc"><i>77</i>&nbsp;        Renderer.draw(terrainLayer);</b>
+<b class="nc"><i>78</i>&nbsp;        Renderer.draw(guiLayer);</b>
+<i>79</i>&nbsp;
+<i>80</i>&nbsp;        // Backdrop animation
+<b class="nc"><i>81</i>&nbsp;        bScroll.cycle();</b>
+<i>82</i>&nbsp;    }
+<i>83</i>&nbsp;
+<i>84</i>&nbsp;    @Override
+<i>85</i>&nbsp;    void processInputs() {
+<i>86</i>&nbsp;    }
+<i>87</i>&nbsp;
+<i>88</i>&nbsp;    @Override
+<i>89</i>&nbsp;    public void cleanup() {
+<b class="nc"><i>90</i>&nbsp;        terrainLayer.close();</b>
+<b class="nc"><i>91</i>&nbsp;        backdropLayer.close();</b>
+<i>92</i>&nbsp;    }
+<i>93</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

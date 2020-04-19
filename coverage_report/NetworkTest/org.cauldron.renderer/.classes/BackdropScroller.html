@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: BackdropScroller</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: BackdropScroller (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">BackdropScroller</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    60%
+  </span>
+  <span class="absValue">
+    (3/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    92.3%
+  </span>
+  <span class="absValue">
+    (36/ 39)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.renderer.layers.BackdropLayer;
+<i>4</i>&nbsp;import org.cauldron.renderer.layers.Layer;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.util.Arrays;
+<i>7</i>&nbsp;import java.util.LinkedList;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;public class BackdropScroller {
+<i>10</i>&nbsp;    BackdropLayer bl;
+<b class="fc"><i>11</i>&nbsp;    float scale = 1;</b>
+<b class="fc"><i>12</i>&nbsp;    int timeInterval = 500;</b>
+<b class="fc"><i>13</i>&nbsp;    private long lastUpdated = System.currentTimeMillis();</b>
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;    /**
+<i>16</i>&nbsp;     * Create an instance of BackdropScroller with a given BackdropLayer, scale and timeInterval
+<i>17</i>&nbsp;     *
+<i>18</i>&nbsp;     * @param bl           The layer you wish to scroll (must contain 3 images)
+<i>19</i>&nbsp;     * @param scale        The amount you&#39;d like the images to scroll every tick
+<i>20</i>&nbsp;     * @param timeInterval The time between ticks
+<i>21</i>&nbsp;     */
+<b class="fc"><i>22</i>&nbsp;    public BackdropScroller(BackdropLayer bl, float scale, int timeInterval) {</b>
+<b class="fc"><i>23</i>&nbsp;        bl.backdrops = cloneMovers(bl.backdrops);</b>
+<b class="fc"><i>24</i>&nbsp;        this.bl = bl;</b>
+<b class="fc"><i>25</i>&nbsp;        this.scale = scale;</b>
+<b class="fc"><i>26</i>&nbsp;        this.timeInterval = timeInterval;</b>
+<i>27</i>&nbsp;    }
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    private Backdrop[] cloneMovers(Backdrop[] backdrops) {
+<b class="fc"><i>30</i>&nbsp;        Backdrop bg = backdrops[backdrops.length - 2];</b>
+<b class="fc"><i>31</i>&nbsp;        Backdrop bgClone = new Backdrop(bg);</b>
+<b class="fc"><i>32</i>&nbsp;        bgClone.x = Layer.WIDTH + 100;</b>
+<b class="fc"><i>33</i>&nbsp;        Backdrop fg = backdrops[backdrops.length - 3];</b>
+<b class="fc"><i>34</i>&nbsp;        Backdrop fgClone = new Backdrop(fg);</b>
+<b class="fc"><i>35</i>&nbsp;        fgClone.x = Layer.WIDTH + 100;</b>
+<b class="fc"><i>36</i>&nbsp;        LinkedList&lt;Backdrop&gt; newList = new LinkedList&lt;&gt;(Arrays.asList(backdrops));</b>
+<b class="fc"><i>37</i>&nbsp;        newList.add(backdrops.length - 2, bgClone);</b>
+<b class="fc"><i>38</i>&nbsp;        newList.add(backdrops.length - 3, fgClone);</b>
+<b class="fc"><i>39</i>&nbsp;        Backdrop[] newArray = new Backdrop[newList.size()];</b>
+<b class="fc"><i>40</i>&nbsp;        for (int i = 0; i &lt; newArray.length; i++) {</b>
+<b class="fc"><i>41</i>&nbsp;            newArray[i] = newList.get(i);</b>
+<i>42</i>&nbsp;        }
+<b class="fc"><i>43</i>&nbsp;        return newArray;</b>
+<i>44</i>&nbsp;    }
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    /**
+<i>47</i>&nbsp;     * Set the scale to modify the amount the layers move every backdrop tick
+<i>48</i>&nbsp;     *
+<i>49</i>&nbsp;     * @param scale
+<i>50</i>&nbsp;     */
+<i>51</i>&nbsp;    public void setScale(float scale) {
+<b class="nc"><i>52</i>&nbsp;        this.scale = scale;</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     * Set the time interval for a backdrop tick
+<i>57</i>&nbsp;     *
+<i>58</i>&nbsp;     * @param timeInterval
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public void setTimeInterval(int timeInterval) {
+<b class="nc"><i>61</i>&nbsp;        this.timeInterval = timeInterval;</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * Cycle a 3 layer backdrop where the furthest away image remains static,
+<i>66</i>&nbsp;     * the middle image moves slowly and the front-most image moves fastest.
+<i>67</i>&nbsp;     *
+<i>68</i>&nbsp;     * @return the BackdropLayer held in this BackdropScroller
+<i>69</i>&nbsp;     */
+<i>70</i>&nbsp;    public BackdropLayer cycle() {
+<b class="fc"><i>71</i>&nbsp;        long curTime = System.currentTimeMillis();</b>
+<b class="fc"><i>72</i>&nbsp;        if (curTime - lastUpdated &lt; timeInterval)</b>
+<b class="fc"><i>73</i>&nbsp;            return bl;</b>
+<b class="fc"><i>74</i>&nbsp;        for (int i = bl.backdrops.length - 5; i &lt; bl.backdrops.length - 1; i++) {</b>
+<b class="pc"><i>75</i>&nbsp;            if (bl.backdrops[i].x &lt; -Layer.WIDTH)</b>
+<b class="nc"><i>76</i>&nbsp;                bl.backdrops[i].x = Layer.WIDTH + 200;</b>
+<i>77</i>&nbsp;        }
+<b class="fc"><i>78</i>&nbsp;        Backdrop bg = bl.backdrops[bl.backdrops.length - 2];</b>
+<b class="fc"><i>79</i>&nbsp;        Backdrop bgClone = bl.backdrops[bl.backdrops.length - 3];</b>
+<b class="fc"><i>80</i>&nbsp;        Backdrop fg = bl.backdrops[bl.backdrops.length - 4];</b>
+<b class="fc"><i>81</i>&nbsp;        Backdrop fgClone = bl.backdrops[bl.backdrops.length - 5];</b>
+<b class="fc"><i>82</i>&nbsp;        bg.x -= scale / 3f;</b>
+<b class="fc"><i>83</i>&nbsp;        fg.x -= scale;</b>
+<b class="fc"><i>84</i>&nbsp;        bgClone.x -= scale / 3f;</b>
+<b class="fc"><i>85</i>&nbsp;        fgClone.x -= scale;</b>
+<b class="fc"><i>86</i>&nbsp;        lastUpdated = curTime;</b>
+<b class="fc"><i>87</i>&nbsp;        return bl;</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

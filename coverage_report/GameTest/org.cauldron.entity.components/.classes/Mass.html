@@ -1,0 +1,113 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Mass</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.entity.components</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Mass (org.cauldron.entity.components)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Mass</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    91.7%
+  </span>
+  <span class="absValue">
+    (11/ 12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.entity.components;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.io.Serializable;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;/**
+<i>6</i>&nbsp; * Stores mass data
+<i>7</i>&nbsp; * &lt;p&gt;
+<i>8</i>&nbsp; * This makes calculating certain physics equations much quicker as we only have to calculate inverse mass once, rather than many times every game cycle.
+<i>9</i>&nbsp; */
+<i>10</i>&nbsp;public class Mass implements Serializable {
+<i>11</i>&nbsp;    private static final long serialVersionUID = -3563329797495493727L;
+<b class="fc"><i>12</i>&nbsp;    public float mass = 0;</b>
+<b class="fc"><i>13</i>&nbsp;    public float invMass = 0;</b>
+<b class="fc"><i>14</i>&nbsp;    public float inertia = 0;</b>
+<b class="fc"><i>15</i>&nbsp;    public float invInertia = 0;</b>
+<i>16</i>&nbsp;
+<b class="fc"><i>17</i>&nbsp;    public Mass() {</b>
+<i>18</i>&nbsp;    }
+<i>19</i>&nbsp;
+<b class="fc"><i>20</i>&nbsp;    public Mass(float mass) {</b>
+<b class="fc"><i>21</i>&nbsp;        this.mass = mass;</b>
+<b class="pc"><i>22</i>&nbsp;        if (this.mass == 0) {</b>
+<b class="nc"><i>23</i>&nbsp;            this.invMass = 0;</b>
+<i>24</i>&nbsp;        } else {
+<b class="fc"><i>25</i>&nbsp;            this.invMass = 1 / this.mass;</b>
+<i>26</i>&nbsp;        }
+<b class="fc"><i>27</i>&nbsp;        inertia = 0;</b>
+<b class="fc"><i>28</i>&nbsp;        invInertia = 0;</b>
+<i>29</i>&nbsp;    }
+<i>30</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

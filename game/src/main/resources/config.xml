@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<settings>
+    <volume>100</volume>
+    <barsfollow>true</barsfollow>
+    <powerindicator>both</powerindicator>
+    <powerupsonbars>true</powerupsonbars>
+    <resolution>1280x720</resolution>
+    <fullscreen>false</fullscreen>
+    <vsync>true</vsync>
+    <fps>false</fps>
+</settings>

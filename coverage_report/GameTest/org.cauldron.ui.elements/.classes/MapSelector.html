@@ -1,0 +1,221 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MapSelector</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MapSelector (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MapSelector</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    55.1%
+  </span>
+  <span class="absValue">
+    (38/ 69)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.audio.AudioManager;
+<i>4</i>&nbsp;import org.cauldron.game.Game;
+<i>5</i>&nbsp;import org.cauldron.game.MapLoader;
+<i>6</i>&nbsp;import org.cauldron.game.Settings;
+<i>7</i>&nbsp;import org.cauldron.game.Terrain;
+<i>8</i>&nbsp;import org.cauldron.network.LobbySettings;
+<i>9</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>10</i>&nbsp;import org.cauldron.ui.UIHandler;
+<i>11</i>&nbsp;import org.lwjgl.nuklear.NkColor;
+<i>12</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>13</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>14</i>&nbsp;import org.lwjgl.nuklear.NkVec2;
+<i>15</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;import static org.cauldron.game.Game.SceneType.*;
+<i>18</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;public class MapSelector extends UIElement {
+<i>21</i>&nbsp;
+<b class="fc"><i>22</i>&nbsp;    private float currentVolume = 0.5f;</b>
+<b class="fc"><i>23</i>&nbsp;    private final int uiHeight = 800;</b>
+<b class="fc"><i>24</i>&nbsp;    private final int uiWidth = 360;</b>
+<b class="fc"><i>25</i>&nbsp;    public String chosenMap = &quot;Default&quot;;</b>
+<b class="fc"><i>26</i>&nbsp;    public Game.SceneType destination = MAPEDITOR;</b>
+<i>27</i>&nbsp;
+<b class="fc"><i>28</i>&nbsp;    public boolean gameModeTimed = true;</b>
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    public MapSelector(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>31</i>&nbsp;        super(ctx, name, x, y);</b>
+<i>32</i>&nbsp;    }
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    @Override
+<i>35</i>&nbsp;    public void layout() {
+<b class="pc"><i>36</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="fc"><i>37</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<b class="fc"><i>38</i>&nbsp;            ctx.style().window().fixed_background().data().color().set((byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x00);</b>
+<b class="fc"><i>39</i>&nbsp;            setUserDataUUID();</b>
+<b class="pc"><i>40</i>&nbsp;            if (nk_begin(</b>
+<i>41</i>&nbsp;                    ctx,
+<i>42</i>&nbsp;                    name,
+<b class="fc"><i>43</i>&nbsp;                    nk_rect(x, y, uiWidth, uiHeight, rect),</b>
+<i>44</i>&nbsp;                    NK_WINDOW_NO_SCROLLBAR
+<i>45</i>&nbsp;                    //windowOptions
+<i>46</i>&nbsp;            )) {
+<i>47</i>&nbsp;
+<b class="pc"><i>48</i>&nbsp;                if (destination == OFFLINE) {</b>
+<b class="fc"><i>49</i>&nbsp;                    layoutGameOptions();</b>
+<i>50</i>&nbsp;                }
+<i>51</i>&nbsp;
+<b class="fc"><i>52</i>&nbsp;                nk_layout_row_dynamic(ctx, 50, 1);</b>
+<b class="pc"><i>53</i>&nbsp;                if (nk_combo_begin_label(ctx, chosenMap, NkVec2.mallocStack(stack).set(nk_widget_width(ctx), 400))) {</b>
+<b class="nc"><i>54</i>&nbsp;                    if (isEnabled()) {</b>
+<b class="nc"><i>55</i>&nbsp;                        nk_layout_row_dynamic(ctx, 20, 1);</b>
+<b class="nc"><i>56</i>&nbsp;                        for (String s : MapLoader.list()) {</b>
+<b class="nc"><i>57</i>&nbsp;                            if (nk_combo_item_text(ctx, s, NK_TEXT_ALIGN_CENTERED)) {</b>
+<b class="nc"><i>58</i>&nbsp;                                chosenMap = s;</b>
+<i>59</i>&nbsp;                            }
+<b class="nc"><i>60</i>&nbsp;                        }</b>
+<i>61</i>&nbsp;                    }
+<b class="nc"><i>62</i>&nbsp;                    nk_combo_end(ctx);</b>
+<i>63</i>&nbsp;                }
+<i>64</i>&nbsp;
+<b class="pc"><i>65</i>&nbsp;                if (destination == OFFLINE || destination == ONLINE) {</b>
+<b class="fc"><i>66</i>&nbsp;                    if (nk_button_label(ctx, &quot;SELECT&quot;)) {</b>
+<b class="pc"><i>67</i>&nbsp;                        if (destination == OFFLINE) {</b>
+<b class="fc"><i>68</i>&nbsp;                            Game.changeSceneFlag = true;</b>
+<b class="fc"><i>69</i>&nbsp;                            Game.destScene = OFFLINE;</b>
+<i>70</i>&nbsp;                        } else {
+<b class="nc"><i>71</i>&nbsp;                            Terrain map = new Terrain(25);</b>
+<b class="nc"><i>72</i>&nbsp;                            MapLoader.load(map, ((MapSelector) UIHandler.getUIElements().get(&quot;MapSelector&quot;)).chosenMap);</b>
+<b class="nc"><i>73</i>&nbsp;                            Game.setRequestedMapCntrlPoints(map.controlPoints);</b>
+<b class="nc"><i>74</i>&nbsp;                            Game.changeSceneFlag = true;</b>
+<b class="nc"><i>75</i>&nbsp;                            Game.destScene = ONLINE;</b>
+<i>76</i>&nbsp;                        }
+<i>77</i>&nbsp;                    }
+<i>78</i>&nbsp;                }
+<i>79</i>&nbsp;
+<b class="pc"><i>80</i>&nbsp;                if (destination == MAPEDITOR) {</b>
+<b class="nc"><i>81</i>&nbsp;                    if (nk_button_label(ctx, &quot;EDIT&quot;)) {</b>
+<b class="nc"><i>82</i>&nbsp;                        if (!chosenMap.equals(&quot;Default&quot;)) {</b>
+<b class="nc"><i>83</i>&nbsp;                            Game.changeSceneFlag = true;</b>
+<b class="nc"><i>84</i>&nbsp;                            Game.destScene = MAPEDITOR;</b>
+<i>85</i>&nbsp;                        }
+<i>86</i>&nbsp;                    }
+<i>87</i>&nbsp;
+<b class="nc"><i>88</i>&nbsp;                    if (nk_button_label(ctx, &quot;NEW&quot;)) {</b>
+<b class="nc"><i>89</i>&nbsp;                        chosenMap = &quot;Default&quot;;</b>
+<b class="nc"><i>90</i>&nbsp;                        Game.changeSceneFlag = true;</b>
+<b class="nc"><i>91</i>&nbsp;                        Game.destScene = MAPEDITOR;</b>
+<i>92</i>&nbsp;                    }
+<i>93</i>&nbsp;
+<b class="nc"><i>94</i>&nbsp;                    if (nk_button_label(ctx, &quot;DELETE&quot;)) {</b>
+<b class="nc"><i>95</i>&nbsp;                        if (!chosenMap.equals(&quot;Default&quot;)) {</b>
+<b class="nc"><i>96</i>&nbsp;                            MapLoader.delete(chosenMap);</b>
+<i>97</i>&nbsp;                        }
+<b class="nc"><i>98</i>&nbsp;                        chosenMap = &quot;Default&quot;;</b>
+<i>99</i>&nbsp;                    }
+<i>100</i>&nbsp;                }
+<i>101</i>&nbsp;
+<b class="fc"><i>102</i>&nbsp;                if (nk_button_label(ctx, &quot;BACK&quot;)) {</b>
+<b class="pc"><i>103</i>&nbsp;                    if (destination == ONLINE) {</b>
+<b class="nc"><i>104</i>&nbsp;                        UIHandler.disable(&quot;MapSelector&quot;);</b>
+<b class="nc"><i>105</i>&nbsp;                        UIHandler.enable(&quot;LobbySystem&quot;);</b>
+<i>106</i>&nbsp;                    } else {
+<b class="fc"><i>107</i>&nbsp;                        UIHandler.enable(&quot;MainMenu&quot;);</b>
+<b class="fc"><i>108</i>&nbsp;                        UIHandler.enable(&quot;Title&quot;);</b>
+<b class="fc"><i>109</i>&nbsp;                        UIHandler.disable(&quot;MapSelector&quot;);</b>
+<b class="fc"><i>110</i>&nbsp;                        nk_window_set_focus(ctx, &quot;MainMenu&quot;);</b>
+<i>111</i>&nbsp;                    }
+<i>112</i>&nbsp;                }
+<i>113</i>&nbsp;
+<b class="fc"><i>114</i>&nbsp;                nk_layout_row_end(ctx);</b>
+<i>115</i>&nbsp;
+<i>116</i>&nbsp;            }
+<b class="fc"><i>117</i>&nbsp;            resetUserDataUUID();</b>
+<b class="fc"><i>118</i>&nbsp;            nk_end(ctx);</b>
+<b class="pc"><i>119</i>&nbsp;        }</b>
+<i>120</i>&nbsp;    }
+<i>121</i>&nbsp;
+<i>122</i>&nbsp;    private void layoutGameOptions() {
+<b class="fc"><i>123</i>&nbsp;        nk_layout_row_dynamic(ctx, 50, 1);</b>
+<b class="pc"><i>124</i>&nbsp;        if (gameModeTimed) {</b>
+<b class="pc"><i>125</i>&nbsp;            if (nk_button_label(ctx, &quot;GAMEMODE: TIME LIMIT&quot;)) {</b>
+<b class="nc"><i>126</i>&nbsp;                gameModeTimed = false;</b>
+<b class="nc"><i>127</i>&nbsp;                Game.setRequestedGameType(LobbySettings.GameType.LIVES);</b>
+<i>128</i>&nbsp;            }
+<i>129</i>&nbsp;        } else {
+<b class="nc"><i>130</i>&nbsp;            if (nk_button_label(ctx, &quot;GAMEMODE: LIVES&quot;)) {</b>
+<b class="nc"><i>131</i>&nbsp;                gameModeTimed = true;</b>
+<b class="nc"><i>132</i>&nbsp;                Game.setRequestedGameType(LobbySettings.GameType.DEFAULT);</b>
+<i>133</i>&nbsp;            }
+<i>134</i>&nbsp;        }
+<b class="fc"><i>135</i>&nbsp;        nk_layout_row_dynamic(ctx, 20, 1);</b>
+<b class="fc"><i>136</i>&nbsp;        nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<i>137</i>&nbsp;    }
+<i>138</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

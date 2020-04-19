@@ -1,0 +1,253 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Renderer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Renderer (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Renderer</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (6/ 9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    69.2%
+  </span>
+  <span class="absValue">
+    (45/ 65)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Renderer$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Renderer$COLOR</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    75%
+  </span>
+  <span class="absValue">
+    (9/ 12)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    70.6%
+  </span>
+  <span class="absValue">
+    (48/ 68)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.Entity;
+<i>4</i>&nbsp;import org.cauldron.renderer.layers.Layer;
+<i>5</i>&nbsp;import org.cauldron.ui.TexUIElement;
+<i>6</i>&nbsp;import org.joml.Matrix4f;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;import static org.cauldron.entity.EntityType.*;
+<i>9</i>&nbsp;import static org.lwjgl.opengl.GL32.*;
+<i>10</i>&nbsp;
+<b class="nc"><i>11</i>&nbsp;public class Renderer {</b>
+<i>12</i>&nbsp;
+<b class="fc"><i>13</i>&nbsp;    public enum COLOR {</b>
+<b class="fc"><i>14</i>&nbsp;        BLUE, ORANGE, GREEN, RED, GREY, YELLOW, PURPLE, WHITE, BLACK</b>
+<i>15</i>&nbsp;    }
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    /**
+<i>18</i>&nbsp;     * Clears the framebuffer.
+<i>19</i>&nbsp;     */
+<i>20</i>&nbsp;    public static void clear() {
+<b class="fc"><i>21</i>&nbsp;        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);</b>
+<i>22</i>&nbsp;    }
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    /**
+<i>25</i>&nbsp;     * Run through the drawing routines of the given layer.
+<i>26</i>&nbsp;     *
+<i>27</i>&nbsp;     * @param layer Layer to draw
+<i>28</i>&nbsp;     */
+<i>29</i>&nbsp;    public static void draw(Layer layer) {
+<b class="fc"><i>30</i>&nbsp;        layer.preDraw();</b>
+<b class="fc"><i>31</i>&nbsp;        layer.draw();</b>
+<b class="fc"><i>32</i>&nbsp;        layer.postDraw();</b>
+<i>33</i>&nbsp;    }
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    public static Matrix4f getModelMatrix(Entity e) {
+<b class="fc"><i>36</i>&nbsp;        Matrix4f modelMatrix = new Matrix4f();</b>
+<b class="fc"><i>37</i>&nbsp;        if (e.type == PROJECTILE || e.type == PARTICLE) {</b>
+<b class="fc"><i>38</i>&nbsp;            float velDirection = 0;</b>
+<b class="fc"><i>39</i>&nbsp;            if ((int) e.velocity.x == 0 &amp;&amp; (int) e.velocity.y &lt; 0)</b>
+<b class="fc"><i>40</i>&nbsp;                velDirection = 180;</b>
+<b class="fc"><i>41</i>&nbsp;            else if ((int) e.velocity.x == 0)</b>
+<b class="fc"><i>42</i>&nbsp;                velDirection = 0;</b>
+<i>43</i>&nbsp;            else
+<b class="fc"><i>44</i>&nbsp;                velDirection = (float) Math.toDegrees(Math.atan(e.velocity.y / e.velocity.x)) - 90;</b>
+<b class="fc"><i>45</i>&nbsp;            if (e.velocity.x &lt; 0)</b>
+<b class="fc"><i>46</i>&nbsp;                velDirection = 180 + velDirection;</b>
+<b class="fc"><i>47</i>&nbsp;            modelMatrix.translate((float) (e.position.x), (float) (e.position.y), e.depth);</b>
+<b class="fc"><i>48</i>&nbsp;            modelMatrix.rotate((float) Math.toRadians(velDirection), 0f, 0f, 1f);</b>
+<b class="fc"><i>49</i>&nbsp;            modelMatrix.translate(-e.shape.width / 2f, -e.shape.height / 2f, 0f);</b>
+<b class="fc"><i>50</i>&nbsp;            modelMatrix.scale(e.shape.width, e.shape.height, 1f);</b>
+<b class="fc"><i>51</i>&nbsp;        } else if (e.type == TURRET) {</b>
+<b class="fc"><i>52</i>&nbsp;            modelMatrix.translate((float) (e.position.x), (float) (e.position.y), e.depth);</b>
+<b class="fc"><i>53</i>&nbsp;            modelMatrix.rotate((float) Math.toRadians(e.rotation), 0f, 0f, 1f);</b>
+<b class="fc"><i>54</i>&nbsp;            modelMatrix.translate(-e.shape.width / 2f, 0f, 0f);</b>
+<b class="fc"><i>55</i>&nbsp;            modelMatrix.scale(e.shape.width, e.shape.height, 1f);</b>
+<i>56</i>&nbsp;        } else {
+<b class="fc"><i>57</i>&nbsp;            modelMatrix.scale(e.shape.width, e.shape.height, 1f);</b>
+<b class="fc"><i>58</i>&nbsp;            modelMatrix.translate((float) (e.position.x / e.shape.width), (float) (e.position.y / e.shape.height), e.depth);</b>
+<b class="fc"><i>59</i>&nbsp;            modelMatrix.scale(1f / e.shape.width, 1f / e.shape.height, 1f);</b>
+<b class="fc"><i>60</i>&nbsp;            modelMatrix.rotate((float) Math.toRadians(e.rotation), 0f, 0f, 1f);</b>
+<b class="fc"><i>61</i>&nbsp;            modelMatrix.scale(e.shape.width, e.shape.height, 1f);</b>
+<i>62</i>&nbsp;        }
+<b class="fc"><i>63</i>&nbsp;        return modelMatrix;</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    public static Matrix4f getModelMatrix(TexUIElement e) {
+<b class="fc"><i>67</i>&nbsp;        Matrix4f modelMatrix = new Matrix4f();</b>
+<b class="fc"><i>68</i>&nbsp;        modelMatrix.translate(e.getPosition().x, e.getPosition().y, 0f);</b>
+<b class="fc"><i>69</i>&nbsp;        modelMatrix.rotate((float) Math.toRadians(e.getRotation()), 0f, 0f, 1f);</b>
+<b class="fc"><i>70</i>&nbsp;        modelMatrix.translate(-e.getWidth() / 2f, 0f, 0f);</b>
+<b class="fc"><i>71</i>&nbsp;        modelMatrix.scale(e.getWidth(), e.getHeight(), 1f);</b>
+<b class="fc"><i>72</i>&nbsp;        return modelMatrix;</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    public static Vertex setColor(Vertex v, Renderer.COLOR color) {
+<b class="pc"><i>76</i>&nbsp;        if (color == null)</b>
+<b class="nc"><i>77</i>&nbsp;            return null;</b>
+<b class="pc"><i>78</i>&nbsp;        switch (color) {</b>
+<i>79</i>&nbsp;            case BLUE:
+<b class="nc"><i>80</i>&nbsp;                v.setRGB(0f, 102f / 255f, 204f / 255f);</b>
+<b class="nc"><i>81</i>&nbsp;                break;</b>
+<i>82</i>&nbsp;            case ORANGE:
+<b class="fc"><i>83</i>&nbsp;                v.setRGB(1f, 153f / 255f, 51f / 255f);</b>
+<b class="fc"><i>84</i>&nbsp;                break;</b>
+<i>85</i>&nbsp;            case RED:
+<b class="fc"><i>86</i>&nbsp;                v.setRGB(1f, 0f, 0f);</b>
+<b class="fc"><i>87</i>&nbsp;                break;</b>
+<i>88</i>&nbsp;            case GREEN:
+<b class="nc"><i>89</i>&nbsp;                v.setRGB(0f, 204f / 255f, 0f / 255f);</b>
+<b class="nc"><i>90</i>&nbsp;                break;</b>
+<i>91</i>&nbsp;            case WHITE:
+<b class="nc"><i>92</i>&nbsp;                v.setRGB(1f, 1f, 1f);</b>
+<b class="nc"><i>93</i>&nbsp;                break;</b>
+<i>94</i>&nbsp;            case BLACK:
+<b class="nc"><i>95</i>&nbsp;                v.setRGB(0f, 0f, 0f);</b>
+<b class="nc"><i>96</i>&nbsp;                break;</b>
+<i>97</i>&nbsp;            default:
+<b class="nc"><i>98</i>&nbsp;                v.setRGB(1, 1, 1);</b>
+<i>99</i>&nbsp;        }
+<b class="fc"><i>100</i>&nbsp;        return v;</b>
+<i>101</i>&nbsp;    }
+<i>102</i>&nbsp;
+<i>103</i>&nbsp;    public static Vertex[] setColor(Vertex[] vertices, Renderer.COLOR color) {
+<b class="fc"><i>104</i>&nbsp;        for (Vertex v : vertices) {</b>
+<b class="fc"><i>105</i>&nbsp;            setColor(v, color);</b>
+<i>106</i>&nbsp;        }
+<b class="fc"><i>107</i>&nbsp;        return vertices;</b>
+<i>108</i>&nbsp;    }
+<i>109</i>&nbsp;
+<i>110</i>&nbsp;    public static Vertex setOpacity(Vertex v, float opacity) {
+<b class="nc"><i>111</i>&nbsp;        if (opacity &gt; 1)</b>
+<b class="nc"><i>112</i>&nbsp;            opacity = 1;</b>
+<b class="nc"><i>113</i>&nbsp;        else if (opacity &lt; 0)</b>
+<b class="nc"><i>114</i>&nbsp;            opacity = 0;</b>
+<b class="nc"><i>115</i>&nbsp;        v.setRGBA(v.getRGB()[0], v.getRGB()[1], v.getRGB()[2], opacity);</b>
+<b class="nc"><i>116</i>&nbsp;        return v;</b>
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    public static Vertex[] setOpacity(Vertex[] vertices, float opacity) {
+<b class="nc"><i>120</i>&nbsp;        for (Vertex v : vertices) {</b>
+<b class="nc"><i>121</i>&nbsp;            setOpacity(v, opacity);</b>
+<i>122</i>&nbsp;        }
+<b class="nc"><i>123</i>&nbsp;        return vertices;</b>
+<i>124</i>&nbsp;    }
+<i>125</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: SettingsElem</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: SettingsElem (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">SettingsElem</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    5.2%
+  </span>
+  <span class="absValue">
+    (4/ 77)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.audio.AudioManager;
+<i>4</i>&nbsp;import org.cauldron.game.Game;
+<i>5</i>&nbsp;import org.cauldron.game.Settings;
+<i>6</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>7</i>&nbsp;import org.cauldron.ui.UIHandler;
+<i>8</i>&nbsp;import org.lwjgl.nuklear.NkColor;
+<i>9</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>10</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>11</i>&nbsp;import org.lwjgl.nuklear.NkVec2;
+<i>12</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;import static org.cauldron.game.Game.SceneType.*;
+<i>15</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;public class SettingsElem extends UIElement {
+<i>18</i>&nbsp;
+<b class="fc"><i>19</i>&nbsp;    private float currentVolume = 0.5f;</b>
+<b class="fc"><i>20</i>&nbsp;    private final int uiHeight = 800;</b>
+<b class="fc"><i>21</i>&nbsp;    private final int uiWidth = 360;</b>
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;
+<i>24</i>&nbsp;    public SettingsElem(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>25</i>&nbsp;        super(ctx, name, x, y);</b>
+<i>26</i>&nbsp;    }
+<i>27</i>&nbsp;
+<i>28</i>&nbsp;    @Override
+<i>29</i>&nbsp;    public void layout() {
+<b class="nc"><i>30</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="nc"><i>31</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<b class="nc"><i>32</i>&nbsp;            ctx.style().window().fixed_background().data().color().set((byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0x00);</b>
+<b class="nc"><i>33</i>&nbsp;            setUserDataUUID();</b>
+<b class="nc"><i>34</i>&nbsp;            if (nk_begin(</b>
+<i>35</i>&nbsp;                    ctx,
+<i>36</i>&nbsp;                    name,
+<b class="nc"><i>37</i>&nbsp;                    nk_rect(x, y, uiWidth, uiHeight, rect),</b>
+<i>38</i>&nbsp;                    NK_WINDOW_NO_SCROLLBAR
+<i>39</i>&nbsp;                    //windowOptions
+<i>40</i>&nbsp;            )) {
+<i>41</i>&nbsp;
+<b class="nc"><i>42</i>&nbsp;                nk_layout_row_begin(ctx, NK_DYNAMIC, 20, 2);</b>
+<i>43</i>&nbsp;
+<b class="nc"><i>44</i>&nbsp;                nk_layout_row_push(ctx, 0.3f);</b>
+<b class="nc"><i>45</i>&nbsp;                nk_label_colored(ctx, &quot;   VOLUME: &quot; + ((int) (AudioManager.getVolume() * 20)), NK_TEXT_ALIGN_LEFT | NK_TEXT_ALIGN_BOTTOM, NkColor.create().set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xFF));</b>
+<i>46</i>&nbsp;
+<b class="nc"><i>47</i>&nbsp;                nk_layout_row_push(ctx, 0.7f);</b>
+<b class="nc"><i>48</i>&nbsp;                currentVolume = AudioManager.getVolume();</b>
+<b class="nc"><i>49</i>&nbsp;                float volume = nk_slide_float(ctx, 0f, currentVolume, 1f, 0.05f);</b>
+<i>50</i>&nbsp;
+<b class="nc"><i>51</i>&nbsp;                nk_layout_row_end(ctx);</b>
+<i>52</i>&nbsp;
+<b class="nc"><i>53</i>&nbsp;                if (currentVolume != volume) {</b>
+<b class="nc"><i>54</i>&nbsp;                    System.out.println(volume * 100 + &quot;%&quot;);</b>
+<b class="nc"><i>55</i>&nbsp;                    currentVolume = volume;</b>
+<b class="nc"><i>56</i>&nbsp;                    AudioManager.setVolume(currentVolume);</b>
+<i>57</i>&nbsp;                }
+<b class="nc"><i>58</i>&nbsp;                Settings.volume = (int) (volume * 100f);</b>
+<i>59</i>&nbsp;
+<b class="nc"><i>60</i>&nbsp;                float vert = ctx.style().window().spacing().y();</b>
+<b class="nc"><i>61</i>&nbsp;                ctx.style().window().spacing().y(0.5f);</b>
+<b class="nc"><i>62</i>&nbsp;                nk_spacing(ctx, 1);</b>
+<b class="nc"><i>63</i>&nbsp;                ctx.style().window().spacing().y(vert);</b>
+<b class="nc"><i>64</i>&nbsp;                nk_layout_row_dynamic(ctx, 50, 1);</b>
+<i>65</i>&nbsp;
+<b class="nc"><i>66</i>&nbsp;                if (nk_button_label(ctx, &quot;HEALTHBARS FOLLOW PLAYERS: &quot; + (Settings.barsFollow ? &quot;ON&quot; : &quot;OFF&quot;))) {</b>
+<b class="nc"><i>67</i>&nbsp;                    if (Settings.barsFollow) {</b>
+<b class="nc"><i>68</i>&nbsp;                        System.out.println(&quot;healthBarsFollowPlayers set to false&quot;);</b>
+<b class="nc"><i>69</i>&nbsp;                        Settings.barsFollow = false;</b>
+<i>70</i>&nbsp;                    } else {
+<b class="nc"><i>71</i>&nbsp;                        System.out.println(&quot;healthBarsFollowPlayers set to true&quot;);</b>
+<b class="nc"><i>72</i>&nbsp;                        Settings.barsFollow = true;</b>
+<i>73</i>&nbsp;                    }
+<i>74</i>&nbsp;                }
+<i>75</i>&nbsp;
+<b class="nc"><i>76</i>&nbsp;                if (nk_button_label(ctx, &quot;POWERUPS ON BARS: &quot; + (Settings.powerUpsOnBars ? &quot;ON&quot; : &quot;OFF&quot;))) {</b>
+<b class="nc"><i>77</i>&nbsp;                    if (Settings.powerUpsOnBars) {</b>
+<b class="nc"><i>78</i>&nbsp;                        System.out.println(&quot;powerUpsOnBars set to false&quot;);</b>
+<b class="nc"><i>79</i>&nbsp;                        Settings.powerUpsOnBars = false;</b>
+<i>80</i>&nbsp;                    } else {
+<b class="nc"><i>81</i>&nbsp;                        System.out.println(&quot;powerUpsOnBars set to true&quot;);</b>
+<b class="nc"><i>82</i>&nbsp;                        Settings.powerUpsOnBars = true;</b>
+<i>83</i>&nbsp;                    }
+<i>84</i>&nbsp;                }
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;                if (nk_button_label(ctx, &quot;POWER INDICATOR: &quot; + Settings.powerIndicator.toUpperCase())) {</b>
+<b class="nc"><i>87</i>&nbsp;                    if (Settings.powerIndicator.equals(&quot;both&quot;)) {</b>
+<b class="nc"><i>88</i>&nbsp;                        Settings.powerIndicator = &quot;arrow&quot;;</b>
+<b class="nc"><i>89</i>&nbsp;                    } else if (Settings.powerIndicator.equals(&quot;arrow&quot;)) {</b>
+<b class="nc"><i>90</i>&nbsp;                        Settings.powerIndicator = &quot;bar&quot;;</b>
+<b class="nc"><i>91</i>&nbsp;                    } else if (Settings.powerIndicator.equals(&quot;bar&quot;)) {</b>
+<b class="nc"><i>92</i>&nbsp;                        Settings.powerIndicator = &quot;both&quot;;</b>
+<i>93</i>&nbsp;                    }
+<i>94</i>&nbsp;                }
+<i>95</i>&nbsp;
+<b class="nc"><i>96</i>&nbsp;                if (nk_combo_begin_label(ctx, Settings.fullscreen ? &quot;N/A&quot; : Settings.resolution, NkVec2.mallocStack(stack).set(nk_widget_width(ctx), 400))) {</b>
+<b class="nc"><i>97</i>&nbsp;                    if (!Settings.fullscreen) {</b>
+<b class="nc"><i>98</i>&nbsp;                        nk_layout_row_dynamic(ctx, 20, 1);</b>
+<b class="nc"><i>99</i>&nbsp;                        for (String s : Settings.resOptions) {</b>
+<b class="nc"><i>100</i>&nbsp;                            if (nk_combo_item_text(ctx, s, NK_TEXT_ALIGN_CENTERED)) {</b>
+<b class="nc"><i>101</i>&nbsp;                                Settings.resolution = s;</b>
+<b class="nc"><i>102</i>&nbsp;                                String[] split = Settings.resolution.split(&quot;x&quot;);</b>
+<b class="nc"><i>103</i>&nbsp;                                Settings.resInt[0] = Integer.parseInt(split[0]);</b>
+<b class="nc"><i>104</i>&nbsp;                                Settings.resInt[1] = Integer.parseInt(split[1]);</b>
+<i>105</i>&nbsp;                            }
+<i>106</i>&nbsp;                        }
+<i>107</i>&nbsp;                    }
+<b class="nc"><i>108</i>&nbsp;                    nk_combo_end(ctx);</b>
+<i>109</i>&nbsp;                }
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;                if (nk_button_label(ctx, &quot;FULLSCREEN: &quot; + (Settings.fullscreen ? &quot;ON&quot; : &quot;OFF&quot;))) {</b>
+<b class="nc"><i>112</i>&nbsp;                    Settings.fullscreen = !Settings.fullscreen;</b>
+<i>113</i>&nbsp;                }
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;                if (nk_button_label(ctx, &quot;VSYNC: &quot; + (Settings.vsync ? &quot;ON&quot; : &quot;OFF&quot;))) {</b>
+<b class="nc"><i>116</i>&nbsp;                    Settings.vsync = !Settings.vsync;</b>
+<i>117</i>&nbsp;                }
+<i>118</i>&nbsp;
+<b class="nc"><i>119</i>&nbsp;                if (nk_button_label(ctx, &quot;FPS COUNTER: &quot; + (Settings.fps ? &quot;ON&quot; : &quot;OFF&quot;))) {</b>
+<b class="nc"><i>120</i>&nbsp;                    Settings.fps = !Settings.fps;</b>
+<i>121</i>&nbsp;                }
+<i>122</i>&nbsp;
+<b class="nc"><i>123</i>&nbsp;                nk_spacing(ctx, 1);</b>
+<b class="nc"><i>124</i>&nbsp;                if (nk_button_label(ctx, &quot;BACK&quot;)) {</b>
+<b class="nc"><i>125</i>&nbsp;                    Settings.write();</b>
+<b class="nc"><i>126</i>&nbsp;                    if (Game.currentScene.getType() == OFFLINE || Game.currentScene.getType() == ONLINE) {</b>
+<b class="nc"><i>127</i>&nbsp;                        ctx.style().window().fixed_background().data().color().set((byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0xFF);</b>
+<b class="nc"><i>128</i>&nbsp;                        UIHandler.uiProgress(name, &quot;InGameMenu&quot;);</b>
+<b class="nc"><i>129</i>&nbsp;                    } else if (Game.currentScene.getType() == MAINMENU) {</b>
+<b class="nc"><i>130</i>&nbsp;                        UIHandler.enable(&quot;MainMenu&quot;);</b>
+<b class="nc"><i>131</i>&nbsp;                        UIHandler.enable(&quot;Title&quot;);</b>
+<b class="nc"><i>132</i>&nbsp;                        UIHandler.disable(&quot;Settings&quot;);</b>
+<b class="nc"><i>133</i>&nbsp;                        nk_window_set_focus(ctx, &quot;MainMenu&quot;);</b>
+<i>134</i>&nbsp;                    }
+<i>135</i>&nbsp;                }
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;                nk_layout_row_end(ctx);</b>
+<i>138</i>&nbsp;
+<i>139</i>&nbsp;            }
+<b class="nc"><i>140</i>&nbsp;            resetUserDataUUID();</b>
+<b class="nc"><i>141</i>&nbsp;            nk_end(ctx);</b>
+<b class="nc"><i>142</i>&nbsp;        }</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

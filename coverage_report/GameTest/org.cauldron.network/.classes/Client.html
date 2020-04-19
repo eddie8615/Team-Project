@@ -1,0 +1,560 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Client</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.network</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Client (org.cauldron.network)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Client</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 85)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Client$Listener</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 114)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 24)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 199)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.network;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.apache.commons.lang3.SerializationException;
+<i>4</i>&nbsp;import org.apache.commons.lang3.SerializationUtils;
+<i>5</i>&nbsp;import org.cauldron.entity.EntityHandler;
+<i>6</i>&nbsp;import org.cauldron.entity.entities.Tank;
+<i>7</i>&nbsp;import org.cauldron.game.Input;
+<i>8</i>&nbsp;import org.cauldron.network.LobbySettings.GameType;
+<i>9</i>&nbsp;import org.cauldron.scenes.OnlineScene;
+<i>10</i>&nbsp;import org.cauldron.scenes.Scene;
+<i>11</i>&nbsp;import org.cauldron.ui.UIHandler;
+<i>12</i>&nbsp;import org.joml.Vector2d;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;import java.io.IOException;
+<i>15</i>&nbsp;import java.net.InetSocketAddress;
+<i>16</i>&nbsp;import java.net.SocketAddress;
+<i>17</i>&nbsp;import java.nio.ByteBuffer;
+<i>18</i>&nbsp;import java.nio.channels.SocketChannel;
+<i>19</i>&nbsp;import java.util.ArrayList;
+<i>20</i>&nbsp;import java.util.HashMap;
+<i>21</i>&nbsp;import java.util.Map;
+<i>22</i>&nbsp;
+<i>23</i>&nbsp;import static org.lwjgl.glfw.GLFW.GLFW_KEY_A;
+<i>24</i>&nbsp;import static org.lwjgl.glfw.GLFW.GLFW_KEY_D;
+<i>25</i>&nbsp;
+<b class="nc"><i>26</i>&nbsp;public class Client {</b>
+<i>27</i>&nbsp;    private SocketChannel client;
+<i>28</i>&nbsp;    public static String address;
+<b class="nc"><i>29</i>&nbsp;    private final int port = 10004;</b>
+<b class="nc"><i>30</i>&nbsp;    private double packetNum = 0;</b>
+<b class="nc"><i>31</i>&nbsp;    private ArrayList&lt;Message&gt; reconciliation = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>32</i>&nbsp;    public ArrayList&lt;Message&gt; testMessages = new ArrayList&lt;&gt;();</b>
+<i>33</i>&nbsp;
+<b class="nc"><i>34</i>&nbsp;    private static int TICK_COUNT = 10; // number of input updates until send again</b>
+<b class="nc"><i>35</i>&nbsp;    private int cycleCount = 0;</b>
+<i>36</i>&nbsp;    private String name;
+<i>37</i>&nbsp;    private OnlineScene game;
+<b class="nc"><i>38</i>&nbsp;    public boolean accepted = false;</b>
+<b class="nc"><i>39</i>&nbsp;    public boolean started = false;</b>
+<b class="nc"><i>40</i>&nbsp;    public boolean ended = false;</b>
+<b class="nc"><i>41</i>&nbsp;    public Map&lt;String, String&gt; tankToUsernameMap = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>42</i>&nbsp;    public Map&lt;String, Double&gt; tankToHeldLength = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>43</i>&nbsp;    private GameType requestedGameType = null;</b>
+<b class="nc"><i>44</i>&nbsp;    private ArrayList&lt;Vector2d&gt; requestedMapCntrlPoints = null;</b>
+<i>45</i>&nbsp;
+<i>46</i>&nbsp;    public void setRequestedMapCntrlPoints(ArrayList&lt;Vector2d&gt; requestedMapCntrlPoints) {
+<b class="nc"><i>47</i>&nbsp;        this.requestedMapCntrlPoints = requestedMapCntrlPoints;</b>
+<i>48</i>&nbsp;    }
+<i>49</i>&nbsp;
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /**
+<i>52</i>&nbsp;     * Creates a new client.
+<i>53</i>&nbsp;     */
+<b class="nc"><i>54</i>&nbsp;    public Client() {</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * We start the connection to the server here.
+<i>59</i>&nbsp;     *
+<i>60</i>&nbsp;     * @param game The game so we can later update.
+<i>61</i>&nbsp;     * @return The success in starting the client.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public boolean startClient(OnlineScene game) {
+<b class="nc"><i>64</i>&nbsp;        InetSocketAddress hostAddress = new InetSocketAddress(Client.address, port);</b>
+<i>65</i>&nbsp;        try {
+<b class="nc"><i>66</i>&nbsp;            client = SocketChannel.open(hostAddress);</b>
+<b class="nc"><i>67</i>&nbsp;            client.configureBlocking(true);</b>
+<b class="nc"><i>68</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>69</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>70</i>&nbsp;            return false;</b>
+<b class="nc"><i>71</i>&nbsp;        }</b>
+<i>72</i>&nbsp;
+<b class="nc"><i>73</i>&nbsp;        name = Scene.userInfo != null ? Scene.userInfo.getUserID() : UIHandler.username;</b>
+<i>74</i>&nbsp;
+<b class="nc"><i>75</i>&nbsp;        log(&quot;started&quot;);</b>
+<b class="nc"><i>76</i>&nbsp;        this.game = game;</b>
+<i>77</i>&nbsp;
+<b class="nc"><i>78</i>&nbsp;        startThreads();</b>
+<b class="nc"><i>79</i>&nbsp;        sendRegisterMessage();</b>
+<b class="nc"><i>80</i>&nbsp;        return true;</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Starts the listener for receiving updates from the server.
+<i>85</i>&nbsp;     */
+<i>86</i>&nbsp;    private void startThreads() {
+<b class="nc"><i>87</i>&nbsp;        Listener listener = new Listener();</b>
+<b class="nc"><i>88</i>&nbsp;        Thread listenerThread = new Thread(listener);</b>
+<i>89</i>&nbsp;
+<b class="nc"><i>90</i>&nbsp;        listenerThread.start();</b>
+<i>91</i>&nbsp;    }
+<i>92</i>&nbsp;
+<i>93</i>&nbsp;    /**
+<i>94</i>&nbsp;     * Send a register message to the server.
+<i>95</i>&nbsp;     */
+<i>96</i>&nbsp;    private void sendRegisterMessage() {
+<b class="nc"><i>97</i>&nbsp;        Message initMessage = new Message(&quot;register&quot;);</b>
+<b class="nc"><i>98</i>&nbsp;        initMessage.name = name;</b>
+<b class="nc"><i>99</i>&nbsp;        sendMessage(initMessage);</b>
+<i>100</i>&nbsp;
+<b class="nc"><i>101</i>&nbsp;        log(&quot;sent init. message:&quot; + initMessage);</b>
+<i>102</i>&nbsp;    }
+<i>103</i>&nbsp;
+<i>104</i>&nbsp;    /**
+<i>105</i>&nbsp;     * Attempt to send our inputs to the server.
+<i>106</i>&nbsp;     * &lt;p&gt; If a shot has been fired client-side, always send a message.
+<i>107</i>&nbsp;     *
+<i>108</i>&nbsp;     * @param eh The entity handler.
+<i>109</i>&nbsp;     */
+<i>110</i>&nbsp;    public void sendUpdateToServer(EntityHandler eh) {
+<b class="nc"><i>111</i>&nbsp;        if (!started)</b>
+<i>112</i>&nbsp;            return;
+<i>113</i>&nbsp;
+<i>114</i>&nbsp;        // Always send update if a shot is fired
+<b class="nc"><i>115</i>&nbsp;        boolean shotFired = Input.mouseHeldTime &gt; -1</b>
+<b class="nc"><i>116</i>&nbsp;                &amp;&amp; ((Tank) game.entityHandler.getEntity(game.tankID)).checkIfCanFire();</b>
+<i>117</i>&nbsp;
+<b class="nc"><i>118</i>&nbsp;        if (shotFired || cycleCount++ % TICK_COUNT == 0) {</b>
+<b class="nc"><i>119</i>&nbsp;            Integer[] keys = new Integer[Input.keysPressed.size()];</b>
+<b class="nc"><i>120</i>&nbsp;            Input.keysPressed.toArray(keys);</b>
+<i>121</i>&nbsp;
+<b class="nc"><i>122</i>&nbsp;            Message message = new Message(&quot;update&quot;);</b>
+<b class="nc"><i>123</i>&nbsp;            message.entityHandler = eh;</b>
+<b class="nc"><i>124</i>&nbsp;            message.keysPressed = keys;</b>
+<b class="nc"><i>125</i>&nbsp;            message.currentMouseHeldTime = Input.currentMouseHeldTime;</b>
+<b class="nc"><i>126</i>&nbsp;            System.out.println(&quot;Current held time according to client: &quot; + Input.currentMouseHeldTime);</b>
+<b class="nc"><i>127</i>&nbsp;            message.mouseHeldTime = Input.mouseHeldTime;</b>
+<i>128</i>&nbsp;
+<b class="nc"><i>129</i>&nbsp;            sendMessage(message);</b>
+<i>130</i>&nbsp;        }
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;
+<i>133</i>&nbsp;    /**
+<i>134</i>&nbsp;     * Send the current lobby settings to the server.
+<i>135</i>&nbsp;     *
+<i>136</i>&nbsp;     * @param lobbySettings The lobby settings.
+<i>137</i>&nbsp;     */
+<i>138</i>&nbsp;    public void sendLobbySettingsToServer(LobbySettings lobbySettings) {
+<b class="nc"><i>139</i>&nbsp;        Message message = new Message(&quot;lobby&quot;);</b>
+<b class="nc"><i>140</i>&nbsp;        message.lobbySettings = lobbySettings;</b>
+<b class="nc"><i>141</i>&nbsp;        log(&quot;sending lobby message&quot;);</b>
+<b class="nc"><i>142</i>&nbsp;        sendMessage(message);</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;
+<i>145</i>&nbsp;    /**
+<i>146</i>&nbsp;     * This class allows us to start another thread to listen for updates from the server.
+<i>147</i>&nbsp;     */
+<b class="nc"><i>148</i>&nbsp;    private class Listener implements Runnable {</b>
+<i>149</i>&nbsp;        @Override
+<i>150</i>&nbsp;        public void run() {
+<b class="nc"><i>151</i>&nbsp;            log(&quot;listener started&quot;);</b>
+<b class="nc"><i>152</i>&nbsp;            ByteBuffer buffer = ByteBuffer.allocate(100000); // allocate DUMMY amounts</b>
+<i>153</i>&nbsp;
+<i>154</i>&nbsp;            /*
+<i>155</i>&nbsp;             * Always listens for updates from the server.
+<i>156</i>&nbsp;             */
+<i>157</i>&nbsp;            while (true) {
+<b class="nc"><i>158</i>&nbsp;                int numRead = -1;</b>
+<i>159</i>&nbsp;                try {
+<b class="nc"><i>160</i>&nbsp;                    numRead = client.read(buffer);</b>
+<b class="nc"><i>161</i>&nbsp;                } catch (IOException e) {</b>
+<b class="nc"><i>162</i>&nbsp;                    e.printStackTrace();</b>
+<b class="nc"><i>163</i>&nbsp;                }</b>
+<b class="nc"><i>164</i>&nbsp;                if (numRead == -1)</b>
+<b class="nc"><i>165</i>&nbsp;                    break;</b>
+<i>166</i>&nbsp;
+<b class="nc"><i>167</i>&nbsp;                byte[] data = buffer.array();</b>
+<i>168</i>&nbsp;
+<i>169</i>&nbsp;                try {
+<b class="nc"><i>170</i>&nbsp;                    Message message = SerializationUtils.deserialize(data);</b>
+<b class="nc"><i>171</i>&nbsp;                    processMessage(message);</b>
+<b class="nc"><i>172</i>&nbsp;                } catch (SerializationException e) {</b>
+<b class="nc"><i>173</i>&nbsp;                    error(&quot;Serialisation Exception&quot;);</b>
+<b class="nc"><i>174</i>&nbsp;                    e.printStackTrace();</b>
+<b class="nc"><i>175</i>&nbsp;                } catch (Exception e) {</b>
+<b class="nc"><i>176</i>&nbsp;                    error(&quot;Exception from process&quot;);</b>
+<b class="nc"><i>177</i>&nbsp;                    e.printStackTrace();</b>
+<b class="nc"><i>178</i>&nbsp;                }</b>
+<i>179</i>&nbsp;
+<b class="nc"><i>180</i>&nbsp;                buffer.clear();</b>
+<b class="nc"><i>181</i>&nbsp;            }</b>
+<i>182</i>&nbsp;        }
+<i>183</i>&nbsp;
+<i>184</i>&nbsp;        /**
+<i>185</i>&nbsp;         * This takes a message from the server and updates our game accordingly.
+<i>186</i>&nbsp;         *
+<i>187</i>&nbsp;         * @param message The message from the server.
+<i>188</i>&nbsp;         */
+<i>189</i>&nbsp;        private void processMessage(Message message) {
+<b class="nc"><i>190</i>&nbsp;            log(&quot;&quot;);</b>
+<b class="nc"><i>191</i>&nbsp;            log(&quot;&quot;);</b>
+<i>192</i>&nbsp;//            log(&quot;recon list: &quot; + reconciliation);
+<b class="nc"><i>193</i>&nbsp;            log(&quot;message&quot;, message);</b>
+<i>194</i>&nbsp;
+<b class="nc"><i>195</i>&nbsp;            switch (message.type) {</b>
+<i>196</i>&nbsp;                // Response from server when registering
+<i>197</i>&nbsp;                case &quot;accepted&quot;:
+<b class="nc"><i>198</i>&nbsp;                    accepted = true;</b>
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;                    // lobby leader, this user sets the info for all users.
+<b class="nc"><i>201</i>&nbsp;                    if (message.stringData != null &amp;&amp; message.stringData.equals(&quot;leader&quot;)) {</b>
+<i>202</i>&nbsp;
+<b class="nc"><i>203</i>&nbsp;                        LobbySettings lobbySettings = new LobbySettings();</b>
+<b class="nc"><i>204</i>&nbsp;                        if (requestedGameType != null)</b>
+<b class="nc"><i>205</i>&nbsp;                            lobbySettings.updateType(requestedGameType);</b>
+<b class="nc"><i>206</i>&nbsp;                        log(&quot;req points&quot;, requestedMapCntrlPoints);</b>
+<b class="nc"><i>207</i>&nbsp;                        lobbySettings.setMap(requestedMapCntrlPoints);</b>
+<i>208</i>&nbsp;
+<b class="nc"><i>209</i>&nbsp;                        sendLobbySettingsToServer(lobbySettings);</b>
+<i>210</i>&nbsp;                    }
+<i>211</i>&nbsp;
+<b class="nc"><i>212</i>&nbsp;                    if (message.name != name) {</b>
+<b class="nc"><i>213</i>&nbsp;                        name = message.name;</b>
+<b class="nc"><i>214</i>&nbsp;                        System.out.println(&quot;Name rejected. New name: &quot; + name);</b>
+<i>215</i>&nbsp;                    }
+<i>216</i>&nbsp;
+<i>217</i>&nbsp;                    break;
+<i>218</i>&nbsp;                // Resend register message
+<i>219</i>&nbsp;                case &quot;rejected&quot;:
+<i>220</i>&nbsp;                    try {
+<b class="nc"><i>221</i>&nbsp;                        Thread.sleep(500);</b>
+<b class="nc"><i>222</i>&nbsp;                    } catch (InterruptedException e) {</b>
+<b class="nc"><i>223</i>&nbsp;                        e.printStackTrace();</b>
+<b class="nc"><i>224</i>&nbsp;                    }</b>
+<i>225</i>&nbsp;
+<b class="nc"><i>226</i>&nbsp;                    sendRegisterMessage();</b>
+<b class="nc"><i>227</i>&nbsp;                    break;</b>
+<i>228</i>&nbsp;                // the first game message from the server
+<i>229</i>&nbsp;                case &quot;initialUpdate&quot;:
+<b class="nc"><i>230</i>&nbsp;                    EntityHandler eh = message.entityHandler;</b>
+<b class="nc"><i>231</i>&nbsp;                    game.entityHandler = eh;</b>
+<b class="nc"><i>232</i>&nbsp;                    game.modelLayer.setEntities(eh);</b>
+<b class="nc"><i>233</i>&nbsp;                    game.lobbySettings = message.lobbySettings;</b>
+<b class="nc"><i>234</i>&nbsp;                    game.timeRemaining = message.timeRemaining;</b>
+<b class="nc"><i>235</i>&nbsp;                    game.teamsList = message.teamsList;</b>
+<b class="nc"><i>236</i>&nbsp;                    game.tankID = message.stringData;</b>
+<b class="nc"><i>237</i>&nbsp;                    game.teamID = message.teamID;</b>
+<b class="nc"><i>238</i>&nbsp;                    tankToUsernameMap = message.tankToNameMap;</b>
+<b class="nc"><i>239</i>&nbsp;                    log(String.format(&quot;We are &#39;%s&#39; on team %d.&quot;, message.stringData, message.teamID));</b>
+<i>240</i>&nbsp;
+<i>241</i>&nbsp;                    // TODO this is the shit
+<b class="nc"><i>242</i>&nbsp;                    game.map.loadMap(message.lobbySettings.getMap());</b>
+<b class="nc"><i>243</i>&nbsp;                    game.setupTerrainFlag = true;</b>
+<i>244</i>&nbsp;
+<b class="nc"><i>245</i>&nbsp;                    started = true;</b>
+<i>246</i>&nbsp;
+<b class="nc"><i>247</i>&nbsp;                    game.postConnect();</b>
+<b class="nc"><i>248</i>&nbsp;                    log(&quot;game started!!&quot;);</b>
+<b class="nc"><i>249</i>&nbsp;                    break;</b>
+<i>250</i>&nbsp;                // main update case
+<i>251</i>&nbsp;                case &quot;update&quot;:
+<b class="nc"><i>252</i>&nbsp;                    if (!started)</b>
+<i>253</i>&nbsp;                        return;
+<i>254</i>&nbsp;
+<b class="nc"><i>255</i>&nbsp;                    log(&quot;received new entity handler&quot;);</b>
+<i>256</i>&nbsp;
+<b class="nc"><i>257</i>&nbsp;                    EntityHandler serverEntityHandler = message.entityHandler;</b>
+<b class="nc"><i>258</i>&nbsp;                    game.entityHandler = serverEntityHandler;</b>
+<b class="nc"><i>259</i>&nbsp;                    tankToHeldLength = message.tankToHeldLength;</b>
+<b class="nc"><i>260</i>&nbsp;                    game.modelLayer.setEntities(serverEntityHandler);</b>
+<i>261</i>&nbsp;
+<b class="nc"><i>262</i>&nbsp;                    game.entityHandler.constrainTanks(game.map);</b>
+<b class="nc"><i>263</i>&nbsp;                    game.entityHandler.constrainCrates(game.map);</b>
+<b class="nc"><i>264</i>&nbsp;                    game.entityHandler.constrainTurrets(game.tankID, Input.cursorPos);</b>
+<i>265</i>&nbsp;
+<b class="nc"><i>266</i>&nbsp;                    game.timeRemaining = message.timeRemaining;</b>
+<i>267</i>&nbsp;
+<b class="nc"><i>268</i>&nbsp;                    double serverPacketNumber = message.packetNum;</b>
+<b class="nc"><i>269</i>&nbsp;                    log(&quot;server packet:&quot; + serverPacketNumber + &quot;, last packet we sent:&quot; + packetNum);</b>
+<i>270</i>&nbsp;
+<b class="nc"><i>271</i>&nbsp;                    int i = 0;</b>
+<b class="nc"><i>272</i>&nbsp;                    while (i &lt; reconciliation.size()) {</b>
+<b class="nc"><i>273</i>&nbsp;                        Message reconMessage = reconciliation.get(i);</b>
+<i>274</i>&nbsp;
+<b class="nc"><i>275</i>&nbsp;                        if (reconMessage.packetNum &lt;= serverPacketNumber) {</b>
+<b class="nc"><i>276</i>&nbsp;                            log(&quot;reconcile!, m packet:&quot; + reconMessage.packetNum + &quot;&lt;= server packet:&quot; + serverPacketNumber);</b>
+<b class="nc"><i>277</i>&nbsp;                            reconciliation.remove(i);</b>
+<i>278</i>&nbsp;                        } else {
+<b class="nc"><i>279</i>&nbsp;                            log(&quot;server lagging behind, apply inputs again for packet: &quot; + reconMessage.packetNum);</b>
+<i>280</i>&nbsp;
+<b class="nc"><i>281</i>&nbsp;                            Integer[] keysPressed = reconMessage.keysPressed;</b>
+<b class="nc"><i>282</i>&nbsp;                            double mouseHeldTime = reconMessage.mouseHeldTime;</b>
+<b class="nc"><i>283</i>&nbsp;                            reconciliationUpdate(keysPressed, mouseHeldTime);</b>
+<b class="nc"><i>284</i>&nbsp;                            i++;</b>
+<i>285</i>&nbsp;                        }
+<b class="nc"><i>286</i>&nbsp;                    }</b>
+<i>287</i>&nbsp;                    break;
+<i>288</i>&nbsp;                case &quot;endUpdate&quot;:
+<b class="nc"><i>289</i>&nbsp;                    if (!started)</b>
+<i>290</i>&nbsp;                        return;
+<i>291</i>&nbsp;
+<b class="nc"><i>292</i>&nbsp;                    log(&quot;received final entity handler&quot;);</b>
+<b class="nc"><i>293</i>&nbsp;                    accepted = false;</b>
+<b class="nc"><i>294</i>&nbsp;                    started = false;</b>
+<b class="nc"><i>295</i>&nbsp;                    ended = true;</b>
+<b class="nc"><i>296</i>&nbsp;                    game.entityHandler = message.entityHandler;</b>
+<b class="nc"><i>297</i>&nbsp;                    game.modelLayer.setEntities(message.entityHandler);</b>
+<b class="nc"><i>298</i>&nbsp;                    game.entityHandler.constrainTanks(game.map);</b>
+<b class="nc"><i>299</i>&nbsp;                    game.entityHandler.constrainTurrets(game.tankID, Input.cursorPos);</b>
+<b class="nc"><i>300</i>&nbsp;                    game.setEndOfGame(); // assuming we are in online mode</b>
+<b class="nc"><i>301</i>&nbsp;                    break;</b>
+<i>302</i>&nbsp;                case &quot;debug&quot;:
+<b class="nc"><i>303</i>&nbsp;                    String str = message.stringData;</b>
+<b class="nc"><i>304</i>&nbsp;                    log(str);</b>
+<b class="nc"><i>305</i>&nbsp;                    testMessages.add(message);</b>
+<b class="nc"><i>306</i>&nbsp;                    break;</b>
+<i>307</i>&nbsp;                default:
+<b class="nc"><i>308</i>&nbsp;                    error(&quot;unknown type: &quot; + message.type);</b>
+<i>309</i>&nbsp;                    break;
+<i>310</i>&nbsp;            }
+<i>311</i>&nbsp;        }
+<i>312</i>&nbsp;
+<i>313</i>&nbsp;        /**
+<i>314</i>&nbsp;         * Takes inputs from an old message sent to the server and applies it to our EntityHandler. Used when the server is lagging behind on updates.
+<i>315</i>&nbsp;         *
+<i>316</i>&nbsp;         * @param keysPressed   The keys pressed.
+<i>317</i>&nbsp;         * @param mouseHeldTime The time the mouse was down for.
+<i>318</i>&nbsp;         */
+<i>319</i>&nbsp;        private void reconciliationUpdate(Integer[] keysPressed, double mouseHeldTime) {
+<b class="nc"><i>320</i>&nbsp;            log(&quot;recon&quot;, &quot;update&quot;);</b>
+<i>321</i>&nbsp;
+<b class="nc"><i>322</i>&nbsp;            game.entityHandler.setDrivingForce(game.tankID, 0);</b>
+<b class="nc"><i>323</i>&nbsp;            if (keysPressed == null)</b>
+<i>324</i>&nbsp;                return;
+<i>325</i>&nbsp;
+<b class="nc"><i>326</i>&nbsp;            for (int key : keysPressed) {</b>
+<b class="nc"><i>327</i>&nbsp;                switch (key) {</b>
+<i>328</i>&nbsp;                    case GLFW_KEY_D:
+<b class="nc"><i>329</i>&nbsp;                        log(&quot;recon&quot;, &quot;Applying D.&quot;);</b>
+<b class="nc"><i>330</i>&nbsp;                        game.entityHandler.setDrivingForce(game.tankID, 10000f);</b>
+<b class="nc"><i>331</i>&nbsp;                        break;</b>
+<i>332</i>&nbsp;                    case GLFW_KEY_A:
+<b class="nc"><i>333</i>&nbsp;                        log(&quot;recon&quot;, &quot;Applying A.&quot;);</b>
+<b class="nc"><i>334</i>&nbsp;                        game.entityHandler.setDrivingForce(game.tankID, -10000f);</b>
+<i>335</i>&nbsp;                        break;
+<i>336</i>&nbsp;                }
+<i>337</i>&nbsp;            }
+<b class="nc"><i>338</i>&nbsp;            if (mouseHeldTime &gt; 0)</b>
+<b class="nc"><i>339</i>&nbsp;                if (((Tank) game.entityHandler.getEntity(game.tankID)).checkIfCanFire())</b>
+<b class="nc"><i>340</i>&nbsp;                    game.entityHandler.fireProjectile(game.tankID, (float) mouseHeldTime);</b>
+<i>341</i>&nbsp;
+<b class="nc"><i>342</i>&nbsp;            game.entityHandler.constrainEntityToGround(game.tankID, game.map);</b>
+<b class="nc"><i>343</i>&nbsp;            game.entityHandler.constrainTurret(game.tankID, Input.cursorPos);</b>
+<i>344</i>&nbsp;        }
+<i>345</i>&nbsp;    }
+<i>346</i>&nbsp;
+<i>347</i>&nbsp;
+<i>348</i>&nbsp;    /**
+<i>349</i>&nbsp;     * Takes a message and attempts to send it to the server.
+<i>350</i>&nbsp;     *
+<i>351</i>&nbsp;     * @param message The message.
+<i>352</i>&nbsp;     */
+<i>353</i>&nbsp;    public void sendMessage(Message message) {
+<b class="nc"><i>354</i>&nbsp;        if (accepted || !ended || message.type.equals(&quot;register&quot;) || message.type.equals(&quot;lobby&quot;)) {</b>
+<b class="nc"><i>355</i>&nbsp;            message.packetNum = packetNum;</b>
+<b class="nc"><i>356</i>&nbsp;            ByteBuffer buffer = ByteBuffer.wrap(SerializationUtils.serialize(message));</b>
+<b class="nc"><i>357</i>&nbsp;            SocketAddress addr = null;</b>
+<i>358</i>&nbsp;            try {
+<b class="nc"><i>359</i>&nbsp;                addr = client.getLocalAddress();</b>
+<b class="nc"><i>360</i>&nbsp;                log(&quot;sending [&quot; + message + &quot;] to &quot; + addr);</b>
+<b class="nc"><i>361</i>&nbsp;                client.write(buffer);</b>
+<b class="nc"><i>362</i>&nbsp;                reconciliation.add(message);</b>
+<b class="nc"><i>363</i>&nbsp;                packetNum++;</b>
+<b class="nc"><i>364</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>365</i>&nbsp;                error(&quot;Failed to send message to:&quot; + addr);</b>
+<b class="nc"><i>366</i>&nbsp;                e.printStackTrace();</b>
+<b class="nc"><i>367</i>&nbsp;            }</b>
+<i>368</i>&nbsp;        }
+<i>369</i>&nbsp;    }
+<i>370</i>&nbsp;
+<i>371</i>&nbsp;    /**
+<i>372</i>&nbsp;     * Output to the client&#39;s console. Takes a name to add the address before the message. Calls .toString() on the provided objects.
+<i>373</i>&nbsp;     * &lt;p&gt; EG:
+<i>374</i>&nbsp;     * &lt;p&gt;{@code [XYZ] This is an example message}
+<i>375</i>&nbsp;     *
+<i>376</i>&nbsp;     * @param name    The name.
+<i>377</i>&nbsp;     * @param message The message to write.
+<i>378</i>&nbsp;     */
+<i>379</i>&nbsp;    public static void log(Object name, Object message) {
+<b class="nc"><i>380</i>&nbsp;        if (message != null &amp;&amp; name != null)</b>
+<b class="nc"><i>381</i>&nbsp;            System.out.println(&quot;[&quot; + name.toString() + &quot;] &quot; + message.toString());</b>
+<i>382</i>&nbsp;    }
+<i>383</i>&nbsp;
+<i>384</i>&nbsp;    /**
+<i>385</i>&nbsp;     * Output to the client&#39;s console. Calls .toString() on the provided object.
+<i>386</i>&nbsp;     * &lt;p&gt; EG:
+<i>387</i>&nbsp;     * &lt;p&gt;{@code This is an example message}
+<i>388</i>&nbsp;     *
+<i>389</i>&nbsp;     * @param message The message to write.
+<i>390</i>&nbsp;     */
+<i>391</i>&nbsp;    public static void log(Object message) {
+<b class="nc"><i>392</i>&nbsp;        if (message != null)</b>
+<b class="nc"><i>393</i>&nbsp;            System.out.println(message.toString());</b>
+<i>394</i>&nbsp;    }
+<i>395</i>&nbsp;
+<i>396</i>&nbsp;    /**
+<i>397</i>&nbsp;     * Output to the client&#39;s console as an error. Takes a name to add the address before the message. Calls .toString() on the provided objects.
+<i>398</i>&nbsp;     * &lt;p&gt; EG:
+<i>399</i>&nbsp;     * &lt;p&gt;{@code [XYZ] This is an example message}
+<i>400</i>&nbsp;     *
+<i>401</i>&nbsp;     * @param name    The name.
+<i>402</i>&nbsp;     * @param message The message to write.
+<i>403</i>&nbsp;     */
+<i>404</i>&nbsp;    public static void error(Object name, Object message) {
+<b class="nc"><i>405</i>&nbsp;        if (message != null &amp;&amp; name != null)</b>
+<b class="nc"><i>406</i>&nbsp;            System.err.println(&quot;[&quot; + name.toString() + &quot;] &quot; + message.toString());</b>
+<i>407</i>&nbsp;    }
+<i>408</i>&nbsp;
+<i>409</i>&nbsp;    /**
+<i>410</i>&nbsp;     * Output to the client&#39;s console as an error. Calls .toString() on the provided object.
+<i>411</i>&nbsp;     * &lt;p&gt; EG:
+<i>412</i>&nbsp;     * &lt;p&gt;{@code This is an example message}
+<i>413</i>&nbsp;     *
+<i>414</i>&nbsp;     * @param message The message to write.
+<i>415</i>&nbsp;     */
+<i>416</i>&nbsp;    public static void error(Object message) {
+<b class="nc"><i>417</i>&nbsp;        if (message != null)</b>
+<b class="nc"><i>418</i>&nbsp;            System.err.println(message.toString());</b>
+<i>419</i>&nbsp;    }
+<i>420</i>&nbsp;
+<i>421</i>&nbsp;    public void setRequestedGameType(GameType gameType) {
+<b class="nc"><i>422</i>&nbsp;        this.requestedGameType = gameType;</b>
+<i>423</i>&nbsp;    }
+<i>424</i>&nbsp;
+<i>425</i>&nbsp;    public GameType getRequestedGameType() {
+<b class="nc"><i>426</i>&nbsp;        return requestedGameType;</b>
+<i>427</i>&nbsp;    }
+<i>428</i>&nbsp;
+<i>429</i>&nbsp;    public String getName() {
+<b class="nc"><i>430</i>&nbsp;        return name;</b>
+<i>431</i>&nbsp;    }
+<i>432</i>&nbsp;
+<i>433</i>&nbsp;    public void setName(String name){
+<b class="nc"><i>434</i>&nbsp;        this.name = name;</b>
+<i>435</i>&nbsp;    }
+<i>436</i>&nbsp;
+<i>437</i>&nbsp;    public boolean closeClient() {
+<i>438</i>&nbsp;        try {
+<i>439</i>&nbsp;
+<b class="nc"><i>440</i>&nbsp;            client.close();</b>
+<b class="nc"><i>441</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>442</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>443</i>&nbsp;            return false;</b>
+<b class="nc"><i>444</i>&nbsp;        }</b>
+<b class="nc"><i>445</i>&nbsp;        return true;</b>
+<i>446</i>&nbsp;    }
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;    public ArrayList&lt;Message&gt; getReconciliation(){
+<b class="nc"><i>449</i>&nbsp;        return reconciliation;</b>
+<i>450</i>&nbsp;    }
+<i>451</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: StaticHealth</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: StaticHealth (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">StaticHealth</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    40%
+  </span>
+  <span class="absValue">
+    (2/ 5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    14%
+  </span>
+  <span class="absValue">
+    (6/ 43)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.game.Settings;
+<i>4</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>5</i>&nbsp;import org.lwjgl.BufferUtils;
+<i>6</i>&nbsp;import org.lwjgl.PointerBuffer;
+<i>7</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>8</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>9</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;import java.math.BigInteger;
+<i>12</i>&nbsp;import java.nio.ByteBuffer;
+<i>13</i>&nbsp;import java.util.*;
+<i>14</i>&nbsp;
+<i>15</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;public class StaticHealth extends UIElement {
+<i>18</i>&nbsp;    public BigInteger power;
+<b class="fc"><i>19</i>&nbsp;    public String clientName = &quot;&quot;;</b>
+<b class="fc"><i>20</i>&nbsp;    public Map&lt;String, BigInteger&gt; nameToHealth = new HashMap&lt;&gt;();</b>
+<i>21</i>&nbsp;
+<b class="fc"><i>22</i>&nbsp;    private ByteBuffer buffer = BufferUtils.createByteBuffer(120);</b>
+<b class="fc"><i>23</i>&nbsp;    private PointerBuffer cur = PointerBuffer.create(buffer);</b>
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public StaticHealth(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>26</i>&nbsp;        super(ctx, name, x, y);</b>
+<i>27</i>&nbsp;    }
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;    public void layout() {
+<b class="nc"><i>30</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="nc"><i>31</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<b class="nc"><i>32</i>&nbsp;            ctx.style().window().fixed_background().data().color().set((byte) 0xDD, (byte) 0xDD, (byte) 0xDD, (byte) 0xAA);</b>
+<b class="nc"><i>33</i>&nbsp;            ctx.style().window().rounding(5f);</b>
+<b class="nc"><i>34</i>&nbsp;            if (nk_begin(</b>
+<i>35</i>&nbsp;                    ctx,
+<i>36</i>&nbsp;                    name,
+<b class="nc"><i>37</i>&nbsp;                    nk_rect(x, y, 280, 75, rect),</b>
+<i>38</i>&nbsp;                    NK_WINDOW_NO_INPUT
+<i>39</i>&nbsp;            )) {
+<b class="nc"><i>40</i>&nbsp;                List&lt;String&gt; names = new ArrayList&lt;&gt;();</b>
+<b class="nc"><i>41</i>&nbsp;                names.addAll(nameToHealth.keySet());</b>
+<b class="nc"><i>42</i>&nbsp;                Collections.sort(names);</b>
+<i>43</i>&nbsp;
+<b class="nc"><i>44</i>&nbsp;                for (int i = 0; i + 1 &lt; names.size(); i += 2) {</b>
+<b class="nc"><i>45</i>&nbsp;                    nk_layout_row_dynamic(ctx, 18, 2);</b>
+<b class="nc"><i>46</i>&nbsp;                    nk_label(ctx, names.get(i), NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>47</i>&nbsp;                    nk_label(ctx, names.get(i + 1), NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>48</i>&nbsp;                    nk_layout_row_dynamic(ctx, 8, 2);</b>
+<b class="nc"><i>49</i>&nbsp;                    layoutHealth(names.get(i));</b>
+<b class="nc"><i>50</i>&nbsp;                    layoutHealth(names.get(i + 1));</b>
+<b class="nc"><i>51</i>&nbsp;                    if (names.get(i).equals(clientName) &amp;&amp; !Settings.powerIndicator.equals(&quot;arrow&quot;))</b>
+<b class="nc"><i>52</i>&nbsp;                        layoutPower();</b>
+<b class="nc"><i>53</i>&nbsp;                    if (names.get(i + 1).equals(clientName) &amp;&amp; !Settings.powerIndicator.equals(&quot;arrow&quot;)) {</b>
+<b class="nc"><i>54</i>&nbsp;                        nk_label(ctx, &quot;&quot;, NK_TEXT_ALIGN_CENTERED);</b>
+<b class="nc"><i>55</i>&nbsp;                        layoutPower();</b>
+<i>56</i>&nbsp;                    }
+<i>57</i>&nbsp;                }
+<i>58</i>&nbsp;            }
+<b class="nc"><i>59</i>&nbsp;            nk_end(ctx);</b>
+<b class="nc"><i>60</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>61</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>62</i>&nbsp;        }</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    private void layoutPower() {
+<b class="nc"><i>66</i>&nbsp;        ctx.style().progress().rounding(3f);</b>
+<b class="nc"><i>67</i>&nbsp;        ctx.style().progress().normal().data().color().set((byte) 0x66, (byte) 0xCC, (byte) 0xFF, (byte) 0x66);</b>
+<b class="nc"><i>68</i>&nbsp;        ctx.style().progress().cursor_normal().data().color().set((byte) 0x66, (byte) 0xCC, (byte) 0xFF, (byte) 0xFF);</b>
+<b class="nc"><i>69</i>&nbsp;        ctx.style().progress().border(1f);</b>
+<i>70</i>&nbsp;        //nk_layout_row_static(ctx, 8, 100, 1);
+<b class="nc"><i>71</i>&nbsp;        buffer.put(0, power.byteValueExact());</b>
+<b class="nc"><i>72</i>&nbsp;        nk_progress(ctx, cur, 100, false);</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    private void layoutHealth(String name) {
+<b class="nc"><i>76</i>&nbsp;        ctx.style().progress().rounding(3f);</b>
+<b class="nc"><i>77</i>&nbsp;        ctx.style().progress().normal().data().color().set((byte) 0x33, (byte) 0xCC, (byte) 0x33, (byte) 0x66);</b>
+<b class="nc"><i>78</i>&nbsp;        ctx.style().progress().cursor_normal().data().color().set((byte) 0x33, (byte) 0xCC, (byte) 0x33, (byte) 0xFF);</b>
+<b class="nc"><i>79</i>&nbsp;        ctx.style().progress().border(1f);</b>
+<i>80</i>&nbsp;        //nk_layout_row_static(ctx, 8, 100, 1);
+<b class="nc"><i>81</i>&nbsp;        buffer.put(0, nameToHealth.get(name).byteValueExact());</b>
+<b class="nc"><i>82</i>&nbsp;        nk_progress(ctx, cur, 100, false);</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    public void resetBars() {
+<b class="fc"><i>86</i>&nbsp;        nameToHealth.clear();</b>
+<i>87</i>&nbsp;    }
+<i>88</i>&nbsp;
+<i>89</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

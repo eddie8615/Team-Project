@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Animation</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Animation (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Animation</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    57.1%
+  </span>
+  <span class="absValue">
+    (4/ 7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    51.2%
+  </span>
+  <span class="absValue">
+    (21/ 41)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import java.util.Arrays;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;public class Animation {
+<i>6</i>&nbsp;    protected long lastUpdated;
+<i>7</i>&nbsp;    protected int interval;
+<i>8</i>&nbsp;    protected int[] textureQueue;
+<b class="fc"><i>9</i>&nbsp;    protected int textureIndex = 0;</b>
+<b class="fc"><i>10</i>&nbsp;    protected boolean loops = true;</b>
+<b class="fc"><i>11</i>&nbsp;    protected boolean holdTexture = false;</b>
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;    /**
+<i>14</i>&nbsp;     * Create an animation with a given time interval and queue of textures
+<i>15</i>&nbsp;     *
+<i>16</i>&nbsp;     * @param interval     The time between each frame
+<i>17</i>&nbsp;     * @param textureQueue The array of texture IDs to cycle through
+<i>18</i>&nbsp;     */
+<b class="nc"><i>19</i>&nbsp;    public Animation(int interval, int[] textureQueue) {</b>
+<b class="nc"><i>20</i>&nbsp;        lastUpdated = System.currentTimeMillis();</b>
+<b class="nc"><i>21</i>&nbsp;        this.interval = interval;</b>
+<b class="nc"><i>22</i>&nbsp;        this.textureQueue = textureQueue;</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    /**
+<i>26</i>&nbsp;     * Create an animation with a given time interval and queue of textures
+<i>27</i>&nbsp;     *
+<i>28</i>&nbsp;     * @param holdTexture  Whether the end texture should be held if the animation doesn&#39;t loop
+<i>29</i>&nbsp;     * @param loops        Whether the animation should loop
+<i>30</i>&nbsp;     * @param interval     The time between each frame
+<i>31</i>&nbsp;     * @param textureQueue The array of texture IDs to cycle through
+<i>32</i>&nbsp;     */
+<b class="nc"><i>33</i>&nbsp;    public Animation(int interval, int[] textureQueue, boolean loops, boolean holdTexture) {</b>
+<b class="nc"><i>34</i>&nbsp;        lastUpdated = System.currentTimeMillis();</b>
+<b class="nc"><i>35</i>&nbsp;        this.interval = interval;</b>
+<b class="nc"><i>36</i>&nbsp;        this.textureQueue = textureQueue;</b>
+<b class="nc"><i>37</i>&nbsp;        this.loops = loops;</b>
+<b class="nc"><i>38</i>&nbsp;        this.holdTexture = holdTexture;</b>
+<i>39</i>&nbsp;    }
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    /**
+<i>42</i>&nbsp;     * Create an animation with a given time interval.
+<i>43</i>&nbsp;     * A textureQueue must be set to allow the Animation to cycle.
+<i>44</i>&nbsp;     *
+<i>45</i>&nbsp;     * @param interval The time between each frame
+<i>46</i>&nbsp;     */
+<b class="nc"><i>47</i>&nbsp;    public Animation(int interval) {</b>
+<b class="nc"><i>48</i>&nbsp;        lastUpdated = System.currentTimeMillis();</b>
+<b class="nc"><i>49</i>&nbsp;        this.interval = interval;</b>
+<i>50</i>&nbsp;    }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * Create an animation with a given time interval.
+<i>54</i>&nbsp;     * A textureQueue must be set to allow the Animation to cycle.
+<i>55</i>&nbsp;     *
+<i>56</i>&nbsp;     * @param holdTexture Whether the end texture should be held if the animation doesn&#39;t loop
+<i>57</i>&nbsp;     * @param loops       Whether the animation should loop
+<i>58</i>&nbsp;     * @param interval    The time between each frame
+<i>59</i>&nbsp;     */
+<b class="fc"><i>60</i>&nbsp;    public Animation(int interval, boolean loops, boolean holdTexture) {</b>
+<b class="fc"><i>61</i>&nbsp;        lastUpdated = System.currentTimeMillis();</b>
+<b class="fc"><i>62</i>&nbsp;        this.interval = interval;</b>
+<b class="fc"><i>63</i>&nbsp;        this.loops = loops;</b>
+<b class="fc"><i>64</i>&nbsp;        this.holdTexture = holdTexture;</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * Cycles an Animation based on its attributes
+<i>69</i>&nbsp;     *
+<i>70</i>&nbsp;     * @return the texture ID after cycling
+<i>71</i>&nbsp;     */
+<i>72</i>&nbsp;    public int cycle() {
+<b class="fc"><i>73</i>&nbsp;        long now = System.currentTimeMillis();</b>
+<b class="fc"><i>74</i>&nbsp;        if (!loops &amp;&amp; (textureIndex == textureQueue.length - 1)) {</b>
+<b class="fc"><i>75</i>&nbsp;            if (holdTexture)</b>
+<b class="fc"><i>76</i>&nbsp;                return textureQueue[textureIndex];</b>
+<i>77</i>&nbsp;            else
+<b class="fc"><i>78</i>&nbsp;                return -1;</b>
+<i>79</i>&nbsp;        }
+<b class="fc"><i>80</i>&nbsp;        if (now - lastUpdated &gt;= interval) {</b>
+<b class="fc"><i>81</i>&nbsp;            textureIndex = (textureIndex + 1) % textureQueue.length;</b>
+<b class="fc"><i>82</i>&nbsp;            lastUpdated = now;</b>
+<i>83</i>&nbsp;        }
+<b class="fc"><i>84</i>&nbsp;        return textureQueue[textureIndex];</b>
+<i>85</i>&nbsp;    }
+<i>86</i>&nbsp;
+<i>87</i>&nbsp;    @Override
+<i>88</i>&nbsp;    public boolean equals(Object o) {
+<b class="pc"><i>89</i>&nbsp;        if (o == null) {</b>
+<b class="nc"><i>90</i>&nbsp;            return false;</b>
+<i>91</i>&nbsp;        }
+<i>92</i>&nbsp;
+<b class="pc"><i>93</i>&nbsp;        if (!Animation.class.isAssignableFrom(o.getClass())) {</b>
+<b class="nc"><i>94</i>&nbsp;            return false;</b>
+<i>95</i>&nbsp;        }
+<i>96</i>&nbsp;
+<b class="fc"><i>97</i>&nbsp;        final Animation other = (Animation) o;</b>
+<b class="pc"><i>98</i>&nbsp;        return (Arrays.equals(other.textureQueue, textureQueue) || other.textureQueue == textureQueue) &amp;&amp; other.interval == interval;</b>
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    @Override
+<i>102</i>&nbsp;    public int hashCode() {
+<b class="nc"><i>103</i>&nbsp;        String str = &quot;&quot;;</b>
+<b class="nc"><i>104</i>&nbsp;        for (int i : textureQueue) {</b>
+<b class="nc"><i>105</i>&nbsp;            str += String.valueOf(i);</b>
+<i>106</i>&nbsp;        }
+<b class="nc"><i>107</i>&nbsp;        str += String.valueOf(interval);</b>
+<b class="nc"><i>108</i>&nbsp;        return Integer.parseInt(str);</b>
+<i>109</i>&nbsp;    }
+<i>110</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

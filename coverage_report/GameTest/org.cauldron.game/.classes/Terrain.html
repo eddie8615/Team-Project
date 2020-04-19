@@ -1,0 +1,167 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Terrain</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.game</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Terrain (org.cauldron.game)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Terrain</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90.9%
+  </span>
+  <span class="absValue">
+    (30/ 33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.game;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.renderer.Vertex;
+<i>4</i>&nbsp;import org.cauldron.util.Bezier;
+<i>5</i>&nbsp;import org.joml.Vector2d;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.io.*;
+<i>8</i>&nbsp;import java.util.ArrayList;
+<i>9</i>&nbsp;import java.util.Arrays;
+<i>10</i>&nbsp;import java.util.List;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;/**
+<i>13</i>&nbsp; * Holds and processes all terrain info, and generates a Bezier curve for smooth terrain
+<i>14</i>&nbsp; */
+<i>15</i>&nbsp;public class Terrain implements Serializable {
+<i>16</i>&nbsp;    private static final long serialVersionUID = -423318671895788071L;
+<i>17</i>&nbsp;    public int increment;
+<i>18</i>&nbsp;    public ArrayList&lt;Vector2d&gt; vertices;
+<i>19</i>&nbsp;    public ArrayList&lt;Vector2d&gt; controlPoints;
+<i>20</i>&nbsp;
+<b class="fc"><i>21</i>&nbsp;    public Terrain(int increment) {</b>
+<b class="fc"><i>22</i>&nbsp;        this.increment = increment;</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public void loadMap(ArrayList&lt;Vector2d&gt; points) {
+<b class="fc"><i>26</i>&nbsp;        controlPoints = points;</b>
+<b class="fc"><i>27</i>&nbsp;        genCurve();</b>
+<i>28</i>&nbsp;    }
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    /**
+<i>31</i>&nbsp;     * Generates the curve using Bezier algorithm, polling it at increments to lower
+<i>32</i>&nbsp;     * its resolution and make it drawable.
+<i>33</i>&nbsp;     */
+<i>34</i>&nbsp;    private void genCurve() {
+<b class="fc"><i>35</i>&nbsp;        Bezier curve = Bezier.create(controlPoints, 2000 * controlPoints.size(), 0.5);</b>
+<b class="fc"><i>36</i>&nbsp;        List&lt;Vector2d&gt; interpolatedPoints = curve.getInterpolatedPoints();</b>
+<b class="fc"><i>37</i>&nbsp;        vertices = new ArrayList&lt;Vector2d&gt;();</b>
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;        int i = -1;</b>
+<b class="fc"><i>40</i>&nbsp;        int lastX = -1;</b>
+<b class="fc"><i>41</i>&nbsp;        for (Vector2d v : interpolatedPoints) {</b>
+<b class="pc"><i>42</i>&nbsp;            if (i &gt;= interpolatedPoints.size())</b>
+<b class="nc"><i>43</i>&nbsp;                break;</b>
+<b class="fc"><i>44</i>&nbsp;            if (v.x &gt; 1f &amp;&amp; (v.x % increment &lt;= 5f)) {</b>
+<b class="fc"><i>45</i>&nbsp;                int x = (int) (Math.round(v.x * (1f / increment)) / (1f / increment));</b>
+<b class="fc"><i>46</i>&nbsp;                int y = (int) Math.round(v.y);</b>
+<b class="pc"><i>47</i>&nbsp;                if (x == lastX &amp;&amp; i != -1) {</b>
+<b class="fc"><i>48</i>&nbsp;                    vertices.set(i, new Vector2d(x, y));</b>
+<i>49</i>&nbsp;                } else {
+<b class="fc"><i>50</i>&nbsp;                    vertices.add(++i, new Vector2d(x, y));</b>
+<i>51</i>&nbsp;                }
+<b class="fc"><i>52</i>&nbsp;                lastX = x;</b>
+<i>53</i>&nbsp;            }
+<b class="fc"><i>54</i>&nbsp;        }</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * Interpolates between points to find a y value along the terrain, given an x.
+<i>59</i>&nbsp;     *
+<i>60</i>&nbsp;     * @param x
+<i>61</i>&nbsp;     * @return y value or -1 if failed to find
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public float getYVal(float x) {
+<b class="fc"><i>64</i>&nbsp;        double xStart = (int) (Math.floor((double) x * (1f / (double) increment)) / (1f / (double) increment));</b>
+<b class="fc"><i>65</i>&nbsp;        double xEnd = (int) (Math.ceil((double) x * (1f / (double) increment)) / (1f / (double) increment));</b>
+<i>66</i>&nbsp;
+<b class="pc"><i>67</i>&nbsp;        for (int i = 0; i &lt; vertices.size(); i++) {</b>
+<b class="fc"><i>68</i>&nbsp;            if ((int) x == (int) vertices.get(i).x)</b>
+<b class="fc"><i>69</i>&nbsp;                return (float) vertices.get(i).y;</b>
+<i>70</i>&nbsp;
+<b class="pc"><i>71</i>&nbsp;            if (i + 1 &gt;= vertices.size())</b>
+<b class="nc"><i>72</i>&nbsp;                break;</b>
+<i>73</i>&nbsp;
+<b class="pc"><i>74</i>&nbsp;            if (vertices.get(i).x &lt;= x &amp;&amp; vertices.get(i + 1).x &gt; x) {</b>
+<b class="fc"><i>75</i>&nbsp;                double yStart = vertices.get(i).y;</b>
+<b class="fc"><i>76</i>&nbsp;                double yEnd = vertices.get(i + 1).y;</b>
+<b class="fc"><i>77</i>&nbsp;                double gradient = (yEnd - yStart) / (xEnd - xStart);</b>
+<b class="fc"><i>78</i>&nbsp;                return (float) (gradient * (double) x + (yStart - gradient * xStart));</b>
+<i>79</i>&nbsp;            }
+<i>80</i>&nbsp;        }
+<i>81</i>&nbsp;
+<b class="nc"><i>82</i>&nbsp;        return -1f;</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

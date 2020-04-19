@@ -1,0 +1,149 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Scene</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.scenes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Scene (org.cauldron.scenes)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Scene</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (4/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (12/ 12)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.scenes;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.ai.BasicAi;
+<i>4</i>&nbsp;import org.cauldron.database.Database;
+<i>5</i>&nbsp;import org.cauldron.game.Game.SceneType;
+<i>6</i>&nbsp;import org.cauldron.network.LobbySettings;
+<i>7</i>&nbsp;import org.cauldron.renderer.layers.BackdropLayer;
+<i>8</i>&nbsp;import org.cauldron.renderer.layers.GUILayer;
+<i>9</i>&nbsp;import org.cauldron.renderer.layers.ModelLayer;
+<i>10</i>&nbsp;import org.cauldron.renderer.layers.TerrainLayer;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import java.util.ArrayList;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;/**
+<i>15</i>&nbsp; * Scenes hold the setup and running instructions for different distinct areas, or &#39;scenes&#39;, in the game
+<i>16</i>&nbsp; */
+<b class="fc"><i>17</i>&nbsp;public abstract class Scene {</b>
+<i>18</i>&nbsp;    private SceneType type;
+<i>19</i>&nbsp;    public LobbySettings lobbySettings;
+<i>20</i>&nbsp;    public long timeRemaining;
+<b class="fc"><i>21</i>&nbsp;    long lastUpdated = System.currentTimeMillis();</b>
+<b class="fc"><i>22</i>&nbsp;    long lastCrateDropped = System.currentTimeMillis();</b>
+<b class="fc"><i>23</i>&nbsp;    long aiUpdate = System.currentTimeMillis();</b>
+<b class="fc"><i>24</i>&nbsp;    public static Database userInfo = null;</b>
+<b class="fc"><i>25</i>&nbsp;    GUILayer guiLayer = new GUILayer();</b>
+<i>26</i>&nbsp;    public String tankID;
+<i>27</i>&nbsp;    public String tankAiID;
+<b class="fc"><i>28</i>&nbsp;    public boolean gameOver = false;</b>
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;    public ArrayList&lt;ArrayList&lt;String&gt;&gt; teamsList = new ArrayList&lt;&gt;();</b>
+<b class="fc"><i>31</i>&nbsp;    public int[] scores = {0, 0};</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;    BasicAi basicAi = new BasicAi();</b>
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    /**
+<i>36</i>&nbsp;     * Set the type of Scene this is, so Game can easily identify it
+<i>37</i>&nbsp;     *
+<i>38</i>&nbsp;     * @param sceneType
+<i>39</i>&nbsp;     */
+<i>40</i>&nbsp;    public void setType(SceneType sceneType) {
+<b class="fc"><i>41</i>&nbsp;        this.type = sceneType;</b>
+<i>42</i>&nbsp;    }
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * @return the SceneType associated with this Scene
+<i>46</i>&nbsp;     */
+<i>47</i>&nbsp;    public SceneType getType() {
+<b class="fc"><i>48</i>&nbsp;        return type;</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;    /**
+<i>52</i>&nbsp;     * The loop of Scene code to be run every Game cycle
+<i>53</i>&nbsp;     */
+<i>54</i>&nbsp;    public abstract void cycle();
+<i>55</i>&nbsp;
+<i>56</i>&nbsp;    /**
+<i>57</i>&nbsp;     * Used to process various inputs from Input, according to the needs of this Scene
+<i>58</i>&nbsp;     */
+<i>59</i>&nbsp;    abstract void processInputs();
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    /**
+<i>62</i>&nbsp;     * Clean up any memory allocated during Scene operation
+<i>63</i>&nbsp;     */
+<i>64</i>&nbsp;    public abstract void cleanup();
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

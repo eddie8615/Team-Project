@@ -1,0 +1,258 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: TerrainLayer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer.layers</a> ]
+</div>
+
+<h1>Coverage Summary for Class: TerrainLayer (org.cauldron.renderer.layers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">TerrainLayer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    90%
+  </span>
+  <span class="absValue">
+    (9/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    97.6%
+  </span>
+  <span class="absValue">
+    (83/ 85)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer.layers;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.game.Terrain;
+<i>4</i>&nbsp;import org.cauldron.renderer.*;
+<i>5</i>&nbsp;import org.joml.Matrix4f;
+<i>6</i>&nbsp;import org.joml.Vector2d;
+<i>7</i>&nbsp;
+<i>8</i>&nbsp;import java.util.List;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import static org.lwjgl.opengl.GL11.glDisableClientState;
+<i>11</i>&nbsp;import static org.lwjgl.opengl.GL11C.*;
+<i>12</i>&nbsp;import static org.lwjgl.opengl.GL14.GL_MIRRORED_REPEAT;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;/**
+<i>15</i>&nbsp; * TerrainLayer holds all terrain information and draws it using OpenGL calls.
+<i>16</i>&nbsp; */
+<i>17</i>&nbsp;public class TerrainLayer extends Layer {
+<i>18</i>&nbsp;
+<b class="fc"><i>19</i>&nbsp;    private VertexBufferLayout layout = new VertexBufferLayout();</b>
+<i>20</i>&nbsp;    private Vertex[] verticesGround;
+<i>21</i>&nbsp;    private Vertex[] verticesSurface;
+<i>22</i>&nbsp;    private List&lt;Vector2d&gt; terrainPoints;
+<i>23</i>&nbsp;    private Terrain map;
+<i>24</i>&nbsp;
+<b class="fc"><i>25</i>&nbsp;    public TerrainLayer() {</b>
+<b class="fc"><i>26</i>&nbsp;        vertexShaderPath = &quot;game/shaders/vertex.glsl&quot;;</b>
+<b class="fc"><i>27</i>&nbsp;        fragmentShaderPath = &quot;game/shaders/fragment.glsl&quot;;</b>
+<b class="fc"><i>28</i>&nbsp;        attribLocations.put(&quot;in_Position&quot;, 0);</b>
+<b class="fc"><i>29</i>&nbsp;        attribLocations.put(&quot;in_Color&quot;, 1);</b>
+<b class="fc"><i>30</i>&nbsp;        attribLocations.put(&quot;in_TextureCoord&quot;, 2);</b>
+<i>31</i>&nbsp;    }
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    public void setTerrain(Terrain map) {
+<b class="fc"><i>34</i>&nbsp;        this.map = map;</b>
+<i>35</i>&nbsp;    }
+<i>36</i>&nbsp;
+<i>37</i>&nbsp;    private byte[] integersToBytes(int[] data) {
+<b class="fc"><i>38</i>&nbsp;        byte[] array = new byte[data.length];</b>
+<i>39</i>&nbsp;
+<b class="fc"><i>40</i>&nbsp;        for (int i = 0; i &lt; data.length; i++) {</b>
+<b class="fc"><i>41</i>&nbsp;            array[i] = (byte) (data[i] &amp; 0xFF);</b>
+<i>42</i>&nbsp;        }
+<i>43</i>&nbsp;
+<b class="fc"><i>44</i>&nbsp;        return array;</b>
+<i>45</i>&nbsp;    }
+<i>46</i>&nbsp;
+<i>47</i>&nbsp;    private int[] genIndices() {
+<b class="fc"><i>48</i>&nbsp;        int[] indices = new int[terrainPoints.size() * 6];</b>
+<i>49</i>&nbsp;
+<b class="fc"><i>50</i>&nbsp;        int quadCount = 0;</b>
+<b class="fc"><i>51</i>&nbsp;        for (int indicesCount = 0; indicesCount &lt; indices.length - 6; indicesCount = indicesCount + 6) {</b>
+<b class="fc"><i>52</i>&nbsp;            indices[indicesCount] = quadCount;</b>
+<b class="fc"><i>53</i>&nbsp;            indices[indicesCount + 1] = quadCount + 1;</b>
+<b class="fc"><i>54</i>&nbsp;            indices[indicesCount + 2] = quadCount + 3;</b>
+<b class="fc"><i>55</i>&nbsp;            indices[indicesCount + 3] = quadCount + 3;</b>
+<b class="fc"><i>56</i>&nbsp;            indices[indicesCount + 4] = quadCount + 2;</b>
+<b class="fc"><i>57</i>&nbsp;            indices[indicesCount + 5] = quadCount;</b>
+<b class="fc"><i>58</i>&nbsp;            quadCount += 2;</b>
+<i>59</i>&nbsp;        }
+<i>60</i>&nbsp;
+<b class="fc"><i>61</i>&nbsp;        return indices;</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    @Override
+<i>65</i>&nbsp;    public void setup() {
+<b class="fc"><i>66</i>&nbsp;        shader = new Shader(vertexShaderPath, fragmentShaderPath, attribLocations);</b>
+<i>67</i>&nbsp;
+<b class="fc"><i>68</i>&nbsp;        layoutTerrain();</b>
+<i>69</i>&nbsp;
+<i>70</i>&nbsp;        // Create a new Vertex Array Object in memory and select it (bind)
+<i>71</i>&nbsp;        // A VAO can have up to 16 attributes (VBO&#39;s) assigned to it by default
+<b class="fc"><i>72</i>&nbsp;        vao = new VertexArray();</b>
+<b class="fc"><i>73</i>&nbsp;        vao.bind();</b>
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;        // New VBO and bind it
+<b class="fc"><i>76</i>&nbsp;        vbo = new VertexBuffer(verticesSurface);</b>
+<i>77</i>&nbsp;        // Put the positions in attribute list 0
+<b class="fc"><i>78</i>&nbsp;        layout.push(4, GL_FLOAT, false);</b>
+<i>79</i>&nbsp;        // Put the colors in attribute list 1
+<b class="fc"><i>80</i>&nbsp;        layout.push(4, GL_FLOAT, false);</b>
+<i>81</i>&nbsp;        // Put the texture coordinates in attribute list 2
+<b class="fc"><i>82</i>&nbsp;        layout.push(2, GL_FLOAT, false);</b>
+<i>83</i>&nbsp;
+<b class="fc"><i>84</i>&nbsp;        vao.addBuffer(vbo, layout);</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;        // New index VBO and bind it
+<b class="fc"><i>87</i>&nbsp;        ibo = new IndexBuffer(integersToBytes(genIndices()));</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    private void layoutTerrain() {
+<b class="fc"><i>91</i>&nbsp;        terrainPoints = map.vertices;</b>
+<b class="fc"><i>92</i>&nbsp;        int count = terrainPoints.size();</b>
+<b class="fc"><i>93</i>&nbsp;        verticesSurface = new Vertex[count * 2];</b>
+<b class="fc"><i>94</i>&nbsp;        verticesGround = new Vertex[count * 2];</b>
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;        for (Integer i = 0; i &lt; count * 2; i = i + 2) {</b>
+<b class="fc"><i>97</i>&nbsp;            Vertex vertexBot = new Vertex();</b>
+<b class="fc"><i>98</i>&nbsp;            vertexBot.setXYZ(i / 2f * map.increment, map.getYVal(i / 2f * map.increment) - 10f, 0);</b>
+<b class="fc"><i>99</i>&nbsp;            vertexBot.setRGB(1f, 1f, 1f);</b>
+<b class="fc"><i>100</i>&nbsp;            vertexBot.setST(i / 4f, 1);</b>
+<i>101</i>&nbsp;
+<b class="fc"><i>102</i>&nbsp;            Vertex vertexTop = new Vertex();</b>
+<b class="fc"><i>103</i>&nbsp;            vertexTop.setXYZ(i / 2f * map.increment, map.getYVal(i / 2f * map.increment) + 10f, 0);</b>
+<b class="fc"><i>104</i>&nbsp;            vertexTop.setRGB(1f, 1f, 1f);</b>
+<b class="fc"><i>105</i>&nbsp;            vertexTop.setST(i / 4f, 0);</b>
+<i>106</i>&nbsp;
+<b class="fc"><i>107</i>&nbsp;            verticesSurface[i] = vertexTop;</b>
+<b class="fc"><i>108</i>&nbsp;            verticesSurface[i + 1] = vertexBot;</b>
+<i>109</i>&nbsp;        }
+<i>110</i>&nbsp;
+<b class="fc"><i>111</i>&nbsp;        for (Integer i = 0; i &lt; count * 2; i = i + 2) {</b>
+<b class="fc"><i>112</i>&nbsp;            Vertex vertexTop = new Vertex();</b>
+<b class="fc"><i>113</i>&nbsp;            vertexTop.setXYZ((float) terrainPoints.get(i / 2).x, (float) terrainPoints.get(i / 2).y, 0f);</b>
+<b class="fc"><i>114</i>&nbsp;            vertexTop.setRGB(1f, 1f, 1f);</b>
+<b class="fc"><i>115</i>&nbsp;            vertexTop.setST((float) terrainPoints.get(i / 2).x / Layer.WIDTH, (Layer.HEIGHT - (float) terrainPoints.get(i / 2).y) / Layer.HEIGHT);</b>
+<i>116</i>&nbsp;
+<b class="fc"><i>117</i>&nbsp;            Vertex vertexBot = new Vertex();</b>
+<b class="fc"><i>118</i>&nbsp;            vertexBot.setXYZ((float) terrainPoints.get(i / 2).x, 0, 0f);</b>
+<b class="fc"><i>119</i>&nbsp;            vertexBot.setRGB(1f, 1f, 1f);</b>
+<b class="fc"><i>120</i>&nbsp;            vertexBot.setST((float) terrainPoints.get(i / 2).x / Layer.WIDTH, 1);</b>
+<i>121</i>&nbsp;
+<b class="fc"><i>122</i>&nbsp;            verticesGround[i] = vertexTop;</b>
+<b class="fc"><i>123</i>&nbsp;            verticesGround[i + 1] = vertexBot;</b>
+<i>124</i>&nbsp;        }
+<i>125</i>&nbsp;    }
+<i>126</i>&nbsp;
+<i>127</i>&nbsp;    public void update() {
+<b class="nc"><i>128</i>&nbsp;        layoutTerrain();</b>
+<b class="nc"><i>129</i>&nbsp;        ibo.updateIndices(integersToBytes(genIndices()));</b>
+<i>130</i>&nbsp;    }
+<i>131</i>&nbsp;
+<i>132</i>&nbsp;    @Override
+<i>133</i>&nbsp;    public void preDraw() {
+<b class="fc"><i>134</i>&nbsp;        shader.bind();</b>
+<b class="fc"><i>135</i>&nbsp;        shader.setMatrix4f(&quot;projectionMatrix&quot;, new Matrix4f().frustum(0f, 1600, 0f, 900,</b>
+<i>136</i>&nbsp;                1f, 100f));
+<b class="fc"><i>137</i>&nbsp;        shader.setMatrix4f(&quot;viewMatrix&quot;, new Matrix4f().translate(0f, 0f, -1f));</b>
+<b class="fc"><i>138</i>&nbsp;        shader.setMatrix4f(&quot;modelMatrix&quot;, new Matrix4f());</b>
+<i>139</i>&nbsp;
+<b class="fc"><i>140</i>&nbsp;        glEnable(GL_BLEND);</b>
+<b class="fc"><i>141</i>&nbsp;        glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);</b>
+<i>142</i>&nbsp;    }
+<i>143</i>&nbsp;
+<i>144</i>&nbsp;    @Override
+<i>145</i>&nbsp;    public void draw() {
+<b class="fc"><i>146</i>&nbsp;        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);</b>
+<b class="fc"><i>147</i>&nbsp;        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);</b>
+<i>148</i>&nbsp;
+<b class="fc"><i>149</i>&nbsp;        vbo.updateVertices(verticesGround);</b>
+<b class="fc"><i>150</i>&nbsp;        vao.addBuffer(vbo, layout);</b>
+<b class="fc"><i>151</i>&nbsp;        ibo.bind();</b>
+<b class="fc"><i>152</i>&nbsp;        shader.setMatrix4f(&quot;modelMatrix&quot;, new Matrix4f().translate(0, 0, -0.0001f));</b>
+<b class="fc"><i>153</i>&nbsp;        glBindTexture(GL_TEXTURE_2D, TextureHandler.getTextureID(&quot;ground&quot;));</b>
+<b class="fc"><i>154</i>&nbsp;        glDrawElements(GL_TRIANGLE_STRIP, ibo.getIndicesCount(), GL_UNSIGNED_BYTE, 0);</b>
+<i>155</i>&nbsp;
+<b class="fc"><i>156</i>&nbsp;        vbo.updateVertices(verticesSurface);</b>
+<b class="fc"><i>157</i>&nbsp;        vao.addBuffer(vbo, layout);</b>
+<b class="fc"><i>158</i>&nbsp;        ibo.bind();</b>
+<b class="fc"><i>159</i>&nbsp;        shader.setMatrix4f(&quot;modelMatrix&quot;, new Matrix4f());</b>
+<b class="fc"><i>160</i>&nbsp;        glBindTexture(GL_TEXTURE_2D, TextureHandler.getTextureID(&quot;terrain&quot;));</b>
+<b class="fc"><i>161</i>&nbsp;        glDrawElements(GL_TRIANGLE_STRIP, ibo.getIndicesCount(), GL_UNSIGNED_BYTE, 0);</b>
+<i>162</i>&nbsp;    }
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;    @Override
+<i>165</i>&nbsp;    public void postDraw() {
+<i>166</i>&nbsp;    }
+<i>167</i>&nbsp;
+<i>168</i>&nbsp;    @Override
+<i>169</i>&nbsp;    public void close() {
+<b class="fc"><i>170</i>&nbsp;        vao.bind();</b>
+<b class="fc"><i>171</i>&nbsp;        vbo.close();</b>
+<b class="fc"><i>172</i>&nbsp;        ibo.close();</b>
+<b class="fc"><i>173</i>&nbsp;        vao.close();</b>
+<i>174</i>&nbsp;    }
+<i>175</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

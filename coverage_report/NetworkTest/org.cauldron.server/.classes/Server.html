@@ -1,0 +1,671 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Server</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.server</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Server (org.cauldron.server)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Server</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 19)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 179)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Server$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 52)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 23)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/ 231)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.server;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.apache.commons.lang3.SerializationException;
+<i>4</i>&nbsp;import org.apache.commons.lang3.SerializationUtils;
+<i>5</i>&nbsp;import org.cauldron.entity.EntityHandler;
+<i>6</i>&nbsp;import org.cauldron.game.MapLoader;
+<i>7</i>&nbsp;import org.cauldron.network.LobbySettings;
+<i>8</i>&nbsp;import org.cauldron.network.Message;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import java.io.IOException;
+<i>11</i>&nbsp;import java.net.InetSocketAddress;
+<i>12</i>&nbsp;import java.nio.ByteBuffer;
+<i>13</i>&nbsp;import java.nio.channels.SelectionKey;
+<i>14</i>&nbsp;import java.nio.channels.Selector;
+<i>15</i>&nbsp;import java.nio.channels.ServerSocketChannel;
+<i>16</i>&nbsp;import java.nio.channels.SocketChannel;
+<i>17</i>&nbsp;import java.util.HashMap;
+<i>18</i>&nbsp;import java.util.Iterator;
+<i>19</i>&nbsp;import java.util.Map;
+<i>20</i>&nbsp;import java.util.concurrent.Executors;
+<i>21</i>&nbsp;import java.util.concurrent.ScheduledExecutorService;
+<i>22</i>&nbsp;import java.util.concurrent.TimeUnit;
+<i>23</i>&nbsp;
+<b class="nc"><i>24</i>&nbsp;public class Server {</b>
+<i>25</i>&nbsp;    private Selector selector;
+<i>26</i>&nbsp;    private InetSocketAddress listenAddress;
+<i>27</i>&nbsp;
+<b class="nc"><i>28</i>&nbsp;    private final int MAX_USERS = 4;</b>
+<i>29</i>&nbsp;    private int forced_user_count;
+<i>30</i>&nbsp;    private int numberConnected;
+<i>31</i>&nbsp;    private int idNum;
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    private ServerGame game;
+<b class="nc"><i>34</i>&nbsp;    private final int updatePeriod = 100; // in milliseconds</b>
+<i>35</i>&nbsp;    private boolean initMessage;
+<i>36</i>&nbsp;    private double[] lastProcessedInput;
+<i>37</i>&nbsp;    private double[] shotFiredLength;
+<i>38</i>&nbsp;    private double[] heldLength;
+<i>39</i>&nbsp;    private long[] lastHeard;
+<i>40</i>&nbsp;    private Map&lt;SocketChannel, Integer&gt; userIDMap;
+<i>41</i>&nbsp;    private SocketChannel[] channelArr;
+<i>42</i>&nbsp;    private boolean lobbySettingsMessage;
+<i>43</i>&nbsp;    private LobbySettings lobbySettings;
+<i>44</i>&nbsp;    private Map&lt;Integer, String&gt; idNameMap;
+<i>45</i>&nbsp;    private long currentTime;
+<b class="nc"><i>46</i>&nbsp;    private final int FAILCOUNT = 5;</b>
+<b class="nc"><i>47</i>&nbsp;    private int count_failed = 0;</b>
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /**
+<i>50</i>&nbsp;     * Server constructor.
+<i>51</i>&nbsp;     * @param address The IP of the host machine.
+<i>52</i>&nbsp;     * @param port The port to use.
+<i>53</i>&nbsp;     */
+<b class="nc"><i>54</i>&nbsp;    private Server(String address, int port) throws IllegalArgumentException {</b>
+<b class="nc"><i>55</i>&nbsp;        listenAddress = new InetSocketAddress(address, port);</b>
+<i>56</i>&nbsp;    }
+<i>57</i>&nbsp;
+<i>58</i>&nbsp;    public static void main(String[] args) {
+<b class="nc"><i>59</i>&nbsp;        String address = &quot;localhost&quot;;</b>
+<b class="nc"><i>60</i>&nbsp;        int port = 10004;</b>
+<i>61</i>&nbsp;
+<b class="nc"><i>62</i>&nbsp;        switch(args.length) {</b>
+<i>63</i>&nbsp;            case 2:
+<i>64</i>&nbsp;                try {
+<b class="nc"><i>65</i>&nbsp;                    port = Integer.parseInt(args[1]);</b>
+<b class="nc"><i>66</i>&nbsp;                } catch (NumberFormatException e) {</b>
+<b class="nc"><i>67</i>&nbsp;                    error(&quot;Port was not an integer.&quot;);</b>
+<b class="nc"><i>68</i>&nbsp;                    e.printStackTrace();</b>
+<i>69</i>&nbsp;                    return;
+<b class="nc"><i>70</i>&nbsp;                }</b>
+<i>71</i>&nbsp;            case 1:
+<b class="nc"><i>72</i>&nbsp;                address = args[0];</b>
+<i>73</i>&nbsp;            case 0:
+<b class="nc"><i>74</i>&nbsp;                break;</b>
+<i>75</i>&nbsp;            default:
+<b class="nc"><i>76</i>&nbsp;                log(&quot;Unknown number of parameters.\nCorrect usage is:&quot;);</b>
+<b class="nc"><i>77</i>&nbsp;                log(&quot;  0: hosts on &quot; + address + &quot; : &quot; + port);</b>
+<b class="nc"><i>78</i>&nbsp;                log(&quot;  1: hosts on argument  : &quot; + port);</b>
+<b class="nc"><i>79</i>&nbsp;                log(&quot;  2: hosts on argument1 : argument2&quot;);</b>
+<i>80</i>&nbsp;                return;
+<i>81</i>&nbsp;        }
+<i>82</i>&nbsp;
+<b class="nc"><i>83</i>&nbsp;        log(String.format(&quot;%d %s. Starting server on %s:%d.&quot;, args.length, args.length == 1 ? &quot;arg&quot; : &quot;args&quot;, address, port));</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;        try {
+<b class="nc"><i>86</i>&nbsp;            new Server(address, port).startServer();</b>
+<b class="nc"><i>87</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>88</i>&nbsp;            error(&quot;Uh oh, failed to start server.&quot;);</b>
+<b class="nc"><i>89</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>90</i>&nbsp;        } catch (IllegalArgumentException e) {</b>
+<b class="nc"><i>91</i>&nbsp;            error(&quot;Failed to create InetSocketAddress.&quot;);</b>
+<b class="nc"><i>92</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>93</i>&nbsp;        }</b>
+<i>94</i>&nbsp;    }
+<i>95</i>&nbsp;
+<i>96</i>&nbsp;    /**
+<i>97</i>&nbsp;     * Creates a new server instance and opens the server socket. Creates a game as well as starting the updater and listener.
+<i>98</i>&nbsp;     * @throws IOException If creation of the socket fails, we throw an exception.
+<i>99</i>&nbsp;     */
+<i>100</i>&nbsp;    private void startServer() throws IOException {
+<b class="nc"><i>101</i>&nbsp;        setupGame();</b>
+<i>102</i>&nbsp;
+<b class="nc"><i>103</i>&nbsp;        this.selector = Selector.open();</b>
+<b class="nc"><i>104</i>&nbsp;        ServerSocketChannel serverChannel = ServerSocketChannel.open();</b>
+<b class="nc"><i>105</i>&nbsp;        serverChannel.configureBlocking(false);</b>
+<i>106</i>&nbsp;
+<i>107</i>&nbsp;        // retrieve server socket and bind to port
+<b class="nc"><i>108</i>&nbsp;        serverChannel.socket().bind(listenAddress);</b>
+<b class="nc"><i>109</i>&nbsp;        serverChannel.register(this.selector, SelectionKey.OP_ACCEPT);</b>
+<i>110</i>&nbsp;
+<b class="nc"><i>111</i>&nbsp;        log(&quot;Server started...: &quot; + listenAddress);</b>
+<i>112</i>&nbsp;
+<b class="nc"><i>113</i>&nbsp;        MapLoader.init();</b>
+<i>114</i>&nbsp;
+<b class="nc"><i>115</i>&nbsp;        startUpdater();</b>
+<b class="nc"><i>116</i>&nbsp;        startListener();</b>
+<i>117</i>&nbsp;    }
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;    /**
+<i>120</i>&nbsp;     * Setup all attributes for the game.
+<i>121</i>&nbsp;     */
+<i>122</i>&nbsp;    public void setupGame() {
+<i>123</i>&nbsp;        //For testing, forced_user_count would be 1;
+<b class="nc"><i>124</i>&nbsp;        forced_user_count = 2;</b>
+<b class="nc"><i>125</i>&nbsp;        numberConnected = 0;</b>
+<b class="nc"><i>126</i>&nbsp;        idNum = 0;</b>
+<b class="nc"><i>127</i>&nbsp;        initMessage = false;</b>
+<b class="nc"><i>128</i>&nbsp;        lobbySettingsMessage = false;</b>
+<b class="nc"><i>129</i>&nbsp;        game = new ServerGame();</b>
+<b class="nc"><i>130</i>&nbsp;        channelArr = new SocketChannel[MAX_USERS];</b>
+<b class="nc"><i>131</i>&nbsp;        lastProcessedInput = new double[MAX_USERS];</b>
+<b class="nc"><i>132</i>&nbsp;        heldLength = new double[MAX_USERS];</b>
+<b class="nc"><i>133</i>&nbsp;        lastHeard = new long[MAX_USERS];</b>
+<b class="nc"><i>134</i>&nbsp;        for (int i = 0; i &lt; MAX_USERS; i++)</b>
+<b class="nc"><i>135</i>&nbsp;            lastHeard[i] = -1;</b>
+<i>136</i>&nbsp;
+<b class="nc"><i>137</i>&nbsp;        idNameMap = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>138</i>&nbsp;        userIDMap = new HashMap&lt;&gt;();</b>
+<i>139</i>&nbsp;    }
+<i>140</i>&nbsp;
+<i>141</i>&nbsp;    /**
+<i>142</i>&nbsp;     * This is where we send out updates to our clients from.
+<i>143</i>&nbsp;     */
+<i>144</i>&nbsp;    private void startUpdater() {
+<b class="nc"><i>145</i>&nbsp;        Runnable updater = new Runnable() {</b>
+<i>146</i>&nbsp;            /**
+<i>147</i>&nbsp;             * Checks whether we need to send a message to the clients and which message to send.
+<i>148</i>&nbsp;             * We also will create the base entity handler for our game here
+<i>149</i>&nbsp;             */
+<i>150</i>&nbsp;            public void run() {
+<i>151</i>&nbsp;
+<b class="nc"><i>152</i>&nbsp;                if(!lobbySettingsMessage) {</b>
+<b class="nc"><i>153</i>&nbsp;                    log(&quot;Waiting for the lobby settings message.&quot;);</b>
+<b class="nc"><i>154</i>&nbsp;                    log(String.format(&quot;number of users. %d.&quot;, numberConnected));</b>
+<i>155</i>&nbsp;                } else {
+<b class="nc"><i>156</i>&nbsp;                    if (numberConnected != forced_user_count) {</b>
+<b class="nc"><i>157</i>&nbsp;                        log(String.format(&quot;Waiting for correct number of users. %d/%d.&quot;, numberConnected, forced_user_count));</b>
+<i>158</i>&nbsp;                    } else {
+<i>159</i>&nbsp;                        // We have all users connected
+<b class="nc"><i>160</i>&nbsp;                        if (!initMessage) {</b>
+<b class="nc"><i>161</i>&nbsp;                            log(&quot;Creating &amp; sending initial Entity Handler to connected users.&quot;);</b>
+<b class="nc"><i>162</i>&nbsp;                            game.createInitialEntityHandler(forced_user_count, lobbySettings, idNameMap);</b>
+<i>163</i>&nbsp;
+<b class="nc"><i>164</i>&nbsp;                            broadCastEntityHandler(&quot;initialUpdate&quot;, game.entityHandler);</b>
+<i>165</i>&nbsp;
+<b class="nc"><i>166</i>&nbsp;                            initMessage = true;</b>
+<i>167</i>&nbsp;                        } else {
+<b class="nc"><i>168</i>&nbsp;                            log(&quot;Sending usual update.&quot;);</b>
+<b class="nc"><i>169</i>&nbsp;                            if (!checkValidConnections()) {</b>
+<b class="nc"><i>170</i>&nbsp;                                error(&quot;User timed out&quot;, &quot;Ending the game&quot;);</b>
+<b class="nc"><i>171</i>&nbsp;                                endGame();</b>
+<i>172</i>&nbsp;                                return;
+<i>173</i>&nbsp;                            }
+<i>174</i>&nbsp;
+<b class="nc"><i>175</i>&nbsp;                            currentTime = System.currentTimeMillis();</b>
+<b class="nc"><i>176</i>&nbsp;                            game.entityHandler.teamsList = game.teamsList;</b>
+<b class="nc"><i>177</i>&nbsp;                            game.cyclePhysics();</b>
+<b class="nc"><i>178</i>&nbsp;                            if ((currentTime - game.timeStarted) &lt; game.settings.getTimeLimit()) {</b>
+<b class="nc"><i>179</i>&nbsp;                                broadCastEntityHandler(&quot;update&quot;, game.entityHandler);</b>
+<i>180</i>&nbsp;                                // reset heldLength
+<b class="nc"><i>181</i>&nbsp;                                heldLength = new double[MAX_USERS];</b>
+<i>182</i>&nbsp;                            } else {
+<i>183</i>&nbsp;                                // the game should end as time-up
+<b class="nc"><i>184</i>&nbsp;                                endGame();</b>
+<i>185</i>&nbsp;                            }
+<i>186</i>&nbsp;                        }
+<i>187</i>&nbsp;                    }
+<i>188</i>&nbsp;                }
+<i>189</i>&nbsp;            }
+<i>190</i>&nbsp;
+<i>191</i>&nbsp;            public void endGame() {
+<b class="nc"><i>192</i>&nbsp;                log(&quot;Game&quot;, &quot;TIME UP&quot;);</b>
+<i>193</i>&nbsp;
+<b class="nc"><i>194</i>&nbsp;                broadCastEntityHandler(&quot;endUpdate&quot;, game.entityHandler);</b>
+<i>195</i>&nbsp;
+<b class="nc"><i>196</i>&nbsp;                for (SocketChannel socketChannel : channelArr) {</b>
+<b class="nc"><i>197</i>&nbsp;                    if (socketChannel == null)</b>
+<b class="nc"><i>198</i>&nbsp;                        continue;</b>
+<i>199</i>&nbsp;
+<i>200</i>&nbsp;                    try {
+<b class="nc"><i>201</i>&nbsp;                        socketChannel.close();</b>
+<b class="nc"><i>202</i>&nbsp;                    } catch (Exception e) {</b>
+<b class="nc"><i>203</i>&nbsp;                        e.printStackTrace();</b>
+<b class="nc"><i>204</i>&nbsp;                    }</b>
+<i>205</i>&nbsp;                }
+<i>206</i>&nbsp;
+<b class="nc"><i>207</i>&nbsp;                setupGame();</b>
+<i>208</i>&nbsp;            }
+<i>209</i>&nbsp;
+<i>210</i>&nbsp;
+<i>211</i>&nbsp;            /**
+<i>212</i>&nbsp;             * Sends an entity handler to every connected user.
+<i>213</i>&nbsp;             * @param type The message type.
+<i>214</i>&nbsp;             * @param entityHandler The EntityHandler.
+<i>215</i>&nbsp;             */
+<i>216</i>&nbsp;            private void broadCastEntityHandler(String type, EntityHandler entityHandler) {
+<i>217</i>&nbsp;                // Set up base message
+<b class="nc"><i>218</i>&nbsp;                Message message = new Message(type);</b>
+<b class="nc"><i>219</i>&nbsp;                message.entityHandler = entityHandler;</b>
+<b class="nc"><i>220</i>&nbsp;                message.tankToHeldLength = createTankHeldLengthMap();</b>
+<b class="nc"><i>221</i>&nbsp;                message.timeRemaining = lobbySettings.getTimeLimit() - (currentTime - game.timeStarted);</b>
+<i>222</i>&nbsp;
+<b class="nc"><i>223</i>&nbsp;                if (type.equals(&quot;initialUpdate&quot;)) {</b>
+<b class="nc"><i>224</i>&nbsp;                    message.lobbySettings = lobbySettings;</b>
+<b class="nc"><i>225</i>&nbsp;                    message.tankToNameMap = game.tankToNameMap;</b>
+<b class="nc"><i>226</i>&nbsp;                    message.teamsList = game.teamsList;</b>
+<b class="nc"><i>227</i>&nbsp;                    message.timeRemaining = lobbySettings.getTimeLimit();</b>
+<i>228</i>&nbsp;                }
+<i>229</i>&nbsp;
+<b class="nc"><i>230</i>&nbsp;                log(&quot;Broadcast&quot;, message);</b>
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;                // Loop over all channels
+<b class="nc"><i>233</i>&nbsp;                for (SocketChannel channel : channelArr) {</b>
+<b class="nc"><i>234</i>&nbsp;                    if (channel == null)</b>
+<b class="nc"><i>235</i>&nbsp;                        continue;</b>
+<i>236</i>&nbsp;
+<i>237</i>&nbsp;                    // Send the ID of the lastProcessed packet from client
+<i>238</i>&nbsp;                    // Send the tankID too :)
+<b class="nc"><i>239</i>&nbsp;                    int id = userIDMap.get(channel);</b>
+<b class="nc"><i>240</i>&nbsp;                    message.packetNum = lastProcessedInput[id];</b>
+<i>241</i>&nbsp;
+<b class="nc"><i>242</i>&nbsp;                    if (type.equals(&quot;initialUpdate&quot;)) {</b>
+<b class="nc"><i>243</i>&nbsp;                        String name = game.IDTankMap.get(id);</b>
+<b class="nc"><i>244</i>&nbsp;                        message.stringData = name;</b>
+<b class="nc"><i>245</i>&nbsp;                        message.teamID = game.IDTeamMap.get(name);</b>
+<i>246</i>&nbsp;                    }
+<i>247</i>&nbsp;
+<b class="nc"><i>248</i>&nbsp;                    sendMessage(channel, message);</b>
+<i>249</i>&nbsp;                }
+<i>250</i>&nbsp;            }
+<i>251</i>&nbsp;        };
+<i>252</i>&nbsp;
+<b class="nc"><i>253</i>&nbsp;        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);</b>
+<b class="nc"><i>254</i>&nbsp;        executor.scheduleAtFixedRate(updater, 0, updatePeriod, TimeUnit.MILLISECONDS);</b>
+<i>255</i>&nbsp;
+<b class="nc"><i>256</i>&nbsp;        log(&quot;Updater Started w/ period: &quot; + updatePeriod);</b>
+<i>257</i>&nbsp;    }
+<i>258</i>&nbsp;
+<i>259</i>&nbsp;    /**
+<i>260</i>&nbsp;     * This method is checking when the last time a message was received from the users.
+<i>261</i>&nbsp;     * If it was more than N seconds, then end the game.
+<i>262</i>&nbsp;     * @return true if all connections are still valid
+<i>263</i>&nbsp;     */
+<i>264</i>&nbsp;    private boolean checkValidConnections() {
+<b class="nc"><i>265</i>&nbsp;        for (long time : lastHeard)</b>
+<b class="nc"><i>266</i>&nbsp;            if (time != -1 &amp;&amp; System.currentTimeMillis() - time &gt; 5000)</b>
+<b class="nc"><i>267</i>&nbsp;                return false;</b>
+<b class="nc"><i>268</i>&nbsp;        return true;</b>
+<i>269</i>&nbsp;    }
+<i>270</i>&nbsp;
+<i>271</i>&nbsp;    /**
+<i>272</i>&nbsp;     * Create a map of tank names to their latest held length.
+<i>273</i>&nbsp;     * @return a map of tank names to their latest held length.
+<i>274</i>&nbsp;     */
+<i>275</i>&nbsp;    private HashMap&lt;String, Double&gt; createTankHeldLengthMap() {
+<b class="nc"><i>276</i>&nbsp;        HashMap&lt;String, Double&gt; tankToHeldFiredLength = new HashMap&lt;&gt;();</b>
+<b class="nc"><i>277</i>&nbsp;        for (int i = 0; i &lt; heldLength.length; i++)</b>
+<b class="nc"><i>278</i>&nbsp;            tankToHeldFiredLength.put(game.IDTankMap.get(i), heldLength[i]);</b>
+<i>279</i>&nbsp;
+<b class="nc"><i>280</i>&nbsp;        return tankToHeldFiredLength;</b>
+<i>281</i>&nbsp;    }
+<i>282</i>&nbsp;
+<i>283</i>&nbsp;    /**
+<i>284</i>&nbsp;     * Makes the selector repeatedly check for new messages.
+<i>285</i>&nbsp;     * @throws IOException If the server&#39;s selector fails to select, there is an issue so throws an exception.
+<i>286</i>&nbsp;     */
+<i>287</i>&nbsp;    private void startListener() throws IOException {
+<i>288</i>&nbsp;        while (true) {
+<i>289</i>&nbsp;            // wait for events
+<b class="nc"><i>290</i>&nbsp;            this.selector.select();</b>
+<i>291</i>&nbsp;
+<i>292</i>&nbsp;            // work on selected keys
+<b class="nc"><i>293</i>&nbsp;            Iterator&lt;SelectionKey&gt; keys = this.selector.selectedKeys().iterator();</b>
+<b class="nc"><i>294</i>&nbsp;            while (keys.hasNext()) {</b>
+<b class="nc"><i>295</i>&nbsp;                SelectionKey key = keys.next();</b>
+<i>296</i>&nbsp;
+<i>297</i>&nbsp;                // this is necessary to prevent the same key from coming up again the next time around.
+<b class="nc"><i>298</i>&nbsp;                keys.remove();</b>
+<i>299</i>&nbsp;
+<b class="nc"><i>300</i>&nbsp;                if (!key.isValid())</b>
+<b class="nc"><i>301</i>&nbsp;                    continue;</b>
+<i>302</i>&nbsp;
+<b class="nc"><i>303</i>&nbsp;                if (key.isAcceptable())</b>
+<b class="nc"><i>304</i>&nbsp;                    this.accept(key);</b>
+<i>305</i>&nbsp;
+<b class="nc"><i>306</i>&nbsp;                if (key.isReadable())</b>
+<b class="nc"><i>307</i>&nbsp;                    this.read(key);</b>
+<b class="nc"><i>308</i>&nbsp;            }</b>
+<b class="nc"><i>309</i>&nbsp;        }</b>
+<i>310</i>&nbsp;    }
+<i>311</i>&nbsp;
+<i>312</i>&nbsp;    /**
+<i>313</i>&nbsp;     * Accepts a new key to another client.
+<i>314</i>&nbsp;     * @param key The key which is being accepted.
+<i>315</i>&nbsp;     * @throws IOException If the accept failed, we throw an exception.
+<i>316</i>&nbsp;     */
+<i>317</i>&nbsp;    private void accept(SelectionKey key) throws IOException {
+<b class="nc"><i>318</i>&nbsp;        ServerSocketChannel serverChannel = (ServerSocketChannel) key.channel();</b>
+<b class="nc"><i>319</i>&nbsp;        SocketChannel channel = serverChannel.accept();</b>
+<b class="nc"><i>320</i>&nbsp;        channel.configureBlocking(false);</b>
+<b class="nc"><i>321</i>&nbsp;        log(channel, &quot;Connected.&quot;);</b>
+<i>322</i>&nbsp;
+<i>323</i>&nbsp;        // register channel with selector for further IO
+<b class="nc"><i>324</i>&nbsp;        channel.register(this.selector, SelectionKey.OP_READ);</b>
+<i>325</i>&nbsp;    }
+<i>326</i>&nbsp;
+<i>327</i>&nbsp;    /**
+<i>328</i>&nbsp;     * Reads data from a client.
+<i>329</i>&nbsp;     * @param key The key to read from.
+<i>330</i>&nbsp;     * @throws IOException If the read failed, we throw an exception.
+<i>331</i>&nbsp;     */
+<i>332</i>&nbsp;    private void read(SelectionKey key) throws IOException {
+<b class="nc"><i>333</i>&nbsp;        SocketChannel channel = (SocketChannel) key.channel();</b>
+<i>334</i>&nbsp;
+<b class="nc"><i>335</i>&nbsp;        ByteBuffer buffer = ByteBuffer.allocate(1000000);</b>
+<b class="nc"><i>336</i>&nbsp;        int numRead = -1;</b>
+<b class="nc"><i>337</i>&nbsp;        numRead = channel.read(buffer);</b>
+<i>338</i>&nbsp;
+<i>339</i>&nbsp;        // -1 means the read broke
+<b class="nc"><i>340</i>&nbsp;        if (numRead == -1) {</b>
+<b class="nc"><i>341</i>&nbsp;            log(channel, &quot;Connection closed by client&quot;);</b>
+<b class="nc"><i>342</i>&nbsp;            numberConnected--;</b>
+<b class="nc"><i>343</i>&nbsp;            channel.close();</b>
+<b class="nc"><i>344</i>&nbsp;            key.cancel();</b>
+<i>345</i>&nbsp;            return;
+<i>346</i>&nbsp;        }
+<i>347</i>&nbsp;
+<b class="nc"><i>348</i>&nbsp;        byte[] data = buffer.array();</b>
+<i>349</i>&nbsp;
+<i>350</i>&nbsp;        try {
+<b class="nc"><i>351</i>&nbsp;            Message message = SerializationUtils.deserialize(data);</b>
+<b class="nc"><i>352</i>&nbsp;            processMessage(channel, message);</b>
+<b class="nc"><i>353</i>&nbsp;        } catch (SerializationException e) {</b>
+<b class="nc"><i>354</i>&nbsp;            error(&quot;Serialisation Exception&quot;);</b>
+<b class="nc"><i>355</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>356</i>&nbsp;        } catch (Exception e) {</b>
+<b class="nc"><i>357</i>&nbsp;            error(&quot;Exception from process&quot;);</b>
+<b class="nc"><i>358</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>359</i>&nbsp;        }</b>
+<i>360</i>&nbsp;
+<b class="nc"><i>361</i>&nbsp;        buffer.clear();</b>
+<i>362</i>&nbsp;    }
+<i>363</i>&nbsp;
+<i>364</i>&nbsp;    /**
+<i>365</i>&nbsp;     * We need to take the message from the client and update the server accordingly.
+<i>366</i>&nbsp;     * @param channel The client&#39;s channel.
+<i>367</i>&nbsp;     * @param message The message.
+<i>368</i>&nbsp;     */
+<i>369</i>&nbsp;    private void processMessage(SocketChannel channel, Message message) {
+<b class="nc"><i>370</i>&nbsp;        log(channel, &quot;Received: &quot; + message);</b>
+<b class="nc"><i>371</i>&nbsp;        switch (message.type) {</b>
+<i>372</i>&nbsp;            case &quot;register&quot;:
+<i>373</i>&nbsp;                // Set up server information
+<b class="nc"><i>374</i>&nbsp;                userIDMap.put(channel, idNum);</b>
+<b class="nc"><i>375</i>&nbsp;                channelArr[idNum] = channel;</b>
+<b class="nc"><i>376</i>&nbsp;                numberConnected++;</b>
+<b class="nc"><i>377</i>&nbsp;                lastProcessedInput[idNum] = message.packetNum;</b>
+<b class="nc"><i>378</i>&nbsp;                String username = message.name;</b>
+<i>379</i>&nbsp;                // If the username is already in the map, give a different username
+<b class="nc"><i>380</i>&nbsp;                if (idNameMap.values().contains(username))</b>
+<b class="nc"><i>381</i>&nbsp;                    username += &quot;1&quot;;</b>
+<i>382</i>&nbsp;
+<b class="nc"><i>383</i>&nbsp;                int i = 2;</b>
+<b class="nc"><i>384</i>&nbsp;                while (idNameMap.values().contains(username))</b>
+<b class="nc"><i>385</i>&nbsp;                    username = username.substring(0, -2) + i++;</b>
+<i>386</i>&nbsp;
+<b class="nc"><i>387</i>&nbsp;                idNameMap.put(idNum, username);</b>
+<i>388</i>&nbsp;
+<i>389</i>&nbsp;                // Reply to client with its ID
+<b class="nc"><i>390</i>&nbsp;                Message reply = new Message(&quot;accepted&quot;);</b>
+<b class="nc"><i>391</i>&nbsp;                if (idNum == 0)</b>
+<b class="nc"><i>392</i>&nbsp;                    reply.stringData = &quot;leader&quot;;</b>
+<i>393</i>&nbsp;
+<b class="nc"><i>394</i>&nbsp;                reply.name = username;</b>
+<i>395</i>&nbsp;
+<b class="nc"><i>396</i>&nbsp;                sendMessage(channel, reply);</b>
+<b class="nc"><i>397</i>&nbsp;                idNum++;</b>
+<b class="nc"><i>398</i>&nbsp;                break;</b>
+<i>399</i>&nbsp;            case &quot;lobby&quot;:
+<b class="nc"><i>400</i>&nbsp;                if (!userIDMap.containsKey(channel)) {</b>
+<b class="nc"><i>401</i>&nbsp;                    error(channel, &quot;This channel does not have an associated ID.&quot;);</b>
+<b class="nc"><i>402</i>&nbsp;                    break;</b>
+<i>403</i>&nbsp;                }
+<i>404</i>&nbsp;
+<b class="nc"><i>405</i>&nbsp;                if (lobbySettingsMessage)</b>
+<b class="nc"><i>406</i>&nbsp;                    break;</b>
+<i>407</i>&nbsp;
+<b class="nc"><i>408</i>&nbsp;                this.lobbySettings = message.lobbySettings;</b>
+<b class="nc"><i>409</i>&nbsp;                this.forced_user_count = lobbySettings.getNumberOfPlayers();</b>
+<b class="nc"><i>410</i>&nbsp;                lobbySettingsMessage = true;</b>
+<b class="nc"><i>411</i>&nbsp;                break;</b>
+<i>412</i>&nbsp;            case &quot;update&quot;:
+<b class="nc"><i>413</i>&nbsp;                if (!userIDMap.containsKey(channel)) {</b>
+<b class="nc"><i>414</i>&nbsp;                    error(channel, &quot;This channel does not have an associated ID.&quot;);</b>
+<b class="nc"><i>415</i>&nbsp;                    break;</b>
+<i>416</i>&nbsp;                }
+<i>417</i>&nbsp;
+<b class="nc"><i>418</i>&nbsp;                int id = userIDMap.get(channel);</b>
+<i>419</i>&nbsp;
+<i>420</i>&nbsp;                // Get the data
+<b class="nc"><i>421</i>&nbsp;                EntityHandler eh = message.entityHandler;</b>
+<b class="nc"><i>422</i>&nbsp;                Integer[] keysPressed = message.keysPressed;</b>
+<b class="nc"><i>423</i>&nbsp;                boolean shotFired = message.shotFired;</b>
+<b class="nc"><i>424</i>&nbsp;                double mouseHeldTime = message.mouseHeldTime;</b>
+<b class="nc"><i>425</i>&nbsp;                double currentMouseHeldTime = message.currentMouseHeldTime;</b>
+<i>426</i>&nbsp;
+<b class="nc"><i>427</i>&nbsp;                heldLength[id] = currentMouseHeldTime;</b>
+<b class="nc"><i>428</i>&nbsp;                if (shotFired)</b>
+<b class="nc"><i>429</i>&nbsp;                    shotFiredLength[id] = currentMouseHeldTime;</b>
+<i>430</i>&nbsp;
+<i>431</i>&nbsp;                // Update the Game
+<b class="nc"><i>432</i>&nbsp;                game.cycle(id, eh, keysPressed, mouseHeldTime);</b>
+<i>433</i>&nbsp;
+<i>434</i>&nbsp;                // Record the ID of the packet
+<b class="nc"><i>435</i>&nbsp;                lastHeard[id] = System.currentTimeMillis();</b>
+<b class="nc"><i>436</i>&nbsp;                lastProcessedInput[id] = message.packetNum;</b>
+<b class="nc"><i>437</i>&nbsp;                break;</b>
+<i>438</i>&nbsp;            case &quot;debug&quot;:
+<b class="nc"><i>439</i>&nbsp;                log(channel, message);</b>
+<b class="nc"><i>440</i>&nbsp;                Message msg = new Message(&quot;debug&quot;);</b>
+<b class="nc"><i>441</i>&nbsp;                msg.stringData = &quot;This is response from server&quot;;</b>
+<b class="nc"><i>442</i>&nbsp;                sendMessage(channel, msg);</b>
+<b class="nc"><i>443</i>&nbsp;                break;</b>
+<i>444</i>&nbsp;            default:
+<i>445</i>&nbsp;                break;
+<i>446</i>&nbsp;        }
+<i>447</i>&nbsp;
+<i>448</i>&nbsp;    }
+<i>449</i>&nbsp;
+<i>450</i>&nbsp;    /**
+<i>451</i>&nbsp;     * Writes to a channel with a given message.
+<i>452</i>&nbsp;     * @param channel The channel to write to.
+<i>453</i>&nbsp;     * @param message The message to write.
+<i>454</i>&nbsp;     */
+<i>455</i>&nbsp;    private void sendMessage(SocketChannel channel, Message message) {
+<b class="nc"><i>456</i>&nbsp;        ByteBuffer bytes = ByteBuffer.wrap(SerializationUtils.serialize(message));</b>
+<i>457</i>&nbsp;        try {
+<b class="nc"><i>458</i>&nbsp;            log(channel, &quot;Sending: &quot; + message);</b>
+<b class="nc"><i>459</i>&nbsp;            channel.write(bytes);</b>
+<b class="nc"><i>460</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>461</i>&nbsp;            error(channel, &quot;Failed to send message: &quot; + message);</b>
+<i>462</i>&nbsp;//            count_failed++;
+<b class="nc"><i>463</i>&nbsp;            e.printStackTrace();</b>
+<i>464</i>&nbsp;//            if(count_failed &gt; 4) {
+<i>465</i>&nbsp;//                for (SocketChannel socketChannel : channelArr) {
+<i>466</i>&nbsp;//                    if (socketChannel == null)
+<i>467</i>&nbsp;//                        continue;
+<i>468</i>&nbsp;//
+<i>469</i>&nbsp;//                    try {
+<i>470</i>&nbsp;//                        socketChannel.close();
+<i>471</i>&nbsp;//                    } catch (Exception ex) {
+<i>472</i>&nbsp;//                        ex.printStackTrace();
+<i>473</i>&nbsp;//                    }
+<i>474</i>&nbsp;//                }
+<i>475</i>&nbsp;//
+<i>476</i>&nbsp;//                setupGame();
+<i>477</i>&nbsp;//            }
+<b class="nc"><i>478</i>&nbsp;        }</b>
+<i>479</i>&nbsp;    }
+<i>480</i>&nbsp;
+<i>481</i>&nbsp;    /**
+<i>482</i>&nbsp;     * Output to the server&#39;s console. Takes a channel to add the address before the message.
+<i>483</i>&nbsp;     * Calls .getRemoteAddress() on the channel and .toString() on the provided object.
+<i>484</i>&nbsp;     * &lt;p&gt; EG:
+<i>485</i>&nbsp;     * &lt;p&gt;{@code [/192.168.0.15:2131] This is an example message}
+<i>486</i>&nbsp;     * @param channel The channel.
+<i>487</i>&nbsp;     * @param message The message to write.
+<i>488</i>&nbsp;     */
+<i>489</i>&nbsp;    public static void log(SocketChannel channel, Object message) {
+<b class="nc"><i>490</i>&nbsp;        if (message != null) {</b>
+<i>491</i>&nbsp;            try {
+<b class="nc"><i>492</i>&nbsp;                System.out.println(&quot;[&quot; + channel.getRemoteAddress() + &quot;] &quot; + message.toString());</b>
+<b class="nc"><i>493</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>494</i>&nbsp;                e.printStackTrace();</b>
+<b class="nc"><i>495</i>&nbsp;            }</b>
+<i>496</i>&nbsp;        }
+<i>497</i>&nbsp;    }
+<i>498</i>&nbsp;
+<i>499</i>&nbsp;    /**
+<i>500</i>&nbsp;     * Output to the server&#39;s console. Takes a name to add the address before the message. Calls .toString() on the provided objects.
+<i>501</i>&nbsp;     * &lt;p&gt; EG:
+<i>502</i>&nbsp;     * &lt;p&gt;{@code [XYZ] This is an example message}
+<i>503</i>&nbsp;     * @param name The name.
+<i>504</i>&nbsp;     * @param message The message to write.
+<i>505</i>&nbsp;     */
+<i>506</i>&nbsp;    public static void log(Object name, Object message) {
+<b class="nc"><i>507</i>&nbsp;        if (message != null &amp;&amp; name != null)</b>
+<b class="nc"><i>508</i>&nbsp;            System.out.println(&quot;[&quot; + name.toString() + &quot;] &quot; + message.toString());</b>
+<i>509</i>&nbsp;    }
+<i>510</i>&nbsp;
+<i>511</i>&nbsp;    /**
+<i>512</i>&nbsp;     * Output to the server&#39;s console. Calls .toString() on the provided object.
+<i>513</i>&nbsp;     * &lt;p&gt; EG:
+<i>514</i>&nbsp;     * &lt;p&gt;{@code This is an example message}
+<i>515</i>&nbsp;     * @param message The message to write.
+<i>516</i>&nbsp;     */
+<i>517</i>&nbsp;    public static void log(Object message) {
+<b class="nc"><i>518</i>&nbsp;        if (message != null)</b>
+<b class="nc"><i>519</i>&nbsp;            System.out.println(message.toString());</b>
+<i>520</i>&nbsp;    }
+<i>521</i>&nbsp;
+<i>522</i>&nbsp;    /**
+<i>523</i>&nbsp;     * Output to the server&#39;s console as an error. Takes a channel to add the address before the message.
+<i>524</i>&nbsp;     * Calls .getRemoteAddress() on the channel and .toString() on the provided object.
+<i>525</i>&nbsp;     * &lt;p&gt; EG:
+<i>526</i>&nbsp;     * &lt;p&gt;{@code [/192.168.0.15:2131] This is an example message}
+<i>527</i>&nbsp;     * @param channel The channel.
+<i>528</i>&nbsp;     * @param message The message to write.
+<i>529</i>&nbsp;     */
+<i>530</i>&nbsp;    public static void error(SocketChannel channel, Object message) {
+<b class="nc"><i>531</i>&nbsp;        if (message != null) {</b>
+<i>532</i>&nbsp;            try {
+<b class="nc"><i>533</i>&nbsp;                System.err.println(&quot;[&quot; + channel.getRemoteAddress() + &quot;] &quot; + message.toString());</b>
+<b class="nc"><i>534</i>&nbsp;            } catch (IOException e) {</b>
+<b class="nc"><i>535</i>&nbsp;                e.printStackTrace();</b>
+<b class="nc"><i>536</i>&nbsp;            }</b>
+<i>537</i>&nbsp;        }
+<i>538</i>&nbsp;    }
+<i>539</i>&nbsp;
+<i>540</i>&nbsp;    /**
+<i>541</i>&nbsp;     * Output to the server&#39;s console as an error. Takes a name to add the address before the message. Calls .toString() on the provided objects.
+<i>542</i>&nbsp;     * &lt;p&gt; EG:
+<i>543</i>&nbsp;     * &lt;p&gt;{@code [XYZ] This is an example message}
+<i>544</i>&nbsp;     * @param name The name.
+<i>545</i>&nbsp;     * @param message The message to write.
+<i>546</i>&nbsp;     */
+<i>547</i>&nbsp;    public static void error(Object name, Object message) {
+<b class="nc"><i>548</i>&nbsp;        if (message != null &amp;&amp; name != null)</b>
+<b class="nc"><i>549</i>&nbsp;            System.err.println(&quot;[&quot; + name.toString() + &quot;] &quot; + message.toString());</b>
+<i>550</i>&nbsp;    }
+<i>551</i>&nbsp;
+<i>552</i>&nbsp;    /**
+<i>553</i>&nbsp;     * Output to the server&#39;s console as an error. Calls .toString() on the provided object.
+<i>554</i>&nbsp;     * &lt;p&gt; EG:
+<i>555</i>&nbsp;     * &lt;p&gt;{@code This is an example message}
+<i>556</i>&nbsp;     * @param message The message to write.
+<i>557</i>&nbsp;     */
+<i>558</i>&nbsp;    public static void error(Object message) {
+<b class="nc"><i>559</i>&nbsp;        if (message != null)</b>
+<b class="nc"><i>560</i>&nbsp;            System.err.println(message.toString());</b>
+<i>561</i>&nbsp;    }
+<i>562</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

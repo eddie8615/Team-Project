@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: MainMenuScene</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.scenes</a> ]
+</div>
+
+<h1>Coverage Summary for Class: MainMenuScene (org.cauldron.scenes)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">MainMenuScene</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    98.8%
+  </span>
+  <span class="absValue">
+    (79/ 80)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.scenes;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.ai.BasicAi;
+<i>4</i>&nbsp;import org.cauldron.audio.AudioManager;
+<i>5</i>&nbsp;import org.cauldron.entity.Entity;
+<i>6</i>&nbsp;import org.cauldron.entity.EntityHandler;
+<i>7</i>&nbsp;import org.cauldron.entity.entities.Tank;
+<i>8</i>&nbsp;import org.cauldron.game.*;
+<i>9</i>&nbsp;import org.cauldron.renderer.Backdrop;
+<i>10</i>&nbsp;import org.cauldron.renderer.BackdropScroller;
+<i>11</i>&nbsp;import org.cauldron.renderer.Renderer;
+<i>12</i>&nbsp;import org.cauldron.renderer.TextureHandler;
+<i>13</i>&nbsp;import org.cauldron.renderer.layers.BackdropLayer;
+<i>14</i>&nbsp;import org.cauldron.renderer.layers.GUILayer;
+<i>15</i>&nbsp;import org.cauldron.renderer.layers.ModelLayer;
+<i>16</i>&nbsp;import org.cauldron.renderer.layers.TerrainLayer;
+<i>17</i>&nbsp;import org.cauldron.ui.UIHandler;
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.nk_window_set_focus;
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;public class MainMenuScene extends Scene {
+<b class="fc"><i>22</i>&nbsp;    public ModelLayer modelLayer = new ModelLayer();</b>
+<b class="fc"><i>23</i>&nbsp;    TerrainLayer terrainLayer = new TerrainLayer();</b>
+<b class="fc"><i>24</i>&nbsp;    BackdropLayer backdropLayer = new BackdropLayer();</b>
+<b class="fc"><i>25</i>&nbsp;    public EntityHandler entityHandler = new EntityHandler();</b>
+<i>26</i>&nbsp;    public Terrain map;
+<b class="fc"><i>27</i>&nbsp;    private BasicAi aiTank1 = new BasicAi();</b>
+<b class="fc"><i>28</i>&nbsp;    private BasicAi aiTank2 = new BasicAi();</b>
+<i>29</i>&nbsp;    private String tankAi1ID;
+<i>30</i>&nbsp;    private String tankAi2ID;
+<b class="fc"><i>31</i>&nbsp;    BackdropScroller bScroll = null;</b>
+<i>32</i>&nbsp;
+<b class="fc"><i>33</i>&nbsp;    public MainMenuScene(GUILayer guiLayer) {</b>
+<i>34</i>&nbsp;        // Clean the animations from a previous scene
+<b class="fc"><i>35</i>&nbsp;        TextureHandler.wipeAnimations();</b>
+<b class="fc"><i>36</i>&nbsp;        super.guiLayer = guiLayer;</b>
+<b class="fc"><i>37</i>&nbsp;        map = new Terrain(25);</b>
+<b class="fc"><i>38</i>&nbsp;        MapLoader.setTerrain(map);</b>
+<b class="fc"><i>39</i>&nbsp;        MapLoader.load(&quot;Default&quot;);</b>
+<b class="fc"><i>40</i>&nbsp;        this.setType(Game.SceneType.MAINMENU);</b>
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;        // Battle of AI tanks in background
+<i>43</i>&nbsp;        // Create entities
+<b class="fc"><i>44</i>&nbsp;        tankAi1ID = entityHandler.createTank(&quot;red&quot;).name;</b>
+<b class="fc"><i>45</i>&nbsp;        tankAi2ID = entityHandler.createTank(&quot;purple&quot;).name;</b>
+<b class="fc"><i>46</i>&nbsp;        aiTank1.setId(tankAi1ID);</b>
+<b class="fc"><i>47</i>&nbsp;        aiTank2.setId(tankAi2ID);</b>
+<b class="fc"><i>48</i>&nbsp;        entityHandler.setPos(tankAi2ID, 1300, 450);</b>
+<b class="fc"><i>49</i>&nbsp;        entityHandler.createGround(map);</b>
+<i>50</i>&nbsp;
+<i>51</i>&nbsp;        // Initialise AudioManager
+<b class="fc"><i>52</i>&nbsp;        AudioManager.setSources(new String[]{&quot;bg&quot;, tankAi1ID, tankAi2ID});</b>
+<b class="fc"><i>53</i>&nbsp;        AudioManager.play(&quot;bg&quot;, &quot;Song_For_Michael&quot;, true);</b>
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;        // Initialise the layers
+<b class="fc"><i>56</i>&nbsp;        modelLayer.setup();</b>
+<b class="fc"><i>57</i>&nbsp;        terrainLayer.setTerrain(map);</b>
+<b class="fc"><i>58</i>&nbsp;        terrainLayer.setup();</b>
+<b class="fc"><i>59</i>&nbsp;        backdropLayer.setup();</b>
+<b class="fc"><i>60</i>&nbsp;        backdropLayer.setBackdrops(new Backdrop[]{new Backdrop(TextureHandler.getTextureID(&quot;clouds_fg&quot;)),</b>
+<b class="fc"><i>61</i>&nbsp;                new Backdrop(TextureHandler.getTextureID(&quot;clouds_bg&quot;)),</b>
+<b class="fc"><i>62</i>&nbsp;                new Backdrop(TextureHandler.getTextureID(&quot;sky&quot;))});</b>
+<b class="fc"><i>63</i>&nbsp;        bScroll = new BackdropScroller(backdropLayer, 1, 200);</b>
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;        // Enable various necessary UI elements for this Scene
+<b class="fc"><i>66</i>&nbsp;        UIHandler.disableAll();</b>
+<b class="fc"><i>67</i>&nbsp;        UIHandler.enable(&quot;Title&quot;);</b>
+<b class="fc"><i>68</i>&nbsp;        UIHandler.enable(&quot;MainMenu&quot;);</b>
+<b class="fc"><i>69</i>&nbsp;        nk_window_set_focus(guiLayer.getContext(), &quot;MainMenu&quot;);</b>
+<b class="fc"><i>70</i>&nbsp;        modelLayer.setEntities(entityHandler);</b>
+<i>71</i>&nbsp;
+<b class="fc"><i>72</i>&nbsp;        Renderer.clear();</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    @Override
+<i>76</i>&nbsp;    public void cycle() {
+<b class="pc"><i>77</i>&nbsp;        if (Settings.fps)</b>
+<b class="nc"><i>78</i>&nbsp;            UIHandler.enable(&quot;FPSCounter&quot;);</b>
+<i>79</i>&nbsp;        else
+<b class="fc"><i>80</i>&nbsp;            UIHandler.disable(&quot;FPSCounter&quot;);</b>
+<i>81</i>&nbsp;
+<i>82</i>&nbsp;        // Polling input and clearing the framebuffer
+<b class="fc"><i>83</i>&nbsp;        Input.cycle();</b>
+<b class="fc"><i>84</i>&nbsp;        Renderer.clear();</b>
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;        //AI tanks behavior
+<b class="fc"><i>87</i>&nbsp;        aiTank1.updateProbabilities((float) entityHandler.getEntity(aiTank1.getId()).position.x, (float) entityHandler.getEntity(aiTank1.getId()).position.y);</b>
+<b class="fc"><i>88</i>&nbsp;        if (System.currentTimeMillis() - aiUpdate &gt; 2000)</b>
+<b class="fc"><i>89</i>&nbsp;            aiTank1.update((float) entityHandler.getEntity(aiTank1.getId()).position.x, (float) entityHandler.getEntity(aiTank1.getId()).position.y);</b>
+<b class="fc"><i>90</i>&nbsp;        BasicAi.processAi(aiTank1.move(), aiTank1.getId(), entityHandler);</b>
+<b class="fc"><i>91</i>&nbsp;        if (((Tank) entityHandler.getEntity(aiTank1.getId())).checkIfCanFire()) {</b>
+<b class="pc"><i>92</i>&nbsp;            if (aiTank1.isShot()) {</b>
+<b class="fc"><i>93</i>&nbsp;                float power = (float) (Math.random() * 4.5f + 0.5);</b>
+<b class="fc"><i>94</i>&nbsp;                entityHandler.fireProjectile(aiTank1.getId(), power);</b>
+<b class="fc"><i>95</i>&nbsp;                System.out.println(aiTank1.ranPos);</b>
+<b class="fc"><i>96</i>&nbsp;                System.out.println(power);</b>
+<b class="fc"><i>97</i>&nbsp;                AudioManager.play(tankAi1ID, &quot;CannonFire&quot;, false);</b>
+<i>98</i>&nbsp;            }
+<i>99</i>&nbsp;        }
+<i>100</i>&nbsp;
+<b class="fc"><i>101</i>&nbsp;        aiTank2.updateProbabilities((float) entityHandler.getEntity(aiTank2.getId()).position.x, (float) entityHandler.getEntity(aiTank2.getId()).position.y);</b>
+<b class="fc"><i>102</i>&nbsp;        if (System.currentTimeMillis() - aiUpdate &gt; 2000)</b>
+<b class="fc"><i>103</i>&nbsp;            aiTank2.update((float) entityHandler.getEntity(aiTank2.getId()).position.x, (float) entityHandler.getEntity(aiTank2.getId()).position.y);</b>
+<b class="fc"><i>104</i>&nbsp;        BasicAi.processAi(aiTank2.move(), aiTank2.getId(), entityHandler);</b>
+<b class="fc"><i>105</i>&nbsp;        if (((Tank) entityHandler.getEntity(aiTank2.getId())).checkIfCanFire()) {</b>
+<b class="pc"><i>106</i>&nbsp;            if (aiTank2.isShot()) {</b>
+<b class="fc"><i>107</i>&nbsp;                float power = (float) (Math.random() * 4.5f + 0.5);</b>
+<b class="fc"><i>108</i>&nbsp;                entityHandler.fireProjectile(aiTank2.getId(), power);</b>
+<b class="fc"><i>109</i>&nbsp;                System.out.println(aiTank2.ranPos);</b>
+<b class="fc"><i>110</i>&nbsp;                System.out.println(power);</b>
+<b class="fc"><i>111</i>&nbsp;                AudioManager.play(tankAi2ID, &quot;CannonFire&quot;, false);</b>
+<i>112</i>&nbsp;            }
+<i>113</i>&nbsp;        }
+<b class="fc"><i>114</i>&nbsp;        entityHandler.constrainTanks(map);</b>
+<b class="fc"><i>115</i>&nbsp;        entityHandler.constrainTurret(aiTank1.getId(), aiTank1.ranPos);</b>
+<b class="fc"><i>116</i>&nbsp;        entityHandler.constrainTurret(aiTank2.getId(), aiTank2.ranPos);</b>
+<i>117</i>&nbsp;
+<i>118</i>&nbsp;        // Rendering calls
+<b class="fc"><i>119</i>&nbsp;        Renderer.draw(backdropLayer);</b>
+<b class="fc"><i>120</i>&nbsp;        Renderer.draw(modelLayer);</b>
+<b class="fc"><i>121</i>&nbsp;        Renderer.draw(terrainLayer);</b>
+<b class="fc"><i>122</i>&nbsp;        Renderer.draw(guiLayer);</b>
+<i>123</i>&nbsp;
+<i>124</i>&nbsp;        // Physics, animations and removal of entities off-screen
+<b class="fc"><i>125</i>&nbsp;        long curTime = System.currentTimeMillis();</b>
+<b class="fc"><i>126</i>&nbsp;        entityHandler.updatePhysics(curTime - lastUpdated);</b>
+<b class="fc"><i>127</i>&nbsp;        TextureHandler.cycleAnimations(guiLayer);</b>
+<b class="fc"><i>128</i>&nbsp;        bScroll.cycle();</b>
+<b class="fc"><i>129</i>&nbsp;        lastUpdated = curTime;</b>
+<b class="fc"><i>130</i>&nbsp;        entityHandler.removeLostProjectiles();</b>
+<b class="fc"><i>131</i>&nbsp;        entityHandler.removeDeadParticles();</b>
+<i>132</i>&nbsp;    }
+<i>133</i>&nbsp;
+<i>134</i>&nbsp;    @Override
+<i>135</i>&nbsp;    void processInputs() {
+<i>136</i>&nbsp;    }
+<i>137</i>&nbsp;
+<i>138</i>&nbsp;    @Override
+<i>139</i>&nbsp;    public void cleanup() {
+<b class="fc"><i>140</i>&nbsp;        modelLayer.close();</b>
+<b class="fc"><i>141</i>&nbsp;        terrainLayer.close();</b>
+<b class="fc"><i>142</i>&nbsp;        backdropLayer.close();</b>
+<i>143</i>&nbsp;    }
+<i>144</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

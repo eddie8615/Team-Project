@@ -1,0 +1,380 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: DefaultStyle</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.styles</a> ]
+</div>
+
+<h1>Coverage Summary for Class: DefaultStyle (org.cauldron.ui.styles)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DefaultStyle</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    98.6%
+  </span>
+  <span class="absValue">
+    (215/ 218)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.styles;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.renderer.TextureHandler;
+<i>4</i>&nbsp;import org.lwjgl.nuklear.*;
+<i>5</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;public class DefaultStyle {
+<i>10</i>&nbsp;    static int skin;
+<i>11</i>&nbsp;    public NkImage check;
+<i>12</i>&nbsp;    public NkImage checkCursor;
+<i>13</i>&nbsp;    public NkImage option;
+<i>14</i>&nbsp;    public NkImage optionCursor;
+<i>15</i>&nbsp;    public NkImage header;
+<i>16</i>&nbsp;    public NkImage window;
+<i>17</i>&nbsp;    public NkImage scrollbarIncButton;
+<i>18</i>&nbsp;    public NkImage scrollbarIncButtonHover;
+<i>19</i>&nbsp;    public NkImage scrollbarDecButton;
+<i>20</i>&nbsp;    public NkImage scrollbarDecButtonHover;
+<i>21</i>&nbsp;    public NkImage button;
+<i>22</i>&nbsp;    public NkImage buttonHover;
+<i>23</i>&nbsp;    public NkImage buttonActive;
+<i>24</i>&nbsp;    public NkImage tabMini;
+<i>25</i>&nbsp;    public NkImage tabMax;
+<i>26</i>&nbsp;    public NkImage sliderBar;
+<i>27</i>&nbsp;    public NkImage sliderKnob;
+<i>28</i>&nbsp;    public NkImage edit;
+<i>29</i>&nbsp;
+<b class="fc"><i>30</i>&nbsp;    public DefaultStyle() {</b>
+<b class="fc"><i>31</i>&nbsp;        short width = 512;</b>
+<b class="fc"><i>32</i>&nbsp;        short height = 512;</b>
+<b class="pc"><i>33</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="fc"><i>34</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<b class="fc"><i>35</i>&nbsp;            skin = TextureHandler.getTextureID(&quot;gwen&quot;);</b>
+<b class="fc"><i>36</i>&nbsp;            check = nk_subimage_id(skin, width, height, nk_rect(464, 32, 15, 15, rect), NkImage.create());</b>
+<b class="fc"><i>37</i>&nbsp;            checkCursor = nk_subimage_id(skin, width, height, nk_rect(464, 34, 11, 11, rect), NkImage.create());</b>
+<b class="fc"><i>38</i>&nbsp;            option = nk_subimage_id(skin, width, height, nk_rect(464, 64, 15, 15, rect), NkImage.create());</b>
+<b class="fc"><i>39</i>&nbsp;            optionCursor = nk_subimage_id(skin, width, height, nk_rect(451, 67, 9, 9, rect), NkImage.create());</b>
+<b class="fc"><i>40</i>&nbsp;            header = nk_subimage_id(skin, width, height, nk_rect(128, 0, 127, 24, rect), NkImage.create());</b>
+<b class="fc"><i>41</i>&nbsp;            window = nk_subimage_id(skin, width, height, nk_rect(128, 23, 127, 104, rect), NkImage.create());</b>
+<b class="fc"><i>42</i>&nbsp;            scrollbarIncButton = nk_subimage_id(skin, width, height, nk_rect(464, 256, 15, 15, rect), NkImage.create());</b>
+<b class="fc"><i>43</i>&nbsp;            scrollbarIncButtonHover = nk_subimage_id(skin, width, height, nk_rect(464, 320, 15, 15, rect), NkImage.create());</b>
+<b class="fc"><i>44</i>&nbsp;            scrollbarDecButton = nk_subimage_id(skin, width, height, nk_rect(464, 224, 15, 15, rect), NkImage.create());</b>
+<b class="fc"><i>45</i>&nbsp;            scrollbarDecButtonHover = nk_subimage_id(skin, width, height, nk_rect(464, 288, 15, 15, rect), NkImage.create());</b>
+<b class="fc"><i>46</i>&nbsp;            button = TextureHandler.getTextureNk(&quot;button_long&quot;);</b>
+<b class="fc"><i>47</i>&nbsp;            buttonHover = TextureHandler.getTextureNk(&quot;button_long_hover&quot;);</b>
+<b class="fc"><i>48</i>&nbsp;            buttonActive = TextureHandler.getTextureNk(&quot;button_long_disabled&quot;);</b>
+<b class="fc"><i>49</i>&nbsp;            tabMini = nk_subimage_id(skin, width, height, nk_rect(451, 99, 9, 9, rect), NkImage.create());</b>
+<b class="fc"><i>50</i>&nbsp;            tabMax = nk_subimage_id(skin, width, height, nk_rect(467, 99, 9, 9, rect), NkImage.create());</b>
+<b class="fc"><i>51</i>&nbsp;            sliderBar = TextureHandler.getTextureNk(&quot;slider.9&quot;);</b>
+<b class="fc"><i>52</i>&nbsp;            sliderKnob = TextureHandler.getTextureNk(&quot;slider-knob.9&quot;);</b>
+<b class="fc"><i>53</i>&nbsp;            edit = TextureHandler.getTextureNk(&quot;text-field.9&quot;);</b>
+<b class="pc"><i>54</i>&nbsp;        }</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public void setStyle(NkContext ctx, boolean transparent) {
+<b class="pc"><i>58</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<i>59</i>&nbsp;            //window
+<b class="fc"><i>60</i>&nbsp;            ctx.style().window().background().set((byte) 0xCC, (byte) 0xCC, (byte) 0xCC, (byte) 0x00);</b>
+<b class="pc"><i>61</i>&nbsp;            if (transparent)</b>
+<b class="fc"><i>62</i>&nbsp;                ctx.style().window().fixed_background().data().color().set((byte) 0xFF, (byte) 0xFF, (byte) 0xFF, (byte) 0x00);</b>
+<i>63</i>&nbsp;            else
+<b class="nc"><i>64</i>&nbsp;                ctx.style().window().fixed_background().data().color().set((byte) 0x30, (byte) 0x30, (byte) 0x30, (byte) 0xFF);</b>
+<i>65</i>&nbsp;            //ctx.style().window().fixed_background().data().image(window);
+<b class="fc"><i>66</i>&nbsp;            ctx.style().window().border_color().set((byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>67</i>&nbsp;            ctx.style().window().combo_border_color().set((byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>68</i>&nbsp;            ctx.style().window().contextual_border_color().set((byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>69</i>&nbsp;            ctx.style().window().menu_border_color().set((byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>70</i>&nbsp;            ctx.style().window().group_border_color().set((byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>71</i>&nbsp;            ctx.style().window().tooltip_border_color().set((byte) 0x33, (byte) 0x33, (byte) 0x33, (byte) 0xFF);</b>
+<b class="fc"><i>72</i>&nbsp;            ctx.style().window().scrollbar_size().set(16, 16);</b>
+<b class="fc"><i>73</i>&nbsp;            ctx.style().window().border_color().set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00);</b>
+<b class="fc"><i>74</i>&nbsp;            ctx.style().window().padding().set(8, 4);</b>
+<b class="fc"><i>75</i>&nbsp;            ctx.style().window().border(3);</b>
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;            //window header
+<b class="fc"><i>78</i>&nbsp;            ctx.style().window().header().normal().data().image(header);</b>
+<b class="fc"><i>79</i>&nbsp;            ctx.style().window().header().hover().data().image(header);</b>
+<b class="fc"><i>80</i>&nbsp;            ctx.style().window().header().active().data().image(header);</b>
+<b class="fc"><i>81</i>&nbsp;            ctx.style().window().header().label_normal().set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0x5F);</b>
+<b class="fc"><i>82</i>&nbsp;            ctx.style().window().header().label_hover().set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0x5F);</b>
+<b class="fc"><i>83</i>&nbsp;            ctx.style().window().header().label_active().set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0x5F);</b>
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;            //scrollbar
+<b class="fc"><i>86</i>&nbsp;            NkColor color = NkColor.create()</b>
+<b class="fc"><i>87</i>&nbsp;                    .r((byte) 0xB8)</b>
+<b class="fc"><i>88</i>&nbsp;                    .g((byte) 0xB8)</b>
+<b class="fc"><i>89</i>&nbsp;                    .b((byte) 0xB8)</b>
+<b class="fc"><i>90</i>&nbsp;                    .a((byte) 0xFF);</b>
+<i>91</i>&nbsp;
+<b class="fc"><i>92</i>&nbsp;            ctx.style().scrollv().normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>93</i>&nbsp;            ctx.style().scrollv().hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>94</i>&nbsp;            ctx.style().scrollv().active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<i>95</i>&nbsp;
+<b class="fc"><i>96</i>&nbsp;            color = color.set((byte) 0xDC, (byte) 0xDC, (byte) 0xDC, (byte) 0xFF);</b>
+<b class="fc"><i>97</i>&nbsp;            ctx.style().scrollv().cursor_normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>98</i>&nbsp;            color = color.set((byte) 0xEB, (byte) 0xEB, (byte) 0xEB, (byte) 0xFF);</b>
+<b class="fc"><i>99</i>&nbsp;            ctx.style().scrollv().cursor_hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>100</i>&nbsp;            color = color.set((byte) 0x63, (byte) 0xC5, (byte) 0xFF, (byte) 0xFF);</b>
+<b class="fc"><i>101</i>&nbsp;            ctx.style().scrollv().cursor_active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>102</i>&nbsp;            ctx.style().scrollv().dec_symbol(NK_SYMBOL_NONE);</b>
+<b class="fc"><i>103</i>&nbsp;            ctx.style().scrollv().inc_symbol(NK_SYMBOL_NONE);</b>
+<b class="fc"><i>104</i>&nbsp;            ctx.style().scrollv().show_buttons(nk_true);</b>
+<b class="fc"><i>105</i>&nbsp;            color = color.set((byte) 0x51, (byte) 0x51, (byte) 0x51, (byte) 0xFF);</b>
+<b class="fc"><i>106</i>&nbsp;            ctx.style().scrollv().border_color().set(color);</b>
+<b class="fc"><i>107</i>&nbsp;            ctx.style().scrollv().cursor_border_color().set(color);</b>
+<b class="fc"><i>108</i>&nbsp;            ctx.style().scrollv().border(1);</b>
+<b class="fc"><i>109</i>&nbsp;            ctx.style().scrollv().rounding(0);</b>
+<b class="fc"><i>110</i>&nbsp;            ctx.style().scrollv().border_cursor(1);</b>
+<b class="fc"><i>111</i>&nbsp;            ctx.style().scrollv().rounding_cursor(2);</b>
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;            //scrollbar buttons
+<b class="fc"><i>114</i>&nbsp;            ctx.style().scrollv().inc_button().normal().set(nk_style_item_image(scrollbarIncButton, NkStyleItem.create()));</b>
+<b class="fc"><i>115</i>&nbsp;            ctx.style().scrollv().inc_button().hover().set(nk_style_item_image(scrollbarIncButtonHover, NkStyleItem.create()));</b>
+<b class="fc"><i>116</i>&nbsp;            ctx.style().scrollv().inc_button().active().set(nk_style_item_image(scrollbarIncButtonHover, NkStyleItem.create()));</b>
+<b class="fc"><i>117</i>&nbsp;            color = color.set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0xFF);</b>
+<b class="fc"><i>118</i>&nbsp;            ctx.style().scrollv().inc_button().border_color(color);</b>
+<b class="fc"><i>119</i>&nbsp;            ctx.style().scrollv().inc_button().text_background(color);</b>
+<b class="fc"><i>120</i>&nbsp;            ctx.style().scrollv().inc_button().text_normal(color);</b>
+<b class="fc"><i>121</i>&nbsp;            ctx.style().scrollv().inc_button().text_hover(color);</b>
+<b class="fc"><i>122</i>&nbsp;            ctx.style().scrollv().inc_button().text_active(color);</b>
+<b class="fc"><i>123</i>&nbsp;            ctx.style().scrollv().inc_button().border(0.0f);</b>
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;
+<b class="fc"><i>126</i>&nbsp;            ctx.style().scrollv().dec_button().normal().set(nk_style_item_image(scrollbarDecButton, NkStyleItem.create()));</b>
+<b class="fc"><i>127</i>&nbsp;            ctx.style().scrollv().dec_button().hover().set(nk_style_item_image(scrollbarDecButtonHover, NkStyleItem.create()));</b>
+<b class="fc"><i>128</i>&nbsp;            ctx.style().scrollv().dec_button().active().set(nk_style_item_image(scrollbarDecButtonHover, NkStyleItem.create()));</b>
+<b class="fc"><i>129</i>&nbsp;            ctx.style().scrollv().dec_button().border_color(color);</b>
+<b class="fc"><i>130</i>&nbsp;            ctx.style().scrollv().dec_button().text_background(color);</b>
+<b class="fc"><i>131</i>&nbsp;            ctx.style().scrollv().dec_button().text_normal(color);</b>
+<b class="fc"><i>132</i>&nbsp;            ctx.style().scrollv().dec_button().text_hover(color);</b>
+<b class="fc"><i>133</i>&nbsp;            ctx.style().scrollv().dec_button().text_active(color);</b>
+<b class="fc"><i>134</i>&nbsp;            ctx.style().scrollv().dec_button().border(0.0f);</b>
+<i>135</i>&nbsp;
+<i>136</i>&nbsp;            //default button
+<b class="fc"><i>137</i>&nbsp;            ctx.style().button().normal().set(nk_style_item_image(button, NkStyleItem.create()));</b>
+<b class="fc"><i>138</i>&nbsp;            ctx.style().button().hover().set(nk_style_item_image(buttonHover, NkStyleItem.create()));</b>
+<b class="fc"><i>139</i>&nbsp;            ctx.style().button().active().set(nk_style_item_image(buttonActive, NkStyleItem.create()));</b>
+<b class="fc"><i>140</i>&nbsp;            ctx.style().button().border_color(color);</b>
+<b class="fc"><i>141</i>&nbsp;            ctx.style().button().text_background(color);</b>
+<b class="fc"><i>142</i>&nbsp;            color = color.set((byte) 0x1F, (byte) 0x1F, (byte) 0x1F, (byte) 0xFF);</b>
+<b class="fc"><i>143</i>&nbsp;            ctx.style().button().text_normal(color);</b>
+<b class="fc"><i>144</i>&nbsp;            ctx.style().button().text_hover(color);</b>
+<b class="fc"><i>145</i>&nbsp;            ctx.style().button().text_active(color);</b>
+<i>146</i>&nbsp;
+<b class="fc"><i>147</i>&nbsp;            ctx.style().text().color(color);</b>
+<i>148</i>&nbsp;
+<i>149</i>&nbsp;            //contextual button
+<b class="fc"><i>150</i>&nbsp;            color = color.set((byte) 0xC7, (byte) 0xC7, (byte) 0xC7, (byte) 0xFF);</b>
+<b class="fc"><i>151</i>&nbsp;            ctx.style().contextual_button().normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>152</i>&nbsp;            color = color.set((byte) 0xE5, (byte) 0xE5, (byte) 0xE5, (byte) 0xFF);</b>
+<b class="fc"><i>153</i>&nbsp;            ctx.style().contextual_button().hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>154</i>&nbsp;            color = color.set((byte) 0x63, (byte) 0xC5, (byte) 0xFF, (byte) 0xFF);</b>
+<b class="fc"><i>155</i>&nbsp;            ctx.style().contextual_button().active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>156</i>&nbsp;            color = color.set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00);</b>
+<b class="fc"><i>157</i>&nbsp;            ctx.style().contextual_button().border_color(color);</b>
+<b class="fc"><i>158</i>&nbsp;            ctx.style().contextual_button().text_background(color);</b>
+<b class="fc"><i>159</i>&nbsp;            color = color.set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0xFF);</b>
+<b class="fc"><i>160</i>&nbsp;            ctx.style().contextual_button().text_normal(color);</b>
+<b class="fc"><i>161</i>&nbsp;            ctx.style().contextual_button().text_hover(color);</b>
+<b class="fc"><i>162</i>&nbsp;            ctx.style().contextual_button().text_active(color);</b>
+<i>163</i>&nbsp;
+<i>164</i>&nbsp;            //menu button
+<b class="fc"><i>165</i>&nbsp;            color = color.set((byte) 0xC7, (byte) 0xC7, (byte) 0xC7, (byte) 0xFF);</b>
+<b class="fc"><i>166</i>&nbsp;            ctx.style().menu_button().normal(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>167</i>&nbsp;            color = color.set((byte) 0xE5, (byte) 0xE5, (byte) 0xE5, (byte) 0xFF);</b>
+<b class="fc"><i>168</i>&nbsp;            ctx.style().menu_button().hover(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>169</i>&nbsp;            color = color.set((byte) 0x63, (byte) 0xC5, (byte) 0xFF, (byte) 0xFF);</b>
+<b class="fc"><i>170</i>&nbsp;            ctx.style().menu_button().active(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>171</i>&nbsp;            color = color.set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00);</b>
+<b class="fc"><i>172</i>&nbsp;            ctx.style().menu_button().border_color(color);</b>
+<b class="fc"><i>173</i>&nbsp;            ctx.style().menu_button().text_background(color);</b>
+<b class="fc"><i>174</i>&nbsp;            color = color.set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0xFF);</b>
+<b class="fc"><i>175</i>&nbsp;            ctx.style().menu_button().text_normal(color);</b>
+<b class="fc"><i>176</i>&nbsp;            ctx.style().menu_button().text_hover(color);</b>
+<b class="fc"><i>177</i>&nbsp;            ctx.style().menu_button().text_active(color);</b>
+<i>178</i>&nbsp;
+<i>179</i>&nbsp;            //tree
+<b class="fc"><i>180</i>&nbsp;            ctx.style().tab().text(color);</b>
+<b class="fc"><i>181</i>&nbsp;            ctx.style().tab().tab_minimize_button().normal(nk_style_item_image(tabMini, NkStyleItem.create()));</b>
+<b class="fc"><i>182</i>&nbsp;            ctx.style().tab().tab_minimize_button().hover(nk_style_item_image(tabMini, NkStyleItem.create()));</b>
+<b class="fc"><i>183</i>&nbsp;            ctx.style().tab().tab_minimize_button().active(nk_style_item_image(tabMini, NkStyleItem.create()));</b>
+<i>184</i>&nbsp;
+<b class="fc"><i>185</i>&nbsp;            color = color.set((byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x00);</b>
+<b class="fc"><i>186</i>&nbsp;            ctx.style().tab().tab_minimize_button().text_background(color);</b>
+<b class="fc"><i>187</i>&nbsp;            ctx.style().tab().tab_minimize_button().text_normal(color);</b>
+<b class="fc"><i>188</i>&nbsp;            ctx.style().tab().tab_minimize_button().text_hover(color);</b>
+<b class="fc"><i>189</i>&nbsp;            ctx.style().tab().tab_minimize_button().text_active(color);</b>
+<i>190</i>&nbsp;
+<b class="fc"><i>191</i>&nbsp;            ctx.style().tab().tab_maximize_button().normal(nk_style_item_image(tabMax, NkStyleItem.create()));</b>
+<b class="fc"><i>192</i>&nbsp;            ctx.style().tab().tab_maximize_button().hover(nk_style_item_image(tabMax, NkStyleItem.create()));</b>
+<b class="fc"><i>193</i>&nbsp;            ctx.style().tab().tab_maximize_button().active(nk_style_item_image(tabMax, NkStyleItem.create()));</b>
+<b class="fc"><i>194</i>&nbsp;            ctx.style().tab().tab_maximize_button().text_background(color);</b>
+<b class="fc"><i>195</i>&nbsp;            ctx.style().tab().tab_maximize_button().text_normal(color);</b>
+<b class="fc"><i>196</i>&nbsp;            ctx.style().tab().tab_maximize_button().text_hover(color);</b>
+<b class="fc"><i>197</i>&nbsp;            ctx.style().tab().tab_maximize_button().text_active(color);</b>
+<i>198</i>&nbsp;
+<b class="fc"><i>199</i>&nbsp;            ctx.style().tab().node_minimize_button().normal(nk_style_item_image(tabMini, NkStyleItem.create()));</b>
+<b class="fc"><i>200</i>&nbsp;            ctx.style().tab().node_minimize_button().hover(nk_style_item_image(tabMini, NkStyleItem.create()));</b>
+<b class="fc"><i>201</i>&nbsp;            ctx.style().tab().node_minimize_button().active(nk_style_item_image(tabMini, NkStyleItem.create()));</b>
+<b class="fc"><i>202</i>&nbsp;            ctx.style().tab().node_minimize_button().text_background(color);</b>
+<b class="fc"><i>203</i>&nbsp;            ctx.style().tab().node_minimize_button().text_normal(color);</b>
+<b class="fc"><i>204</i>&nbsp;            ctx.style().tab().node_minimize_button().text_hover(color);</b>
+<b class="fc"><i>205</i>&nbsp;            ctx.style().tab().node_minimize_button().text_active(color);</b>
+<i>206</i>&nbsp;
+<b class="fc"><i>207</i>&nbsp;            ctx.style().tab().node_maximize_button().normal(nk_style_item_image(tabMax, NkStyleItem.create()));</b>
+<b class="fc"><i>208</i>&nbsp;            ctx.style().tab().node_maximize_button().hover(nk_style_item_image(tabMax, NkStyleItem.create()));</b>
+<b class="fc"><i>209</i>&nbsp;            ctx.style().tab().node_maximize_button().active(nk_style_item_image(tabMax, NkStyleItem.create()));</b>
+<b class="fc"><i>210</i>&nbsp;            ctx.style().tab().node_maximize_button().text_background(color);</b>
+<b class="fc"><i>211</i>&nbsp;            ctx.style().tab().node_maximize_button().text_normal(color);</b>
+<b class="fc"><i>212</i>&nbsp;            ctx.style().tab().node_maximize_button().text_hover(color);</b>
+<b class="fc"><i>213</i>&nbsp;            ctx.style().tab().node_maximize_button().text_active(color);</b>
+<i>214</i>&nbsp;
+<i>215</i>&nbsp;            //selectable
+<b class="fc"><i>216</i>&nbsp;            color = color.set((byte) 0xC7, (byte) 0xC7, (byte) 0xC7, (byte) 0xFF);</b>
+<b class="fc"><i>217</i>&nbsp;            ctx.style().selectable().normal(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>218</i>&nbsp;            ctx.style().selectable().hover(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>219</i>&nbsp;            ctx.style().selectable().pressed(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>220</i>&nbsp;            color = color.set((byte) 0xB9, (byte) 0xCD, (byte) 0xF1, (byte) 0xFF);</b>
+<b class="fc"><i>221</i>&nbsp;            ctx.style().selectable().normal_active(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>222</i>&nbsp;            ctx.style().selectable().hover_active(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>223</i>&nbsp;            ctx.style().selectable().pressed_active(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>224</i>&nbsp;            color = color.set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0xFF);</b>
+<b class="fc"><i>225</i>&nbsp;            ctx.style().selectable().text_normal(color);</b>
+<b class="fc"><i>226</i>&nbsp;            ctx.style().selectable().text_hover(color);</b>
+<b class="fc"><i>227</i>&nbsp;            ctx.style().selectable().text_pressed(color);</b>
+<b class="fc"><i>228</i>&nbsp;            ctx.style().selectable().text_normal_active(color);</b>
+<b class="fc"><i>229</i>&nbsp;            ctx.style().selectable().text_hover_active(color);</b>
+<b class="fc"><i>230</i>&nbsp;            ctx.style().selectable().text_pressed_active(color);</b>
+<i>231</i>&nbsp;
+<i>232</i>&nbsp;            //slider
+<b class="fc"><i>233</i>&nbsp;            ctx.style().slider().normal(nk_style_item_image(sliderBar, NkStyleItem.create()));</b>
+<b class="fc"><i>234</i>&nbsp;            ctx.style().slider().hover(nk_style_item_image(sliderBar, NkStyleItem.create()));</b>
+<b class="fc"><i>235</i>&nbsp;            ctx.style().slider().active(nk_style_item_image(sliderBar, NkStyleItem.create()));</b>
+<b class="fc"><i>236</i>&nbsp;            color = color.set((byte) 0x93, (byte) 0x93, (byte) 0x93, (byte) 0xFF);</b>
+<i>237</i>&nbsp;            //ctx.style().slider().bar_normal(color);
+<i>238</i>&nbsp;            //ctx.style().slider().bar_hover(color);
+<i>239</i>&nbsp;            //ctx.style().slider().bar_active(color);
+<i>240</i>&nbsp;            //ctx.style().slider().bar_filled(color);
+<b class="fc"><i>241</i>&nbsp;            ctx.style().slider().cursor_normal(nk_style_item_image(sliderKnob, NkStyleItem.create()));</b>
+<b class="fc"><i>242</i>&nbsp;            ctx.style().slider().cursor_hover(nk_style_item_image(sliderKnob, NkStyleItem.create()));</b>
+<b class="fc"><i>243</i>&nbsp;            ctx.style().slider().cursor_active(nk_style_item_image(sliderKnob, NkStyleItem.create()));</b>
+<b class="fc"><i>244</i>&nbsp;            ctx.style().slider().cursor_size(NkVec2.create().set(16.5f, 25));</b>
+<b class="fc"><i>245</i>&nbsp;            ctx.style().slider().bar_height(1);</b>
+<i>246</i>&nbsp;
+<i>247</i>&nbsp;            //progressbar
+<b class="fc"><i>248</i>&nbsp;            color = color.set((byte) 0xD7, (byte) 0xD7, (byte) 0xD7, (byte) 0xFF);</b>
+<b class="fc"><i>249</i>&nbsp;            ctx.style().progress().normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>250</i>&nbsp;            ctx.style().progress().hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>251</i>&nbsp;            ctx.style().progress().active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>252</i>&nbsp;            color = color.set((byte) 0x3F, (byte) 0xF1, (byte) 0x5D, (byte) 0xFF);</b>
+<b class="fc"><i>253</i>&nbsp;            ctx.style().progress().cursor_normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>254</i>&nbsp;            ctx.style().progress().cursor_hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>255</i>&nbsp;            ctx.style().progress().cursor_active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>256</i>&nbsp;            color = color.set((byte) 0x71, (byte) 0x73, (byte) 0x72, (byte) 0xFF);</b>
+<b class="fc"><i>257</i>&nbsp;            ctx.style().progress().border_color(color);</b>
+<b class="fc"><i>258</i>&nbsp;            ctx.style().progress().padding().set(0, 0);</b>
+<b class="fc"><i>259</i>&nbsp;            ctx.style().progress().border(2);</b>
+<b class="fc"><i>260</i>&nbsp;            ctx.style().progress().rounding(1);</b>
+<i>261</i>&nbsp;
+<i>262</i>&nbsp;            //combo
+<b class="fc"><i>263</i>&nbsp;            color = color.set((byte) 0xD1, (byte) 0xD1, (byte) 0xD1, (byte) 0xFF);</b>
+<b class="fc"><i>264</i>&nbsp;            ctx.style().combo().normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>265</i>&nbsp;            ctx.style().combo().hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>266</i>&nbsp;            ctx.style().combo().active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>267</i>&nbsp;            color = color.set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0xFF);</b>
+<b class="fc"><i>268</i>&nbsp;            ctx.style().combo().border_color(color);</b>
+<b class="fc"><i>269</i>&nbsp;            ctx.style().combo().label_normal(color);</b>
+<b class="fc"><i>270</i>&nbsp;            ctx.style().combo().label_hover(color);</b>
+<b class="fc"><i>271</i>&nbsp;            ctx.style().combo().label_active(color);</b>
+<b class="fc"><i>272</i>&nbsp;            ctx.style().combo().border(1);</b>
+<b class="fc"><i>273</i>&nbsp;            ctx.style().combo().rounding(1);</b>
+<i>274</i>&nbsp;
+<i>275</i>&nbsp;            //combo button
+<b class="fc"><i>276</i>&nbsp;            color = color.set((byte) 0xD1, (byte) 0xD1, (byte) 0xD1, (byte) 0xFF);</b>
+<b class="fc"><i>277</i>&nbsp;            ctx.style().combo().button().normal().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>278</i>&nbsp;            ctx.style().combo().button().hover().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>279</i>&nbsp;            ctx.style().combo().button().active().set(nk_style_item_color(color, NkStyleItem.create()));</b>
+<b class="fc"><i>280</i>&nbsp;            ctx.style().combo().button().text_background(color);</b>
+<b class="fc"><i>281</i>&nbsp;            color = color.set((byte) 0x5F, (byte) 0x5F, (byte) 0x5F, (byte) 0xFF);</b>
+<b class="fc"><i>282</i>&nbsp;            ctx.style().combo().button().text_normal(color);</b>
+<b class="fc"><i>283</i>&nbsp;            ctx.style().combo().button().text_hover(color);</b>
+<b class="fc"><i>284</i>&nbsp;            ctx.style().combo().button().text_active(color);</b>
+<i>285</i>&nbsp;
+<i>286</i>&nbsp;            //edit
+<b class="fc"><i>287</i>&nbsp;            ctx.style().edit().normal().set(nk_style_item_image(edit, NkStyleItem.create()));</b>
+<b class="fc"><i>288</i>&nbsp;            ctx.style().edit().hover().set(nk_style_item_image(edit, NkStyleItem.create()));</b>
+<b class="fc"><i>289</i>&nbsp;            ctx.style().edit().active().set(nk_style_item_image(edit, NkStyleItem.create()));</b>
+<b class="pc"><i>290</i>&nbsp;        }</b>
+<i>291</i>&nbsp;    }
+<i>292</i>&nbsp;
+<i>293</i>&nbsp;    public void unsetStyle(NkContext ctx) {
+<b class="nc"><i>294</i>&nbsp;        NkContext freshCtx = NkContext.create();</b>
+<b class="nc"><i>295</i>&nbsp;        ctx.style().set(freshCtx.style());</b>
+<i>296</i>&nbsp;    }
+<i>297</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

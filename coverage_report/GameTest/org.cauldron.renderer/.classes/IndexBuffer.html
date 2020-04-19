@@ -1,0 +1,192 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: IndexBuffer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: IndexBuffer (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">IndexBuffer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    80%
+  </span>
+  <span class="absValue">
+    (8/ 10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    76.7%
+  </span>
+  <span class="absValue">
+    (23/ 30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.lwjgl.BufferUtils;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.nio.ByteBuffer;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import static org.lwjgl.opengl.GL30.*;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;/**
+<i>10</i>&nbsp; * Describes a VBO of indices.
+<i>11</i>&nbsp; * These indices correspond to the drawing order of triangles used in glDrawElements.
+<i>12</i>&nbsp; */
+<i>13</i>&nbsp;public class IndexBuffer {
+<i>14</i>&nbsp;    private int rendererId;
+<i>15</i>&nbsp;    private int indicesCount;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;    /**
+<i>18</i>&nbsp;     * Create a new index buffer - holding indices for glDrawElements - register it in OpenGL and bind it.
+<i>19</i>&nbsp;     *
+<i>20</i>&nbsp;     * @param indices The byte array of indices to load into the buffer
+<i>21</i>&nbsp;     */
+<b class="fc"><i>22</i>&nbsp;    public IndexBuffer(byte[] indices) {</b>
+<b class="fc"><i>23</i>&nbsp;        indicesCount = indices.length;</b>
+<b class="fc"><i>24</i>&nbsp;        ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(indicesCount);</b>
+<b class="fc"><i>25</i>&nbsp;        indicesBuffer.put(indices);</b>
+<b class="fc"><i>26</i>&nbsp;        indicesBuffer.flip();</b>
+<i>27</i>&nbsp;
+<b class="fc"><i>28</i>&nbsp;        rendererId = glGenBuffers();</b>
+<b class="fc"><i>29</i>&nbsp;        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);</b>
+<b class="fc"><i>30</i>&nbsp;        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STREAM_DRAW);</b>
+<i>31</i>&nbsp;    }
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * Create a new, empty, unbound index buffer.
+<i>35</i>&nbsp;     */
+<b class="fc"><i>36</i>&nbsp;    public IndexBuffer() {</b>
+<b class="fc"><i>37</i>&nbsp;        rendererId = glGenBuffers();</b>
+<i>38</i>&nbsp;    }
+<i>39</i>&nbsp;
+<i>40</i>&nbsp;    /**
+<i>41</i>&nbsp;     * Deletes the index buffer.
+<i>42</i>&nbsp;     */
+<i>43</i>&nbsp;    public void close() {
+<b class="fc"><i>44</i>&nbsp;        this.unbind();</b>
+<b class="fc"><i>45</i>&nbsp;        glDeleteBuffers(rendererId);</b>
+<i>46</i>&nbsp;    }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    /**
+<i>49</i>&nbsp;     * Binds the index buffer to the OpenGL context.
+<i>50</i>&nbsp;     */
+<i>51</i>&nbsp;    public void bind() {
+<b class="fc"><i>52</i>&nbsp;        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);</b>
+<i>53</i>&nbsp;    }
+<i>54</i>&nbsp;
+<i>55</i>&nbsp;    /**
+<i>56</i>&nbsp;     * Unbinds the index buffer from the OpenGL context.
+<i>57</i>&nbsp;     */
+<i>58</i>&nbsp;    public void unbind() {
+<b class="fc"><i>59</i>&nbsp;        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    public int getIndicesCount() {
+<b class="fc"><i>63</i>&nbsp;        return indicesCount;</b>
+<i>64</i>&nbsp;    }
+<i>65</i>&nbsp;
+<i>66</i>&nbsp;    /**
+<i>67</i>&nbsp;     * Update the ByteBuffer in the element array buffer with a new ByteBuffer of indices.
+<i>68</i>&nbsp;     *
+<i>69</i>&nbsp;     * @param indices The new ByteBuffer of indices
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    public void updateByteBuffer(ByteBuffer indices) {
+<b class="fc"><i>72</i>&nbsp;        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);</b>
+<b class="fc"><i>73</i>&nbsp;        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STREAM_DRAW);</b>
+<i>74</i>&nbsp;    }
+<i>75</i>&nbsp;
+<i>76</i>&nbsp;    public void updateByteBuffer(byte[] indices) {
+<b class="fc"><i>77</i>&nbsp;        indicesCount = indices.length;</b>
+<b class="fc"><i>78</i>&nbsp;        ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(indicesCount);</b>
+<b class="fc"><i>79</i>&nbsp;        indicesBuffer.put(indices);</b>
+<b class="fc"><i>80</i>&nbsp;        indicesBuffer.flip();</b>
+<i>81</i>&nbsp;
+<b class="fc"><i>82</i>&nbsp;        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);</b>
+<b class="fc"><i>83</i>&nbsp;        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STREAM_DRAW);</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Update the indices in the element array buffer with a new byte array of indices.
+<i>88</i>&nbsp;     *
+<i>89</i>&nbsp;     * @param indices The new ByteBuffer of indices
+<i>90</i>&nbsp;     */
+<i>91</i>&nbsp;    public void updateIndices(byte[] indices) {
+<b class="nc"><i>92</i>&nbsp;        indicesCount = indices.length;</b>
+<b class="nc"><i>93</i>&nbsp;        ByteBuffer indicesBuffer = BufferUtils.createByteBuffer(indicesCount);</b>
+<b class="nc"><i>94</i>&nbsp;        indicesBuffer.put(indices);</b>
+<b class="nc"><i>95</i>&nbsp;        indicesBuffer.flip();</b>
+<i>96</i>&nbsp;
+<b class="nc"><i>97</i>&nbsp;        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, rendererId);</b>
+<b class="nc"><i>98</i>&nbsp;        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indicesBuffer, GL_STREAM_DRAW);</b>
+<i>99</i>&nbsp;    }
+<i>100</i>&nbsp;
+<i>101</i>&nbsp;    /**
+<i>102</i>&nbsp;     * Opens an element array buffer of a particular size to be written to directly.
+<i>103</i>&nbsp;     *
+<i>104</i>&nbsp;     * @param size Size of the buffer opened
+<i>105</i>&nbsp;     */
+<i>106</i>&nbsp;    public void openBuffer(int size) {
+<b class="nc"><i>107</i>&nbsp;        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size, GL_STREAM_DRAW);</b>
+<i>108</i>&nbsp;    }
+<i>109</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

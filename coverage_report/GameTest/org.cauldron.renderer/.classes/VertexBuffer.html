@@ -1,0 +1,206 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: VertexBuffer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: VertexBuffer (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">VertexBuffer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87.5%
+  </span>
+  <span class="absValue">
+    (7/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    84.8%
+  </span>
+  <span class="absValue">
+    (28/ 33)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.lwjgl.BufferUtils;
+<i>4</i>&nbsp;import org.lwjgl.opengl.GL15;
+<i>5</i>&nbsp;
+<i>6</i>&nbsp;import java.nio.ByteBuffer;
+<i>7</i>&nbsp;import java.nio.FloatBuffer;
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;import static org.lwjgl.opengl.GL30.*;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;/**
+<i>12</i>&nbsp; * Describes an OpenGL vertex buffer object (VBO).
+<i>13</i>&nbsp; * Contains vertex information, held in an array buffer.
+<i>14</i>&nbsp; */
+<i>15</i>&nbsp;public class VertexBuffer {
+<i>16</i>&nbsp;    private int rendererId;
+<b class="fc"><i>17</i>&nbsp;    private ByteBuffer vertexByteBuffer = null;</b>
+<b class="fc"><i>18</i>&nbsp;    private ByteBuffer verticesByteBuffer = null;</b>
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    /**
+<i>21</i>&nbsp;     * Creates a new VBO using the vertices passed, and binds it.
+<i>22</i>&nbsp;     *
+<i>23</i>&nbsp;     * @param vertices The list of vertices to load into a new VBO
+<i>24</i>&nbsp;     */
+<b class="fc"><i>25</i>&nbsp;    public VertexBuffer(Vertex[] vertices) {</b>
+<i>26</i>&nbsp;        // Create a FloatBuffer of the appropriate size for one vertex
+<b class="fc"><i>27</i>&nbsp;        vertexByteBuffer = BufferUtils.createByteBuffer(Vertex.stride);</b>
+<i>28</i>&nbsp;
+<i>29</i>&nbsp;        // Put each &#39;Vertex&#39; in one FloatBuffer
+<b class="fc"><i>30</i>&nbsp;        verticesByteBuffer = BufferUtils.createByteBuffer(vertices.length *</b>
+<i>31</i>&nbsp;                Vertex.stride);
+<b class="fc"><i>32</i>&nbsp;        FloatBuffer verticesFloatBuffer = verticesByteBuffer.asFloatBuffer();</b>
+<b class="fc"><i>33</i>&nbsp;        for (int i = 0; i &lt; vertices.length; i++) {</b>
+<i>34</i>&nbsp;            // Add position, color and texture floats to the buffer
+<b class="fc"><i>35</i>&nbsp;            verticesFloatBuffer.put(vertices[i].getElements());</b>
+<i>36</i>&nbsp;        }
+<b class="fc"><i>37</i>&nbsp;        verticesFloatBuffer.flip();</b>
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;        rendererId = glGenBuffers();</b>
+<i>40</i>&nbsp;        // Create a new Vertex Buffer Object in memory and select it (bind) - VERTICES
+<b class="fc"><i>41</i>&nbsp;        glBindBuffer(GL_ARRAY_BUFFER, rendererId);</b>
+<b class="fc"><i>42</i>&nbsp;        glBufferData(GL_ARRAY_BUFFER, verticesByteBuffer, GL_STREAM_DRAW);</b>
+<i>43</i>&nbsp;    }
+<i>44</i>&nbsp;
+<i>45</i>&nbsp;    /**
+<i>46</i>&nbsp;     * Register a new, empty, unbound VBO.
+<i>47</i>&nbsp;     */
+<b class="fc"><i>48</i>&nbsp;    public VertexBuffer() {</b>
+<b class="fc"><i>49</i>&nbsp;        rendererId = glGenBuffers();</b>
+<i>50</i>&nbsp;    }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    /**
+<i>53</i>&nbsp;     * Deletes the VBO.
+<i>54</i>&nbsp;     */
+<i>55</i>&nbsp;    public void close() {
+<b class="fc"><i>56</i>&nbsp;        this.unbind();</b>
+<b class="fc"><i>57</i>&nbsp;        glDeleteBuffers(rendererId);</b>
+<i>58</i>&nbsp;    }
+<i>59</i>&nbsp;
+<i>60</i>&nbsp;    /**
+<i>61</i>&nbsp;     * Binds the VBO to the current VAO.
+<i>62</i>&nbsp;     */
+<i>63</i>&nbsp;    public void bind() {
+<b class="fc"><i>64</i>&nbsp;        glBindBuffer(GL_ARRAY_BUFFER, rendererId);</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    /**
+<i>68</i>&nbsp;     * Unbinds the VBO from the current VAO.
+<i>69</i>&nbsp;     */
+<i>70</i>&nbsp;    public void unbind() {
+<b class="fc"><i>71</i>&nbsp;        glBindBuffer(GL_ARRAY_BUFFER, 0);</b>
+<i>72</i>&nbsp;    }
+<i>73</i>&nbsp;
+<i>74</i>&nbsp;    /**
+<i>75</i>&nbsp;     * Update a vertex held in the VBO.
+<i>76</i>&nbsp;     *
+<i>77</i>&nbsp;     * @param v      Number of the vertex to replace in the VBO
+<i>78</i>&nbsp;     * @param vertex New vertex to replace the old one with
+<i>79</i>&nbsp;     */
+<i>80</i>&nbsp;    public void updateVertex(int v, Vertex vertex) {
+<b class="nc"><i>81</i>&nbsp;        FloatBuffer vertexFloatBuffer = vertexByteBuffer.asFloatBuffer();</b>
+<b class="nc"><i>82</i>&nbsp;        vertexFloatBuffer.rewind();</b>
+<b class="nc"><i>83</i>&nbsp;        vertexFloatBuffer.put(vertex.getElements());</b>
+<b class="nc"><i>84</i>&nbsp;        vertexFloatBuffer.flip();</b>
+<i>85</i>&nbsp;
+<b class="nc"><i>86</i>&nbsp;        glBufferSubData(GL15.GL_ARRAY_BUFFER, v * Vertex.stride,</b>
+<i>87</i>&nbsp;                vertexByteBuffer);
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;
+<i>90</i>&nbsp;    /**
+<i>91</i>&nbsp;     * Replaces the ByteBuffer of vertices currently held in the VBO with the given one.
+<i>92</i>&nbsp;     *
+<i>93</i>&nbsp;     * @param vertices A ByteBuffer of vertices to update the VBO with
+<i>94</i>&nbsp;     */
+<i>95</i>&nbsp;    public void updateByteBuffer(ByteBuffer vertices) {
+<b class="fc"><i>96</i>&nbsp;        glBindBuffer(GL_ARRAY_BUFFER, rendererId);</b>
+<b class="fc"><i>97</i>&nbsp;        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STREAM_DRAW);</b>
+<i>98</i>&nbsp;    }
+<i>99</i>&nbsp;
+<i>100</i>&nbsp;    /**
+<i>101</i>&nbsp;     * Replaces the ByteBuffer of vertices currently held in the VBO with vertices from a given Vertex list.
+<i>102</i>&nbsp;     *
+<i>103</i>&nbsp;     * @param vertices A list of vertices to update the VBO with
+<i>104</i>&nbsp;     */
+<i>105</i>&nbsp;    public void updateVertices(Vertex[] vertices) {
+<i>106</i>&nbsp;        // Create a FloatBuffer of the appropriate size for one vertex
+<b class="fc"><i>107</i>&nbsp;        vertexByteBuffer = BufferUtils.createByteBuffer(Vertex.stride);</b>
+<i>108</i>&nbsp;
+<i>109</i>&nbsp;        // Put each &#39;Vertex&#39; in one FloatBuffer
+<b class="fc"><i>110</i>&nbsp;        verticesByteBuffer = BufferUtils.createByteBuffer(vertices.length *</b>
+<i>111</i>&nbsp;                Vertex.stride);
+<b class="fc"><i>112</i>&nbsp;        FloatBuffer verticesFloatBuffer = verticesByteBuffer.asFloatBuffer();</b>
+<b class="fc"><i>113</i>&nbsp;        for (int i = 0; i &lt; vertices.length; i++) {</b>
+<i>114</i>&nbsp;            // Add position, color and texture floats to the buffer
+<b class="fc"><i>115</i>&nbsp;            verticesFloatBuffer.put(vertices[i].getElements());</b>
+<i>116</i>&nbsp;        }
+<b class="fc"><i>117</i>&nbsp;        verticesFloatBuffer.flip();</b>
+<i>118</i>&nbsp;
+<i>119</i>&nbsp;        // Create a new Vertex Buffer Object in memory and select it (bind) - VERTICES
+<b class="fc"><i>120</i>&nbsp;        glBindBuffer(GL_ARRAY_BUFFER, rendererId);</b>
+<b class="fc"><i>121</i>&nbsp;        glBufferData(GL_ARRAY_BUFFER, verticesByteBuffer, GL_STREAM_DRAW);</b>
+<i>122</i>&nbsp;    }
+<i>123</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

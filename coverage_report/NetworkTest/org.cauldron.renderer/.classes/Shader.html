@@ -1,0 +1,263 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Shader</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.renderer</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Shader (org.cauldron.renderer)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Shader</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    81.8%
+  </span>
+  <span class="absValue">
+    (9/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    84.9%
+  </span>
+  <span class="absValue">
+    (45/ 53)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.renderer;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.joml.Matrix4f;
+<i>4</i>&nbsp;import org.lwjgl.BufferUtils;
+<i>5</i>&nbsp;import org.lwjgl.opengl.GL20;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;import java.io.BufferedReader;
+<i>8</i>&nbsp;import java.io.IOException;
+<i>9</i>&nbsp;import java.io.InputStreamReader;
+<i>10</i>&nbsp;import java.nio.FloatBuffer;
+<i>11</i>&nbsp;import java.nio.charset.StandardCharsets;
+<i>12</i>&nbsp;import java.util.HashMap;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;import static org.lwjgl.opengl.GL30.*;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;/**
+<i>17</i>&nbsp; * Handles shader functionality in OpenGL, and creates and binds shader programs.
+<i>18</i>&nbsp; */
+<i>19</i>&nbsp;public class Shader {
+<i>20</i>&nbsp;    private int rendererId;
+<b class="fc"><i>21</i>&nbsp;    private int vsId = 0;</b>
+<b class="fc"><i>22</i>&nbsp;    private int fsId = 0;</b>
+<b class="fc"><i>23</i>&nbsp;    private HashMap&lt;String, Integer&gt; uniformIds = new HashMap&lt;String, Integer&gt;();</b>
+<i>24</i>&nbsp;    // Create a FloatBuffer with the proper size to store our matrices later
+<b class="fc"><i>25</i>&nbsp;    private FloatBuffer matrix44Buffer = BufferUtils.createFloatBuffer(16);</b>
+<i>26</i>&nbsp;
+<i>27</i>&nbsp;    /**
+<i>28</i>&nbsp;     * @param vsPath          The path of the vertex shader
+<i>29</i>&nbsp;     * @param fsPath          The path of the fragment shader
+<i>30</i>&nbsp;     * @param attribLocations The ID&#39;s of the shader attributes in OpenGL
+<i>31</i>&nbsp;     */
+<b class="fc"><i>32</i>&nbsp;    public Shader(String vsPath, String fsPath, HashMap&lt;String, Integer&gt; attribLocations) {</b>
+<b class="fc"><i>33</i>&nbsp;        String vsSource = parseShader(vsPath);</b>
+<b class="fc"><i>34</i>&nbsp;        String fsSource = parseShader(fsPath);</b>
+<i>35</i>&nbsp;        // Load the vertex and fragment shaders
+<b class="fc"><i>36</i>&nbsp;        vsId = compileShader(vsSource, GL_VERTEX_SHADER);</b>
+<b class="fc"><i>37</i>&nbsp;        fsId = compileShader(fsSource, GL_FRAGMENT_SHADER);</b>
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;        createProgram(attribLocations);</b>
+<i>40</i>&nbsp;    }
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    /**
+<i>43</i>&nbsp;     * Deletes the shader program from the OpenGL context.
+<i>44</i>&nbsp;     */
+<i>45</i>&nbsp;    public void close() {
+<b class="fc"><i>46</i>&nbsp;        GL20.glDeleteProgram(rendererId);</b>
+<i>47</i>&nbsp;    }
+<i>48</i>&nbsp;
+<i>49</i>&nbsp;    /**
+<i>50</i>&nbsp;     * Sets the shader program used by OpenGL to the program at the ID,
+<i>51</i>&nbsp;     * binding the current shader program to the OpenGL context.
+<i>52</i>&nbsp;     */
+<i>53</i>&nbsp;    public void bind() {
+<b class="fc"><i>54</i>&nbsp;        glUseProgram(rendererId);</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * Sets the shader program used by OpenGL to 0, unbinding the current shader program.
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public void unbind() {
+<b class="nc"><i>61</i>&nbsp;        glUseProgram(0);</b>
+<i>62</i>&nbsp;    }
+<i>63</i>&nbsp;
+<i>64</i>&nbsp;    /**
+<i>65</i>&nbsp;     * Binds a matrix uniform of a given name to its location in the shader.
+<i>66</i>&nbsp;     * The name passed must be the same as the corresponding name in the shader.
+<i>67</i>&nbsp;     *
+<i>68</i>&nbsp;     * @param name   The name of the uniform in the shader
+<i>69</i>&nbsp;     * @param matrix The matrix to set the uniform to
+<i>70</i>&nbsp;     */
+<i>71</i>&nbsp;    public void setMatrix4f(String name, Matrix4f matrix) {
+<b class="fc"><i>72</i>&nbsp;        glUniformMatrix4fv(getUniformLocation(name), false, matrix.get(matrix44Buffer));</b>
+<i>73</i>&nbsp;    }
+<i>74</i>&nbsp;
+<i>75</i>&nbsp;    /**
+<i>76</i>&nbsp;     * Binds a singleton uniform of a given name to its location in the shader.
+<i>77</i>&nbsp;     * The name passed must be the same as the corresponding name in the shader.
+<i>78</i>&nbsp;     *
+<i>79</i>&nbsp;     * @param name    The name of the uniform in the shader
+<i>80</i>&nbsp;     * @param uniform The uniform1 to set the uniform to
+<i>81</i>&nbsp;     */
+<i>82</i>&nbsp;    public void setUniform1i(String name, int uniform) {
+<b class="fc"><i>83</i>&nbsp;        glUniform1i(getUniformLocation(name), uniform);</b>
+<i>84</i>&nbsp;    }
+<i>85</i>&nbsp;
+<i>86</i>&nbsp;    /**
+<i>87</i>&nbsp;     * Gets the location of a given uniform within the shader.
+<i>88</i>&nbsp;     * If it already exists in the cache (HashMap of Strings and location IDs),
+<i>89</i>&nbsp;     * return it from there without calling glGetUniformLocation.
+<i>90</i>&nbsp;     *
+<i>91</i>&nbsp;     * @param name The name of the uniform to get the location of
+<i>92</i>&nbsp;     * @return The ID in OpenGL of the corresponding uniform
+<i>93</i>&nbsp;     */
+<i>94</i>&nbsp;    private int getUniformLocation(String name) {
+<i>95</i>&nbsp;        // Get matrices uniform locations if not already retrieved
+<b class="fc"><i>96</i>&nbsp;        if (!uniformIds.containsKey(name)) {</b>
+<b class="fc"><i>97</i>&nbsp;            int uniformId = glGetUniformLocation(rendererId, name);</b>
+<b class="fc"><i>98</i>&nbsp;            uniformIds.put(name, uniformId);</b>
+<b class="fc"><i>99</i>&nbsp;            return uniformId;</b>
+<i>100</i>&nbsp;        } else {
+<b class="fc"><i>101</i>&nbsp;            return uniformIds.get(name);</b>
+<i>102</i>&nbsp;        }
+<i>103</i>&nbsp;    }
+<i>104</i>&nbsp;
+<i>105</i>&nbsp;    /**
+<i>106</i>&nbsp;     * @param sPath Path of the shader to parse
+<i>107</i>&nbsp;     * @return String of the shader file contents
+<i>108</i>&nbsp;     */
+<i>109</i>&nbsp;    private String parseShader(String sPath) {
+<b class="fc"><i>110</i>&nbsp;        StringBuilder shaderSource = new StringBuilder();</b>
+<i>111</i>&nbsp;
+<i>112</i>&nbsp;        try {
+<b class="fc"><i>113</i>&nbsp;            BufferedReader reader = new BufferedReader(</b>
+<b class="fc"><i>114</i>&nbsp;                    new InputStreamReader(Thread.currentThread()</b>
+<b class="fc"><i>115</i>&nbsp;                            .getContextClassLoader()</b>
+<b class="fc"><i>116</i>&nbsp;                            .getResourceAsStream(sPath), StandardCharsets.UTF_8));</b>
+<i>117</i>&nbsp;            String line;
+<b class="fc"><i>118</i>&nbsp;            while ((line = reader.readLine()) != null) {</b>
+<b class="fc"><i>119</i>&nbsp;                shaderSource.append(line).append(&quot;\n&quot;);</b>
+<i>120</i>&nbsp;            }
+<b class="fc"><i>121</i>&nbsp;            reader.close();</b>
+<b class="nc"><i>122</i>&nbsp;        } catch (IOException e) {</b>
+<b class="nc"><i>123</i>&nbsp;            System.err.println(&quot;Could not read file.&quot;);</b>
+<b class="nc"><i>124</i>&nbsp;            e.printStackTrace();</b>
+<b class="nc"><i>125</i>&nbsp;            System.exit(-1);</b>
+<b class="fc"><i>126</i>&nbsp;        }</b>
+<b class="fc"><i>127</i>&nbsp;        return shaderSource.toString();</b>
+<i>128</i>&nbsp;    }
+<i>129</i>&nbsp;
+<i>130</i>&nbsp;    /**
+<i>131</i>&nbsp;     * Creates a shader program in OpenGL, setting the shader&#39;s ID as its program ID in OpenGL,
+<i>132</i>&nbsp;     * and attaches the vertex and fragment shaders to this new program.
+<i>133</i>&nbsp;     * Then the attributes and their corresponding integer locations in OpenGL are bound to the shader location.
+<i>134</i>&nbsp;     * The shader program is then linked and validated by OpenGL
+<i>135</i>&nbsp;     *
+<i>136</i>&nbsp;     * @param attribLocations Attribute names and their corresponding integer addresses
+<i>137</i>&nbsp;     */
+<i>138</i>&nbsp;    private void createProgram(HashMap&lt;String, Integer&gt; attribLocations) {
+<i>139</i>&nbsp;        // Link the shaders into an OpenGL program
+<b class="fc"><i>140</i>&nbsp;        rendererId = glCreateProgram();</b>
+<b class="fc"><i>141</i>&nbsp;        glAttachShader(rendererId, vsId);</b>
+<b class="fc"><i>142</i>&nbsp;        glAttachShader(rendererId, fsId);</b>
+<i>143</i>&nbsp;
+<b class="fc"><i>144</i>&nbsp;        for (HashMap.Entry&lt;String, Integer&gt; entry : attribLocations.entrySet()) {</b>
+<b class="fc"><i>145</i>&nbsp;            glBindAttribLocation(rendererId, entry.getValue(), entry.getKey());</b>
+<b class="fc"><i>146</i>&nbsp;        }</b>
+<i>147</i>&nbsp;
+<b class="fc"><i>148</i>&nbsp;        glLinkProgram(rendererId);</b>
+<b class="fc"><i>149</i>&nbsp;        glValidateProgram(rendererId);</b>
+<i>150</i>&nbsp;
+<b class="fc"><i>151</i>&nbsp;        int status = glGetProgrami(rendererId, GL_LINK_STATUS);</b>
+<b class="pc"><i>152</i>&nbsp;        if (status != GL_TRUE) {</b>
+<b class="nc"><i>153</i>&nbsp;            throw new RuntimeException(glGetProgramInfoLog(rendererId));</b>
+<i>154</i>&nbsp;        }
+<i>155</i>&nbsp;    }
+<i>156</i>&nbsp;
+<i>157</i>&nbsp;    /**
+<i>158</i>&nbsp;     * @param shaderSource A String of shader source code to compile into a shader
+<i>159</i>&nbsp;     * @param type         The type of shader to create
+<i>160</i>&nbsp;     * @return
+<i>161</i>&nbsp;     */
+<i>162</i>&nbsp;    private int compileShader(String shaderSource, int type) {
+<b class="fc"><i>163</i>&nbsp;        int shaderID = glCreateShader(type);</b>
+<b class="fc"><i>164</i>&nbsp;        glShaderSource(shaderID, shaderSource);</b>
+<b class="fc"><i>165</i>&nbsp;        glCompileShader(shaderID);</b>
+<i>166</i>&nbsp;
+<b class="fc"><i>167</i>&nbsp;        int status = glGetShaderi(shaderID, GL_COMPILE_STATUS);</b>
+<b class="pc"><i>168</i>&nbsp;        if (status != GL_TRUE) {</b>
+<b class="nc"><i>169</i>&nbsp;            throw new RuntimeException(glGetShaderInfoLog(shaderID));</b>
+<i>170</i>&nbsp;        }
+<b class="fc"><i>171</i>&nbsp;        return shaderID;</b>
+<i>172</i>&nbsp;    }
+<i>173</i>&nbsp;
+<i>174</i>&nbsp;    /**
+<i>175</i>&nbsp;     * @return The ID of the shader (its program&#39;s address in the OpenGL context
+<i>176</i>&nbsp;     */
+<i>177</i>&nbsp;    public int getId() {
+<b class="nc"><i>178</i>&nbsp;        return rendererId;</b>
+<i>179</i>&nbsp;    }
+<i>180</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

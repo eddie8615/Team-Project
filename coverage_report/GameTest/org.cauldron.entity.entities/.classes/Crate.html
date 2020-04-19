@@ -1,0 +1,133 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Crate</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.entity.entities</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Crate (org.cauldron.entity.entities)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Crate</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (2/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    73.7%
+  </span>
+  <span class="absValue">
+    (14/ 19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.entity.entities;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.Entity;
+<i>4</i>&nbsp;import org.cauldron.entity.PowerUpType;
+<i>5</i>&nbsp;import org.cauldron.entity.components.Mass;
+<i>6</i>&nbsp;import org.cauldron.entity.components.Material;
+<i>7</i>&nbsp;import org.cauldron.entity.components.Shape;
+<i>8</i>&nbsp;import org.cauldron.renderer.layers.Layer;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import java.util.Random;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;import static org.cauldron.entity.EntityType.CRATE;
+<i>13</i>&nbsp;
+<i>14</i>&nbsp;/**
+<i>15</i>&nbsp; * Crates will give the person who deals the last bit of damage to open the crate a power-up.
+<i>16</i>&nbsp; * Possibly the crate texture will change depending on its health value
+<i>17</i>&nbsp; */
+<i>18</i>&nbsp;public class Crate extends Entity {
+<i>19</i>&nbsp;    private static final long serialVersionUID = -8168282023833602536L;
+<b class="fc"><i>20</i>&nbsp;    public int hitsTaken = 0;</b>
+<b class="fc"><i>21</i>&nbsp;    public int maxHealth = 75;</b>
+<b class="fc"><i>22</i>&nbsp;    public int health = maxHealth;</b>
+<i>23</i>&nbsp;    public PowerUpType powerUpType;
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public Crate(String id) {
+<b class="fc"><i>26</i>&nbsp;        super(id);</b>
+<i>27</i>&nbsp;        // gives the crate a random x position
+<b class="fc"><i>28</i>&nbsp;        position.x = (int) (Math.random() * Layer.WIDTH);</b>
+<b class="fc"><i>29</i>&nbsp;        position.y = 450;</b>
+<b class="fc"><i>30</i>&nbsp;        rotation = 0;</b>
+<b class="fc"><i>31</i>&nbsp;        initCrate();</b>
+<i>32</i>&nbsp;    }
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    public Crate(String id, float x, float y, float rotation) {
+<b class="nc"><i>35</i>&nbsp;        super(id);</b>
+<b class="nc"><i>36</i>&nbsp;        position.x = x;</b>
+<b class="nc"><i>37</i>&nbsp;        position.y = y;</b>
+<b class="nc"><i>38</i>&nbsp;        super.rotation = rotation;</b>
+<b class="nc"><i>39</i>&nbsp;        initCrate();</b>
+<i>40</i>&nbsp;    }
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    private void initCrate() {
+<b class="fc"><i>43</i>&nbsp;        shape = new Shape(40, 40);</b>
+<b class="fc"><i>44</i>&nbsp;        depth = -0.001f;</b>
+<b class="fc"><i>45</i>&nbsp;        material = new Material.Wood();</b>
+<b class="fc"><i>46</i>&nbsp;        mass = new Mass(5);</b>
+<b class="fc"><i>47</i>&nbsp;        type = CRATE;</b>
+<b class="fc"><i>48</i>&nbsp;        powerUpType = PowerUpType.values()[new Random().nextInt(PowerUpType.values().length)];</b>
+<i>49</i>&nbsp;    }
+<i>50</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

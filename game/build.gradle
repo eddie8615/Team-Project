@@ -1,0 +1,70 @@
+plugins {
+    id 'java'
+}
+
+group 'org.cauldron'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+// Create a list of textures for getResources to use inside and out of the jar
+task listTextures {
+    def newFile = new File("game/src/main/resources/game/textures/list")
+    newFile.delete()
+    newFile.createNewFile()
+
+    File wd = file("src/main/resources/game/textures")
+    wd.eachFile() { File file ->
+        def relPath = wd.toURI().relativize(file.toURI())
+        if (relPath.getPath()[-3..-1].toString() == "png".toString())
+            newFile.append(relPath.toString() + "\n")
+    }
+
+    def newFileUI = new File("game/src/main/resources/ui/textures/list")
+    newFileUI.delete()
+    newFileUI.createNewFile()
+
+    File wdUI = file("src/main/resources/ui/textures")
+    wdUI.eachFile() { File file ->
+        def relPath = wdUI.toURI().relativize(file.toURI())
+        if (relPath.getPath()[-3..-1].toString() == "png".toString())
+            newFileUI.append(relPath.toString() + "\n")
+    }
+}
+
+task listAudio {
+    def newFile = new File("game/src/main/resources/game/audioFiles/list")
+    newFile.delete()
+    newFile.createNewFile()
+
+    File wd = file("src/main/resources/game/audioFiles")
+    wd.eachFile() { File file ->
+        def relPath = wd.toURI().relativize(file.toURI())
+        if (relPath.getPath()[-3..-1].toString() == "ogg".toString())
+            newFile.append(relPath.toString() + "\n")
+    }
+}
+
+jar.dependsOn(listTextures)
+jar.dependsOn(listAudio)
+
+// Create a single jar with all dependencies
+jar {
+    manifest {
+        attributes "Main-Class": "org.cauldron.game.Main"
+    }
+
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+
+    destinationDirectory = file(buildDir.toString() + "/natives/" + (String) rootProject.ext.buildos)
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}

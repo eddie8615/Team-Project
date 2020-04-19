@@ -1,0 +1,123 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: FPSCounter</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: FPSCounter (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FPSCounter</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (1/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    15.4%
+  </span>
+  <span class="absValue">
+    (2/ 13)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.game.Game;
+<i>4</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>5</i>&nbsp;import org.cauldron.ui.styles.DefaultStyle;
+<i>6</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>7</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>8</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;public class FPSCounter extends UIElement {
+<i>13</i>&nbsp;    public FPSCounter(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>14</i>&nbsp;        super(ctx, name, x, y);</b>
+<b class="fc"><i>15</i>&nbsp;        scale = 1.5f;</b>
+<i>16</i>&nbsp;    }
+<i>17</i>&nbsp;
+<i>18</i>&nbsp;    @Override
+<i>19</i>&nbsp;    public void layout() {
+<b class="nc"><i>20</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="nc"><i>21</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<i>22</i>&nbsp;
+<b class="nc"><i>23</i>&nbsp;            new DefaultStyle().setStyle(ctx, true);</b>
+<i>24</i>&nbsp;            // Ensure that GUILayer knows how to identify the element giving the draw command
+<b class="nc"><i>25</i>&nbsp;            setUserDataUUID();</b>
+<b class="nc"><i>26</i>&nbsp;            if (nk_begin(</b>
+<i>27</i>&nbsp;                    ctx,
+<i>28</i>&nbsp;                    name,
+<b class="nc"><i>29</i>&nbsp;                    nk_rect(x, y, 100, 200, rect),</b>
+<i>30</i>&nbsp;                    NK_WINDOW_NO_INPUT
+<i>31</i>&nbsp;            )) {
+<b class="nc"><i>32</i>&nbsp;                nk_layout_row_static(ctx, 8, 24, 1);</b>
+<b class="nc"><i>33</i>&nbsp;                nk_label(ctx, String.valueOf(Game.fps), NK_TEXT_ALIGN_CENTERED);</b>
+<i>34</i>&nbsp;            }
+<i>35</i>&nbsp;
+<b class="nc"><i>36</i>&nbsp;            resetUserDataUUID();</b>
+<b class="nc"><i>37</i>&nbsp;            nk_end(ctx);</b>
+<b class="nc"><i>38</i>&nbsp;        }</b>
+<i>39</i>&nbsp;    }
+<i>40</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

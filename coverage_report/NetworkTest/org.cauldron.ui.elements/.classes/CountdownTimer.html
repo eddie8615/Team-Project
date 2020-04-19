@@ -1,0 +1,136 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: CountdownTimer</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.ui.elements</a> ]
+</div>
+
+<h1>Coverage Summary for Class: CountdownTimer (org.cauldron.ui.elements)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">CountdownTimer</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (3/ 3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (17/ 17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.ui.elements;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.game.Game;
+<i>4</i>&nbsp;import org.cauldron.ui.UIElement;
+<i>5</i>&nbsp;import org.cauldron.ui.styles.DefaultStyle;
+<i>6</i>&nbsp;import org.lwjgl.nuklear.NkContext;
+<i>7</i>&nbsp;import org.lwjgl.nuklear.NkRect;
+<i>8</i>&nbsp;import org.lwjgl.system.MemoryStack;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;import static org.lwjgl.nuklear.Nuklear.*;
+<i>11</i>&nbsp;
+<i>12</i>&nbsp;public class CountdownTimer extends UIElement {
+<i>13</i>&nbsp;
+<b class="fc"><i>14</i>&nbsp;    public long timeRemaining = 0;</b>
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;    public CountdownTimer(NkContext ctx, String name, int x, int y) {
+<b class="fc"><i>17</i>&nbsp;        super(ctx, name, x, y);</b>
+<b class="fc"><i>18</i>&nbsp;        scale = 1.5f;</b>
+<i>19</i>&nbsp;    }
+<i>20</i>&nbsp;
+<i>21</i>&nbsp;    @Override
+<i>22</i>&nbsp;    public void layout() {
+<b class="pc"><i>23</i>&nbsp;        try (MemoryStack stack = MemoryStack.stackPush()) {</b>
+<b class="fc"><i>24</i>&nbsp;            NkRect rect = NkRect.mallocStack(stack);</b>
+<i>25</i>&nbsp;
+<b class="fc"><i>26</i>&nbsp;            new DefaultStyle().setStyle(ctx, true);</b>
+<i>27</i>&nbsp;            // Ensure that GUILayer knows how to identify the element giving the draw command
+<b class="fc"><i>28</i>&nbsp;            setUserDataUUID();</b>
+<b class="pc"><i>29</i>&nbsp;            if (nk_begin(</b>
+<i>30</i>&nbsp;                    ctx,
+<i>31</i>&nbsp;                    name,
+<b class="fc"><i>32</i>&nbsp;                    nk_rect(x, y, 100, 200, rect),</b>
+<i>33</i>&nbsp;                    NK_WINDOW_NO_INPUT
+<i>34</i>&nbsp;            )) {
+<b class="fc"><i>35</i>&nbsp;                nk_layout_row_static(ctx, 8, 24, 1);</b>
+<b class="fc"><i>36</i>&nbsp;                nk_label(ctx, formatTimeLeft(timeRemaining), NK_TEXT_ALIGN_CENTERED);</b>
+<i>37</i>&nbsp;            }
+<i>38</i>&nbsp;
+<b class="fc"><i>39</i>&nbsp;            resetUserDataUUID();</b>
+<b class="fc"><i>40</i>&nbsp;            nk_end(ctx);</b>
+<b class="pc"><i>41</i>&nbsp;        }</b>
+<i>42</i>&nbsp;    }
+<i>43</i>&nbsp;
+<i>44</i>&nbsp;    /**
+<i>45</i>&nbsp;     * @param timeRemaining in milliseconds
+<i>46</i>&nbsp;     * @return string in format mm:ss
+<i>47</i>&nbsp;     */
+<i>48</i>&nbsp;    private String formatTimeLeft(long timeRemaining) {
+<b class="fc"><i>49</i>&nbsp;        int seconds = (int) (timeRemaining / 1000) % 60;</b>
+<b class="fc"><i>50</i>&nbsp;        int minutes = (int) (timeRemaining / 1000 / 60);</b>
+<b class="fc"><i>51</i>&nbsp;        return minutes + &quot;:&quot; + String.format(&quot;%02d&quot;, seconds);</b>
+<i>52</i>&nbsp;    }
+<i>53</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

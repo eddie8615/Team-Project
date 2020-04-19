@@ -1,0 +1,142 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Message</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.network</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Message (org.cauldron.network)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Message</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (18/ 18)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.network;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.entity.EntityHandler;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import java.io.Serializable;
+<i>6</i>&nbsp;import java.util.ArrayList;
+<i>7</i>&nbsp;import java.util.Arrays;
+<i>8</i>&nbsp;import java.util.Map;
+<i>9</i>&nbsp;
+<i>10</i>&nbsp;/**
+<i>11</i>&nbsp; * This class holds all data that may need to be sent across the network. Easy to package up the data.
+<i>12</i>&nbsp; */
+<i>13</i>&nbsp;public class Message implements Serializable {
+<i>14</i>&nbsp;    private static final long serialVersionUID = -3201786932426092210L;
+<i>15</i>&nbsp;    public String type;                                      // The message type.
+<b class="fc"><i>16</i>&nbsp;    public EntityHandler entityHandler = null;               // An EntityHandler.</b>
+<b class="fc"><i>17</i>&nbsp;    public Integer[] keysPressed = null;                     // The keyboard inputs.</b>
+<b class="fc"><i>18</i>&nbsp;    public boolean shotFired = false;                        // Has the user fired.</b>
+<i>19</i>&nbsp;
+<b class="fc"><i>20</i>&nbsp;    public double mouseHeldTime = -1;                        // Time the mouse has held down for a shot.</b>
+<b class="fc"><i>21</i>&nbsp;    public double currentMouseHeldTime = -1;                 // Time the mouse has held down for.</b>
+<b class="fc"><i>22</i>&nbsp;    public Map&lt;String, Double&gt; tankToHeldLength = null;      // How long the users have held down for.</b>
+<b class="fc"><i>23</i>&nbsp;    public long timeRemaining = -1;</b>
+<b class="fc"><i>24</i>&nbsp;    public double packetNum = -1;                            // The packet number. Used to let the other side know what order things have been sent.</b>
+<i>25</i>&nbsp;
+<b class="fc"><i>26</i>&nbsp;    public String name = null;                               // Name of the user.</b>
+<b class="fc"><i>27</i>&nbsp;    public int teamID = -1;                                  // Holds the team number of the user.</b>
+<b class="fc"><i>28</i>&nbsp;    public Map&lt;String, String&gt; tankToNameMap = null;         // Map of tanks to names.</b>
+<b class="fc"><i>29</i>&nbsp;    public ArrayList&lt;ArrayList&lt;String&gt;&gt; teamsList = null;    // List of players in each team.</b>
+<b class="fc"><i>30</i>&nbsp;    public LobbySettings lobbySettings = null;               // The settings of the initial lobby.</b>
+<b class="fc"><i>31</i>&nbsp;    public String stringData = null;                         // String data can be sent here like tankID.</b>
+<i>32</i>&nbsp;
+<i>33</i>&nbsp;    /**
+<i>34</i>&nbsp;     * Create a new message. Relies on the user to assign necessary fields.
+<i>35</i>&nbsp;     *
+<i>36</i>&nbsp;     * @param type The message type.
+<i>37</i>&nbsp;     */
+<b class="fc"><i>38</i>&nbsp;    public Message(String type) {</b>
+<b class="fc"><i>39</i>&nbsp;        this.type = type;</b>
+<i>40</i>&nbsp;    }
+<i>41</i>&nbsp;
+<i>42</i>&nbsp;    @Override
+<i>43</i>&nbsp;    public String toString() {
+<b class="fc"><i>44</i>&nbsp;        return &quot;Message{&quot; +</b>
+<i>45</i>&nbsp;                &quot;type=&#39;&quot; + type + &#39;\&#39;&#39; +
+<i>46</i>&nbsp;                &quot;, entityHandler=&quot; + entityHandler +
+<b class="fc"><i>47</i>&nbsp;                &quot;, keysPressed=&quot; + Arrays.toString(keysPressed) +</b>
+<i>48</i>&nbsp;                &quot;, shotFired=&quot; + shotFired +
+<i>49</i>&nbsp;                &quot;, mouseHeldTime=&quot; + mouseHeldTime +
+<i>50</i>&nbsp;                &quot;, packetNum=&quot; + packetNum +
+<i>51</i>&nbsp;                &quot;, name=&#39;&quot; + name + &#39;\&#39;&#39; +
+<i>52</i>&nbsp;                &quot;, teamID=&quot; + teamID +
+<i>53</i>&nbsp;                &quot;, tankToNameMap=&quot; + tankToNameMap +
+<i>54</i>&nbsp;                &quot;, teamsList=&quot; + teamsList +
+<i>55</i>&nbsp;                &quot;, lobbySettings=&quot; + lobbySettings +
+<i>56</i>&nbsp;                &quot;, stringData=&#39;&quot; + stringData + &#39;\&#39;&#39; +
+<i>57</i>&nbsp;                &#39;}&#39;;
+<i>58</i>&nbsp;    }
+<i>59</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>

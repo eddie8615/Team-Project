@@ -1,0 +1,260 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Game</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.game</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Game (org.cauldron.game)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Game</td>
+<td class="coverageStat">
+  <span class="percent">
+    36.4%
+  </span>
+  <span class="absValue">
+    (4/ 11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    66.7%
+  </span>
+  <span class="absValue">
+    (36/ 54)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">Game$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">Game$SceneType</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (2/ 2)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (7/ 14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    68.4%
+  </span>
+  <span class="absValue">
+    (39/ 57)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.game;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.cauldron.audio.AudioManager;
+<i>4</i>&nbsp;import org.cauldron.network.Client;
+<i>5</i>&nbsp;import org.cauldron.renderer.TextureHandler;
+<i>6</i>&nbsp;import org.cauldron.renderer.layers.GUILayer;
+<i>7</i>&nbsp;import org.cauldron.scenes.*;
+<i>8</i>&nbsp;import org.cauldron.ui.UIHandler;
+<i>9</i>&nbsp;import org.joml.Vector2d;
+<i>10</i>&nbsp;
+<i>11</i>&nbsp;import java.util.ArrayList;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;import static org.cauldron.network.LobbySettings.GameType;
+<i>14</i>&nbsp;import static org.cauldron.network.LobbySettings.GameType.DEFAULT;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;/**
+<i>17</i>&nbsp; * The root Game, which switches Scenes and handles framerate ticks, as well as one-time initialisations
+<i>18</i>&nbsp; */
+<b class="nc"><i>19</i>&nbsp;public class Game {</b>
+<i>20</i>&nbsp;
+<b class="fc"><i>21</i>&nbsp;    public enum SceneType {</b>
+<b class="fc"><i>22</i>&nbsp;        MAINMENU, OFFLINE, ONLINE, MAPEDITOR</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    private static GUILayer guiLayer;
+<i>26</i>&nbsp;    public static Scene currentScene;
+<b class="fc"><i>27</i>&nbsp;    public static boolean changeSceneFlag = false;</b>
+<b class="fc"><i>28</i>&nbsp;    public static SceneType destScene = null;</b>
+<b class="fc"><i>29</i>&nbsp;    private static GameType requestedGameType = DEFAULT;</b>
+<b class="fc"><i>30</i>&nbsp;    private static ArrayList&lt;Vector2d&gt; requestedMapCntrlPoints = null;</b>
+<b class="fc"><i>31</i>&nbsp;    private static long fpsTick = 1000000000; // One sec between fps calc</b>
+<i>32</i>&nbsp;    public static long startFPSTime;
+<b class="fc"><i>33</i>&nbsp;    private static int frameCount = 0;</b>
+<b class="fc"><i>34</i>&nbsp;    public static int fps = 0;</b>
+<i>35</i>&nbsp;
+<i>36</i>&nbsp;    /**
+<i>37</i>&nbsp;     * Process all one-time setup
+<i>38</i>&nbsp;     *
+<i>39</i>&nbsp;     * @param window id of the window the game is running in
+<i>40</i>&nbsp;     */
+<i>41</i>&nbsp;    public static void init(long window) {
+<b class="fc"><i>42</i>&nbsp;        TextureHandler.loadTextures(&quot;game/textures/list&quot;);</b>
+<b class="fc"><i>43</i>&nbsp;        TextureHandler.loadTextures(&quot;ui/textures/list&quot;);</b>
+<i>44</i>&nbsp;
+<b class="fc"><i>45</i>&nbsp;        AudioManager.init();</b>
+<b class="fc"><i>46</i>&nbsp;        AudioManager.loadAudioFiles(&quot;game/audioFiles/list&quot;);</b>
+<b class="fc"><i>47</i>&nbsp;        UIHandler.init(window);</b>
+<b class="fc"><i>48</i>&nbsp;        Input.init(window);</b>
+<b class="fc"><i>49</i>&nbsp;        MapLoader.init();</b>
+<b class="fc"><i>50</i>&nbsp;        guiLayer = new GUILayer();</b>
+<b class="fc"><i>51</i>&nbsp;        guiLayer.setup();</b>
+<b class="fc"><i>52</i>&nbsp;        Input.setGUILayer(guiLayer);</b>
+<b class="fc"><i>53</i>&nbsp;        UIHandler.setGUILayer(guiLayer);</b>
+<b class="fc"><i>54</i>&nbsp;        currentScene = new MainMenuScene(guiLayer);</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    /**
+<i>58</i>&nbsp;     * Cycle all scenes; process scene changes and framerate calculation
+<i>59</i>&nbsp;     */
+<i>60</i>&nbsp;    public static void cycle() {
+<b class="fc"><i>61</i>&nbsp;        long currentNanoTime = System.nanoTime();</b>
+<b class="fc"><i>62</i>&nbsp;        if (fpsTick &lt; currentNanoTime - startFPSTime) {</b>
+<b class="fc"><i>63</i>&nbsp;            fps = frameCount;</b>
+<b class="fc"><i>64</i>&nbsp;            frameCount = 0;</b>
+<b class="fc"><i>65</i>&nbsp;            startFPSTime = currentNanoTime;</b>
+<i>66</i>&nbsp;        }
+<i>67</i>&nbsp;
+<b class="fc"><i>68</i>&nbsp;        currentScene.cycle();</b>
+<b class="fc"><i>69</i>&nbsp;        if (changeSceneFlag) {</b>
+<b class="fc"><i>70</i>&nbsp;            Game.setScene(destScene);</b>
+<b class="fc"><i>71</i>&nbsp;            changeSceneFlag = false;</b>
+<b class="fc"><i>72</i>&nbsp;            destScene = null;</b>
+<i>73</i>&nbsp;        }
+<b class="fc"><i>74</i>&nbsp;        frameCount++;</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    public static void cleanup() {
+<b class="nc"><i>78</i>&nbsp;        guiLayer.close();</b>
+<b class="nc"><i>79</i>&nbsp;        TextureHandler.cleanup();</b>
+<b class="nc"><i>80</i>&nbsp;        AudioManager.cleanup();</b>
+<i>81</i>&nbsp;    }
+<i>82</i>&nbsp;
+<i>83</i>&nbsp;    /**
+<i>84</i>&nbsp;     * Switches to a Scene of the specified type
+<i>85</i>&nbsp;     *
+<i>86</i>&nbsp;     * @param type
+<i>87</i>&nbsp;     */
+<i>88</i>&nbsp;    public static void setScene(SceneType type) {
+<b class="fc"><i>89</i>&nbsp;        Scene oldScene = currentScene;</b>
+<b class="pc"><i>90</i>&nbsp;        if (oldScene.getType() == SceneType.ONLINE) {</b>
+<b class="nc"><i>91</i>&nbsp;            OnlineScene onlineScene = (OnlineScene) oldScene;</b>
+<b class="nc"><i>92</i>&nbsp;            Client client = onlineScene.getClient();</b>
+<b class="nc"><i>93</i>&nbsp;            client.started = false;</b>
+<b class="nc"><i>94</i>&nbsp;            client.closeClient();</b>
+<i>95</i>&nbsp;        }
+<b class="pc"><i>96</i>&nbsp;        switch (type) {</b>
+<i>97</i>&nbsp;            case MAINMENU:
+<b class="nc"><i>98</i>&nbsp;                currentScene = new MainMenuScene(guiLayer);</b>
+<b class="nc"><i>99</i>&nbsp;                break;</b>
+<i>100</i>&nbsp;            case OFFLINE:
+<b class="fc"><i>101</i>&nbsp;                currentScene = new OfflineScene(guiLayer);</b>
+<b class="fc"><i>102</i>&nbsp;                break;</b>
+<i>103</i>&nbsp;            case ONLINE:
+<b class="nc"><i>104</i>&nbsp;                currentScene = new OnlineScene(guiLayer);</b>
+<b class="nc"><i>105</i>&nbsp;                break;</b>
+<i>106</i>&nbsp;            case MAPEDITOR:
+<b class="nc"><i>107</i>&nbsp;                currentScene = new MapEditingScene(guiLayer);</b>
+<i>108</i>&nbsp;                break;
+<i>109</i>&nbsp;        }
+<b class="fc"><i>110</i>&nbsp;        oldScene.cleanup();</b>
+<i>111</i>&nbsp;    }
+<i>112</i>&nbsp;
+<i>113</i>&nbsp;    public static void setRequestedGameType(GameType gametype) {
+<b class="nc"><i>114</i>&nbsp;        requestedGameType = gametype;</b>
+<i>115</i>&nbsp;    }
+<i>116</i>&nbsp;
+<i>117</i>&nbsp;    public static GameType getRequestedGameType() {
+<b class="nc"><i>118</i>&nbsp;        return requestedGameType;</b>
+<i>119</i>&nbsp;    }
+<i>120</i>&nbsp;
+<i>121</i>&nbsp;    public static void setRequestedMapCntrlPoints(ArrayList&lt;Vector2d&gt; mapCntrlPoints) {
+<b class="nc"><i>122</i>&nbsp;        requestedMapCntrlPoints = mapCntrlPoints;</b>
+<i>123</i>&nbsp;    }
+<i>124</i>&nbsp;
+<i>125</i>&nbsp;    public static ArrayList&lt;Vector2d&gt; getRequestedMapCntrlPoints() {
+<b class="nc"><i>126</i>&nbsp;        return requestedMapCntrlPoints;</b>
+<i>127</i>&nbsp;    }
+<i>128</i>&nbsp;
+<i>129</i>&nbsp;    public static GUILayer getGuiLayer(){
+<b class="nc"><i>130</i>&nbsp;        return guiLayer;</b>
+<i>131</i>&nbsp;    }
+<i>132</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:11</div>
+</div>
+</body>
+</html>

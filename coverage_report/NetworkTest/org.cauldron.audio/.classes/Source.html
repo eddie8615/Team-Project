@@ -1,0 +1,172 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: Source</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">org.cauldron.audio</a> ]
+</div>
+
+<h1>Coverage Summary for Class: Source (org.cauldron.audio)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">Source</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    35.3%
+  </span>
+  <span class="absValue">
+    (6/ 17)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    48.3%
+  </span>
+  <span class="absValue">
+    (14/ 29)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package org.cauldron.audio;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.lwjgl.openal.AL10;
+<i>4</i>&nbsp;
+<i>5</i>&nbsp;import static org.lwjgl.openal.AL10.AL_NONE;
+<i>6</i>&nbsp;
+<i>7</i>&nbsp;public class Source {
+<i>8</i>&nbsp;
+<i>9</i>&nbsp;    private int sourceId;
+<b class="fc"><i>10</i>&nbsp;    private float volume = 1f;</b>
+<i>11</i>&nbsp;
+<b class="fc"><i>12</i>&nbsp;    public Source() {</b>
+<b class="fc"><i>13</i>&nbsp;        this.sourceId = AL10.alGenSources();</b>
+<b class="fc"><i>14</i>&nbsp;        AL10.alSourcef(sourceId, AL10.AL_GAIN, volume);</b>
+<b class="fc"><i>15</i>&nbsp;        AL10.alSourcef(sourceId, AL10.AL_PITCH, 1);</b>
+<b class="fc"><i>16</i>&nbsp;        AL10.alSource3f(sourceId, AL10.AL_POSITION, 0, 0, 0);</b>
+<i>17</i>&nbsp;    }
+<i>18</i>&nbsp;
+<i>19</i>&nbsp;    public void playAudio(int buffer) {
+<b class="nc"><i>20</i>&nbsp;        stopAudio();</b>
+<b class="nc"><i>21</i>&nbsp;        AL10.alSourcei(sourceId, AL10.AL_BUFFER, buffer);</b>
+<b class="nc"><i>22</i>&nbsp;        AL10.alSourcePlay(sourceId);</b>
+<i>23</i>&nbsp;    }
+<i>24</i>&nbsp;
+<i>25</i>&nbsp;    public void playAudio(String name) {
+<b class="fc"><i>26</i>&nbsp;        AL10.alSourcei(sourceId, AL10.AL_BUFFER, AudioManager.audioBuffers.get(name));</b>
+<b class="fc"><i>27</i>&nbsp;        AL10.alSourcePlay(sourceId);</b>
+<i>28</i>&nbsp;    }
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    public void pauseAudio() {
+<b class="nc"><i>31</i>&nbsp;        AL10.alSourcePause(sourceId);</b>
+<i>32</i>&nbsp;    }
+<i>33</i>&nbsp;
+<i>34</i>&nbsp;    public void continuePlaying() {
+<b class="nc"><i>35</i>&nbsp;        AL10.alSourcePlay(sourceId);</b>
+<i>36</i>&nbsp;    }
+<i>37</i>&nbsp;
+<i>38</i>&nbsp;    public void stopAudio() {
+<b class="fc"><i>39</i>&nbsp;        AL10.alSourceStop(sourceId);</b>
+<b class="fc"><i>40</i>&nbsp;        AL10.alSourcei(sourceId, AL10.AL_BUFFER, AL_NONE);</b>
+<i>41</i>&nbsp;    }
+<i>42</i>&nbsp;
+<i>43</i>&nbsp;    public void muteAudio(int buffer) {
+<b class="nc"><i>44</i>&nbsp;        AL10.alSourcei(sourceId, AL10.AL_BUFFER, buffer);</b>
+<b class="nc"><i>45</i>&nbsp;        AL10.alSourcef(sourceId, AL10.AL_GAIN, 0);</b>
+<i>46</i>&nbsp;    }
+<i>47</i>&nbsp;
+<i>48</i>&nbsp;    public void unmuteAudio(int buffer) {
+<b class="nc"><i>49</i>&nbsp;        AL10.alSourcei(sourceId, AL10.AL_BUFFER, buffer);</b>
+<b class="nc"><i>50</i>&nbsp;        AL10.alSourcef(sourceId, AL10.AL_GAIN, volume);</b>
+<i>51</i>&nbsp;    }
+<i>52</i>&nbsp;
+<i>53</i>&nbsp;    public void setVolume(float volume) {
+<b class="fc"><i>54</i>&nbsp;        AL10.alSourcef(sourceId, AL10.AL_GAIN, volume);</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    public void setPitch(float pitch) {
+<b class="nc"><i>58</i>&nbsp;        AL10.alSourcef(sourceId, AL10.AL_PITCH, pitch);</b>
+<i>59</i>&nbsp;    }
+<i>60</i>&nbsp;
+<i>61</i>&nbsp;    public void setPosition(float x, float y, float z) {
+<b class="nc"><i>62</i>&nbsp;        AL10.alSource3f(sourceId, AL10.AL_POSITION, x, y, z);</b>
+<i>63</i>&nbsp;    }
+<i>64</i>&nbsp;
+<i>65</i>&nbsp;    public void setVelocity(float x, float y, float z) {
+<b class="nc"><i>66</i>&nbsp;        AL10.alSource3f(sourceId, AL10.AL_VELOCITY, x, y, z);</b>
+<i>67</i>&nbsp;    }
+<i>68</i>&nbsp;
+<i>69</i>&nbsp;    public void setLoop(boolean loop) {
+<b class="pc"><i>70</i>&nbsp;        AL10.alSourcei(sourceId, AL10.AL_LOOPING, loop ? AL10.AL_TRUE : AL10.AL_FALSE);</b>
+<i>71</i>&nbsp;    }
+<i>72</i>&nbsp;
+<i>73</i>&nbsp;    public float getVolume() {
+<b class="nc"><i>74</i>&nbsp;        return this.volume;</b>
+<i>75</i>&nbsp;    }
+<i>76</i>&nbsp;
+<i>77</i>&nbsp;    public int getID() {
+<b class="nc"><i>78</i>&nbsp;        return this.sourceId;</b>
+<i>79</i>&nbsp;    }
+<i>80</i>&nbsp;
+<i>81</i>&nbsp;    public boolean isPlaying() {
+<b class="nc"><i>82</i>&nbsp;        return AL10.alGetSourcei(sourceId, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING;</b>
+<i>83</i>&nbsp;    }
+<i>84</i>&nbsp;
+<i>85</i>&nbsp;    public void delete() {
+<b class="fc"><i>86</i>&nbsp;        stopAudio();</b>
+<b class="fc"><i>87</i>&nbsp;        AL10.alDeleteSources(sourceId);</b>
+<i>88</i>&nbsp;    }
+<i>89</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-04-15 23:14</div>
+</div>
+</body>
+</html>
