@@ -11,3 +11,5 @@
 
 When you commit changes, remember to push them and merge to dev when needed for more complete experimental features.
 For any features needed in a release (demo, final, etc.) merge dev into master.
+
+## To try this game, you need to change directory name to 'cauldron' when you pull or clone this project
